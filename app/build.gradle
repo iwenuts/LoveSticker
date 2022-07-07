@@ -1,0 +1,145 @@
+plugins {
+    id 'com.android.application'
+    id 'stringfog'
+}
+
+stringfog {
+    key 'qwerasdfzxvc'
+    enable true
+    implementation 'com.github.megatronking.stringfog.xor.StringFogImpl'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion '30.0.3'
+
+    android.buildFeatures.viewBinding = true
+
+    defaultConfig {
+        applicationId "com.example.lovesticker"
+        minSdkVersion 21
+        targetSdkVersion 30
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        flavorDimensions "default"
+
+        ndk {
+            abiFilters 'arm64-v8a','armeabi-v7a'
+        }
+    }
+
+
+    buildTypes {
+        debug {
+//            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+
+    }
+
+
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
+    implementation 'com.gyf.immersionbar:immersionbar:3.0.0'
+
+    //引入申请权限
+    implementation 'com.guolindev.permissionx:permissionx:1.4.1'
+
+    implementation 'com.airbnb.android:lottie:4.0.0'
+
+    implementation 'com.blankj:utilcodex:1.30.6'
+
+    implementation 'androidx.room:room-runtime:2.0.0'
+    annotationProcessor 'androidx.room:room-compiler:2.2.5'
+
+    implementation 'com.tencent.bugly:crashreport:3.0.1'
+
+    implementation 'androidx.cardview:cardview:1.0.0'
+
+    implementation 'io.github.youth5201314:banner:2.2.2'
+
+    implementation 'com.qcloud.cos:cos-android-lite:5.6.14'
+
+    //immersion bar
+    implementation 'com.gyf.immersionbar:immersionbar:3.0.0'
+
+    //android logger
+    implementation 'com.orhanobut:logger:2.2.0'
+
+    //string fog
+    implementation 'com.github.megatronking.stringfog:xor:1.1.0'
+
+    //util code
+    implementation 'com.blankj:utilcodex:1.30.6'
+
+    //M M K V
+    implementation 'com.tencent:mmkv:1.2.11'
+
+    //billing library
+    implementation "com.android.billingclient:billing:4.0.0"
+
+    implementation  'com.umeng.umsdk:common:9.4.4'
+    implementation  'com.umeng.umsdk:asms:1.4.1'
+
+    //google event & analytics    &&    messaging
+//    implementation platform('com.google.firebase:firebase-bom:28.3.0')
+//    implementation 'com.google.firebase:firebase-analytics'
+//    implementation 'com.google.firebase:firebase-messaging'
+
+    //retrofit
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.okio:okio:2.8.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.squareup.okhttp3:okhttp:4.8.1'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+//    // ad library
+    implementation 'com.applovin:applovin-sdk:10.3.4'
+    //ad colony
+    implementation 'com.adcolony:sdk:4.6.5'
+    implementation 'com.applovin.mediation:adcolony-adapter:4.6.5.0'
+    // admob mediation
+//    implementation 'com.google.android.gms:play-services-ads:20.4.0'
+//    implementation 'com.applovin.mediation:google-adapter:20.4.0.1'
+    // fb mediation
+    implementation 'com.facebook.android:audience-network-sdk:6.8.0'
+    implementation 'com.applovin.mediation:facebook-adapter:6.8.0.1'
+    // vungle mediation
+    implementation 'com.vungle:publisher-sdk-android:6.10.2'
+    implementation 'com.applovin.mediation:vungle-adapter:6.10.2.0'
+    // unity mediation
+    implementation 'com.unity3d.ads:unity-ads:3.7.5'
+    implementation 'com.applovin.mediation:unityads-adapter:3.7.5.1'
+
+
+    // core
+    implementation 'com.liulishuo.okdownload:okdownload:1.0.7'
+    implementation 'com.liulishuo.okdownload:sqlite:1.0.7'
+    implementation 'com.liulishuo.okdownload:okhttp:1.0.7'
+
+
+
+}
