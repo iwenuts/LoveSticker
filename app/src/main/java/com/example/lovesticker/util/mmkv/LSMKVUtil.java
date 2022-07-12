@@ -3,13 +3,13 @@ package com.example.lovesticker.util.mmkv;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-public class PixMKVUtil {
+public class LSMKVUtil {
 
     private static SharedPreferences sharedPreferences;
     private static SharedPreferences.Editor editor;
 
     public static void initMKV(Context appContext) {
-        sharedPreferences = appContext.getSharedPreferences("Pixocut-config",Context.MODE_PRIVATE);
+        sharedPreferences = appContext.getSharedPreferences("LoveStivker-config",Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
     }
     public static void put(String key,String value) {

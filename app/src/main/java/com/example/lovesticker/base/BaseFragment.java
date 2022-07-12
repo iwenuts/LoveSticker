@@ -17,7 +17,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public abstract class BaseFragment<VM extends BaseViewModel,VB extends ViewBinding> extends Fragment {
+public abstract class BaseFragment<VM extends BaseViewModel,VB> extends Fragment {
 
     protected VM viewModel;
     protected VB viewBinding;

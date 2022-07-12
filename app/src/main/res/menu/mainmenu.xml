@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/packFragment"
+        android:icon="@drawable/pack"
+        android:title="Pack" />
+    <item
+        android:id="@+id/stickerFragment"
+        android:icon="@drawable/sticker"
+        android:title="Sticker" />
+    <item
+        android:id="@+id/mineFragment"
+        android:icon="@drawable/mine"
+        android:title="Mine" />
+</menu>

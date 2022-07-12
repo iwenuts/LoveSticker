@@ -6,8 +6,10 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,13 +20,14 @@ import androidx.viewbinding.ViewBinding;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.example.lovesticker.R;
 import com.example.lovesticker.util.logger.MLog;
+import com.gyf.immersionbar.BarHide;
 import com.gyf.immersionbar.ImmersionBar;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public abstract class BaseActivity<VM extends BaseViewModel, VB extends ViewBinding> extends AppCompatActivity {
+public abstract class BaseActivity<VM extends BaseViewModel, VB> extends AppCompatActivity {
 
     protected VM viewModel;
     protected VB viewBinding;
@@ -52,18 +55,18 @@ public abstract class BaseActivity<VM extends BaseViewModel, VB extends ViewBind
         try {
             Type genericSuperclass = this.getClass().getGenericSuperclass();
             ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
-            if (parameterizedType != null) {
+            if(parameterizedType != null) {
                 Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
                 Class<VB> tClass = (Class<VB>) actualTypeArguments[1];
                 Method inflate = tClass.getMethod("inflate", LayoutInflater.class);
-                viewBinding = (VB) inflate.invoke(viewBinding, getLayoutInflater());
-
+                viewBinding = (VB) inflate.invoke(viewBinding,getLayoutInflater());
                 Method getRoot = tClass.getMethod("getRoot");
                 return (View) getRoot.invoke(viewBinding);
-            } else {
-                return null;
+            }else{
+                throw new ClassCastException("");
             }
         } catch (Exception e) {
+            Log.e("###", "Exception: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -76,12 +79,19 @@ public abstract class BaseActivity<VM extends BaseViewModel, VB extends ViewBind
     protected abstract void initClickListener();
 
     protected void initStatusBar() {
+
+//        ImmersionBar.with(this)
+//                .fullScreen(true)
+//                .hideBar(BarHide.FLAG_HIDE_BAR)
+//                .init();
+
         ImmersionBar.with(this)
-                .statusBarColor("#00000000")
-                .navigationBarColor("#00000000")
-                .statusBarDarkFont(false)
-                .navigationBarDarkIcon(false)
+                .statusBarColor("#00FFFFFF")
+                .navigationBarColor("#00FFFFFF")
+                .statusBarDarkFont(true)
+                .navigationBarDarkIcon(true)
                 .statusBarView(getStatusView())
+                .hideBar(BarHide.FLAG_HIDE_NAVIGATION_BAR)
                 .init();
     }
 
@@ -137,12 +147,12 @@ public abstract class BaseActivity<VM extends BaseViewModel, VB extends ViewBind
     private void initViewModel() {
         Type genericSuperclass = this.getClass().getGenericSuperclass();
         ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
-        if (parameterizedType != null) {
+        if(parameterizedType != null) {
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
             Class<VM> tClass = (Class<VM>) actualTypeArguments[0];
             viewModel = createViewModel(tClass);
-        } else {
-            finish();
+        }else{
+            throw new ClassCastException("");
         }
     }
 

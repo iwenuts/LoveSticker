@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainnavigation"
+    app:startDestination="@id/packFragment">
+
+    <fragment
+        android:id="@+id/packFragment"
+        android:name="com.example.lovesticker.main.fragment.PackFragment"
+        android:label="fragment_pack"
+        tools:layout="@layout/fragment_pack" />
+    <fragment
+        android:id="@+id/stickerFragment"
+        android:name="com.example.lovesticker.main.fragment.StickerFragment"
+        android:label="fragment_sticker"
+        tools:layout="@layout/fragment_sticker" />
+    <fragment
+        android:id="@+id/mineFragment"
+        android:name="com.example.lovesticker.main.fragment.MineFragment"
+        android:label="fragment_mine"
+        tools:layout="@layout/fragment_mine" />
+</navigation>

@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.example.lovesticker.util.event.LSEventUtil;
-import com.example.lovesticker.util.mmkv.PixMKVUtil;
+import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
@@ -29,7 +29,7 @@ public class LoveStickerApp extends Application {
         applicationContext = getApplicationContext();
 
         // mkv init
-        PixMKVUtil.initMKV(applicationContext);
+        LSMKVUtil.initMKV(applicationContext);
 
         // app event upload init
         LSEventUtil.init(applicationContext);

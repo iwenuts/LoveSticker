@@ -25,10 +25,10 @@ public class BaseViewModel extends ViewModel {
 //        return threadHandler;
 //    }
 
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-
+//    @Override
+//    protected void onCleared() {
+//        super.onCleared();
+//
 //        if(threadHandler != null) {
 //            threadHandler.removeCallbacksAndMessages(null);
 //            threadHandler = null;
@@ -37,5 +37,5 @@ public class BaseViewModel extends ViewModel {
 //            handlerThread.quit();
 //            handlerThread = null;
 //        }
-    }
+//    }
 }

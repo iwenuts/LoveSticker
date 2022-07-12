@@ -8,4 +8,10 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
+    <color name="search_bg">#F1F1F1</color>
+    <color name="checked_bottom">#13AD54</color>
+    <color name="pack_number_color">#9D9D9D</color>
+    <color name="item_bg">#F6F6F6</color>
+    <color name="dividing_line_color">#D8D8D8</color>
+
 </resources>
