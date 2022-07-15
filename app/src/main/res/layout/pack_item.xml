@@ -15,6 +15,7 @@
         android:text="Pack 1"
         android:textColor="@color/black"
         android:textSize="17sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -34,7 +35,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
-        android:layout_marginEnd="25dp"
+        android:layout_marginEnd="20dp"
         android:text="9 Stickers"
         android:textColor="@color/pack_number_color"
         android:textSize="13sp"
@@ -97,6 +98,8 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="15dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:background="@color/dividing_line_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

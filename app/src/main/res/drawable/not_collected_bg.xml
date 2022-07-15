@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item>
+
+        <shape android:shape="rectangle">
+
+<!--            <solid android:color="@color/price_upgrade" />-->
+            <!-- 边框 -->
+<!--            <stroke-->
+<!--                android:color="@color/price_upgrade"/>-->
+            <!-- 圆角 -->
+            <corners android:radius="8dp" />
+
+            <!-- 填充颜色 -->
+            <gradient android:startColor="@color/collected_bg_color"
+                android:centerColor="@color/collected_bg_color"
+                android:endColor="@color/collected_bg_color" />
+
+        </shape>
+
+    </item>
+
+</selector>

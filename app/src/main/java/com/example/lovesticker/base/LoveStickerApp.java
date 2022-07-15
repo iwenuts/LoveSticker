@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.example.lovesticker.util.event.LSEventUtil;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
+import com.orhanobut.hawk.Hawk;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
@@ -31,11 +32,15 @@ public class LoveStickerApp extends Application {
         // mkv init
         LSMKVUtil.initMKV(applicationContext);
 
+        // Hawk
+//        Hawk.init(applicationContext).build();
+
         // app event upload init
         LSEventUtil.init(applicationContext);
 
         // logger preset
         initLogger();
+
     }
 
     private void initLogger() {

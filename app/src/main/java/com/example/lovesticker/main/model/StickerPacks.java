@@ -2,13 +2,21 @@ package com.example.lovesticker.main.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class StickerPacks {
+public class StickerPacks implements Serializable{
     private int id;
     private String title;
     private int isNew;
     private int isFree;
+    private String identifier;
+    private String publisher;
+    private String trayImageFile;
+    private String publisherWebsite;
+    private String privacyPolicyWebsite;
+    private String licenseAgreementWebsite;
+
 
     @SerializedName("stickers")
     private List<Stickers> stickersList;
@@ -53,10 +61,58 @@ public class StickerPacks {
         this.stickersList = stickersList;
     }
 
+    public String getIdentifier() {
+        return identifier;
+    }
 
-    public static class Stickers {
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public String getTrayImageFile() {
+        return trayImageFile;
+    }
+
+    public void setTrayImageFile(String trayImageFile) {
+        this.trayImageFile = trayImageFile;
+    }
+
+    public String getPublisherWebsite() {
+        return publisherWebsite;
+    }
+
+    public void setPublisherWebsite(String publisherWebsite) {
+        this.publisherWebsite = publisherWebsite;
+    }
+
+    public String getPrivacyPolicyWebsite() {
+        return privacyPolicyWebsite;
+    }
+
+    public void setPrivacyPolicyWebsite(String privacyPolicyWebsite) {
+        this.privacyPolicyWebsite = privacyPolicyWebsite;
+    }
+
+    public String getLicenseAgreementWebsite() {
+        return licenseAgreementWebsite;
+    }
+
+    public void setLicenseAgreementWebsite(String licenseAgreementWebsite) {
+        this.licenseAgreementWebsite = licenseAgreementWebsite;
+    }
+
+    public static class Stickers implements Serializable{
         private int id;
         private String image;
+
 
         public int getId() {
             return id;

@@ -9,6 +9,8 @@ import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.main.model.PackBean;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
+import com.example.lovesticker.util.stickers.model.StickerPack;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +55,6 @@ public class PackViewModel extends BaseViewModel {
     public void requestInitialPackData(){
 
         baseRepository = BaseRepository.getInstance();
-        Log.e("###", "requestInitialPackData: ");
         baseRepository.getPackBean().enqueue(new Callback<PackBean>() {
             @Override
             public void onResponse(Call<PackBean> call, Response<PackBean> response) {
@@ -62,20 +63,22 @@ public class PackViewModel extends BaseViewModel {
                 PackBean packBean = response.body(); //requestInitialPackData()
 
                 if (packBean != null){
+                    Log.e("###", "getTotalPages: " + packBean.getData().getTotalPages());
                     LSMKVUtil.put("totalPages", packBean.getData().getTotalPages());
 
                     if (packBean.getData().getStickerPacksList() != null){
 
                         for (StickerPacks spData: packBean.getData().getStickerPacksList()) {
                             stickerPacksList.add(spData);
-
-
                         }
+                        //只有重新进入这个fragment中才会启动
+//                        if (packBean.getData().getTotalPages()!= 1){
+//                            requestSurplusPackData();
+//                        }
 
                         spLiveData.setValue(stickerPacksList);
 //                        sLiveData.setValue(stickersList);
                     }
-
 
                 }
             }
@@ -89,6 +92,7 @@ public class PackViewModel extends BaseViewModel {
     }
 
     public void requestSurplusPackData(){
+        Log.e("###", "requestSurplusPackData: ");
 
         baseRepository.getNextPageData().enqueue(new Callback<PackBean>() {
             @Override
@@ -98,10 +102,11 @@ public class PackViewModel extends BaseViewModel {
                 if (packBean != null){
                     if (packBean.getData().getStickerPacksList() != null){
                         for (StickerPacks spData: packBean.getData().getStickerPacksList()) {
+                            Log.e("###", "onResponse spData: ");
                             stickerPacksList.add(spData);
-
-
                         }
+                        LSMKVUtil.put("refreshFinish", true);
+//                        spLiveData.setValue(stickerPacksList);
                     }
                 }
             }

@@ -1,6 +1,7 @@
 package com.example.lovesticker.base;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -13,7 +14,9 @@ import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewbinding.ViewBinding;
 
@@ -143,6 +146,40 @@ public abstract class BaseActivity<VM extends BaseViewModel, VB> extends AppComp
             }
         }
     }
+
+
+    public static final class MessageDialogFragment extends DialogFragment {
+        private static final String ARG_TITLE_ID = "title_id";
+        private static final String ARG_MESSAGE = "message";
+
+        public static DialogFragment newInstance(@StringRes int titleId, String message) {
+            DialogFragment fragment = new MessageDialogFragment();
+            Bundle arguments = new Bundle();
+            arguments.putInt(ARG_TITLE_ID, titleId);
+            arguments.putString(ARG_MESSAGE, message);
+            fragment.setArguments(arguments);
+            return fragment;
+        }
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            @StringRes final int title = getArguments().getInt(ARG_TITLE_ID);
+            String message = getArguments().getString(ARG_MESSAGE);
+
+            androidx.appcompat.app.AlertDialog.Builder dialogBuilder = new androidx.appcompat.app.AlertDialog.Builder(getActivity())
+                    .setMessage(message)
+                    .setCancelable(true)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> dismiss());
+
+            if (title != 0) {
+                dialogBuilder.setTitle(title);
+            }
+            return dialogBuilder.create();
+        }
+    }
+
+
 
     private void initViewModel() {
         Type genericSuperclass = this.getClass().getGenericSuperclass();

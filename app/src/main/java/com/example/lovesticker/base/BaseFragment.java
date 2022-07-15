@@ -1,6 +1,9 @@
 package com.example.lovesticker.base;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewbinding.ViewBinding;
 
+import com.blankj.utilcode.util.ConvertUtils;
+import com.example.lovesticker.R;
 import com.example.lovesticker.util.logger.MLog;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -21,6 +26,9 @@ public abstract class BaseFragment<VM extends BaseViewModel,VB> extends Fragment
 
     protected VM viewModel;
     protected VB viewBinding;
+
+    private AlertDialog baseDlg;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,6 +102,53 @@ public abstract class BaseFragment<VM extends BaseViewModel,VB> extends Fragment
         return new ViewModelProvider.NewInstanceFactory();
     }
 
+    private void initProgressDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        View view = getLayoutInflater().inflate(R.layout.pull_down_refresh, null);
+
+        builder.setView(view);
+        baseDlg = builder.create();
+        baseDlg.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+        baseDlg.setCanceledOnTouchOutside(false);
+        baseDlg.setCancelable(false);
+        baseDlg.setOnDismissListener(d -> {
+
+        });
+    }
+
+    protected void showProgressDialog() {
+        if (baseDlg == null) {
+            initProgressDialog();
+        }
+        baseDlg.show();
+        baseDlg.setOnDismissListener(null);
+//        baseDlg.getWindow().setLayout(ConvertUtils.dp2px(100f),
+//                ConvertUtils.dp2px(200f));
+    }
+
+    protected void showProgressDialog(DialogInterface.OnDismissListener dismissListener) {
+        if (baseDlg == null) {
+            initProgressDialog();
+        }
+        baseDlg.show();
+        baseDlg.setOnDismissListener(dismissListener);
+        baseDlg.getWindow().setLayout(ConvertUtils.dp2px(100f),
+                ConvertUtils.dp2px(200f));
+    }
+
+    protected void dismissProgressDialog() {
+        if (baseDlg != null) {
+            try {
+                baseDlg.dismiss();
+                baseDlg.setOnDismissListener(null);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
     @Override
     public void onStart() {
         super.onStart();
@@ -122,6 +177,7 @@ public abstract class BaseFragment<VM extends BaseViewModel,VB> extends Fragment
     public void onDestroy() {
         super.onDestroy();
         MLog.logLifeStateF("onDestroy");
+        dismissProgressDialog();
     }
 
     @Override

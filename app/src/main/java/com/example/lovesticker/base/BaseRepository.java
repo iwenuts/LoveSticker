@@ -72,6 +72,7 @@ public class BaseRepository {
     public Call<PackBean> getNextPageData() {
         totalPages = LSMKVUtil.getInt("totalPages",1);
         if(currentPage >= totalPages) return null;
+        Log.e("###", "getNextPageData: " + currentPage);
         return apiService.getAllPack(currentPage++,8);
     }
 
