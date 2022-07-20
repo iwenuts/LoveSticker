@@ -18,7 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".mine.SetUpActivity"></activity>
+        <activity android:name=".mine.activity.SetUpActivity"></activity>
         <activity android:name=".sticker.activity.LoadingCategoriesActivity" />
         <activity android:name=".details.activity.SingleAnimatedDetailsActivity" />
         <activity android:name=".details.activity.AnimationDetailsActivity" />

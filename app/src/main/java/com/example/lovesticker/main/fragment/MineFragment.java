@@ -1,27 +1,20 @@
 package com.example.lovesticker.main.fragment;
 
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
-import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseFragment;
-import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.databinding.FragmentMineBinding;
 import com.example.lovesticker.main.viewmodel.MineViewModel;
-import com.example.lovesticker.mine.SetUpActivity;
+import com.example.lovesticker.mine.activity.SetUpActivity;
 import com.example.lovesticker.mine.fragment.SavedPacksFragment;
-import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.gyf.immersionbar.ImmersionBar;
 
 /**
  * A simple {@link Fragment} subclass.

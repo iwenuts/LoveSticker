@@ -181,12 +181,21 @@ public abstract class BaseActivity<VM extends BaseViewModel, VB> extends AppComp
         }
     }
 
-    protected void shareAny(Uri path){
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_SEND);
-        intent.setType("image/*");
-        intent.putExtra(Intent.EXTRA_STREAM,path);
-        startActivity(Intent.createChooser(intent,"Share to"));
+    protected void shareAny(String path){
+        Intent whatsappIntent = new Intent(android.content.Intent.ACTION_SEND);
+        whatsappIntent.setType("image/*");
+        whatsappIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));//add image path
+        startActivity(Intent.createChooser(whatsappIntent, "Share image using"));
+
+
+//        Intent shareIntent = new Intent();
+//        shareIntent.setAction(Intent.ACTION_SEND);
+////        shareIntent.setPackage("com.whatsapp");
+////        shareIntent.putExtra(Intent.EXTRA_TEXT,title + "\n\nLink : " + link );
+//        shareIntent.setType("image/gif");
+//        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
+//
+//        startActivity(Intent.createChooser(shareIntent, "Share image using"));
     }
 
 

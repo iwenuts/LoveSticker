@@ -171,13 +171,13 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             }
         });
 
-        viewBinding.share.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Uri uri = Uri.parse(LSConstant.image_uri + packDetails.getStickersList().get(currentPosition).getImage());
-                shareAny(uri);
-            }
-        });
+//        viewBinding.share.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Uri uri = Uri.parse(LSConstant.image_uri + packDetails.getStickersList().get(currentPosition).getImage());
+//                shareAny(uri);
+//            }
+//        });
 
 
 
