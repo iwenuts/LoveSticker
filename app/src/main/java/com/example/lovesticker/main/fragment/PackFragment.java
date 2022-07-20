@@ -23,6 +23,8 @@ import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
 import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -51,6 +53,7 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
         viewBinding.loadingData.setVisibility(View.VISIBLE);
         viewModel.requestInitialPackData();
 //        viewModel.requestSurplusPackData();
+        initRefresh();
 
     }
 
@@ -67,14 +70,12 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
             public void onChanged(List<StickerPacks> stickerPacks) {
                 Log.e("###", "setAllStickerPacks:" + stickerPacks.size());
                 viewBinding.loadingData.setVisibility(View.GONE);
-                initRefresh();
+                //Adapter
                 LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                 layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                 viewBinding.packRecycler.setLayoutManager(layoutManager);
                 packAdapter = new PackAdapter(stickerPacks,viewModel,getContext(),getActivity());
                 viewBinding.packRecycler.setAdapter(packAdapter);
-                packAdapter.notifyDataSetChanged();
-
 
             }
         });
@@ -103,11 +104,11 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
 //            }
 //        });
 
-
         viewBinding.swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 viewModel.requestSurplusPackData();
+                packAdapter.notifyDataSetChanged();
                 if (LSMKVUtil.getBoolean("refreshFinish",false)){
                     viewBinding.swipeLayout.setRefreshing(false);
                 }

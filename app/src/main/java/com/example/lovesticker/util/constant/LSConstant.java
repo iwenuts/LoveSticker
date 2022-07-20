@@ -8,6 +8,8 @@ public class LSConstant {
     public static final String EXTRA_STICKER_PACK_NAME = "sticker_pack_name";
     public static final int EMOJI_MAX_LIMIT = 3;
     public static final int ADD_PACK = 200;
+    public static final String image_jpg_uri = "https://cdn.wastickersapp.com/storage/animations/thumbs/";
+    public static final String image_gif_uri = "https://cdn.wastickersapp.com/storage/animations/big/";
 
 
 

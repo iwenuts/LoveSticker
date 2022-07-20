@@ -25,7 +25,7 @@ import java.lang.reflect.Type;
 public abstract class BaseFragment<VM extends BaseViewModel,VB> extends Fragment {
 
     protected VM viewModel;
-    protected VB viewBinding;
+    public VB viewBinding;
 
     private AlertDialog baseDlg;
 
@@ -54,6 +54,7 @@ public abstract class BaseFragment<VM extends BaseViewModel,VB> extends Fragment
         initView();
         initClickListener();
         dataObserver();
+
     }
 
     protected View initViewBinding(LayoutInflater inflater,ViewGroup viewGroup){

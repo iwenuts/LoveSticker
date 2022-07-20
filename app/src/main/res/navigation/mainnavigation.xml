@@ -20,4 +20,5 @@
         android:name="com.example.lovesticker.main.fragment.MineFragment"
         android:label="fragment_mine"
         tools:layout="@layout/fragment_mine" />
+
 </navigation>

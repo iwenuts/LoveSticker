@@ -3,7 +3,9 @@ package com.example.lovesticker.base;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -177,6 +179,14 @@ public abstract class BaseActivity<VM extends BaseViewModel, VB> extends AppComp
             }
             return dialogBuilder.create();
         }
+    }
+
+    protected void shareAny(Uri path){
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_STREAM,path);
+        startActivity(Intent.createChooser(intent,"Share to"));
     }
 
 

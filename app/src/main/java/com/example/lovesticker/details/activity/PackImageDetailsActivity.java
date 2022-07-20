@@ -39,8 +39,8 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
     private int imagePosition;
     private int currentPosition; //当前图片所在位置
     private int stickerPackNumber; //图片总数
-    private int minusPosition;
-    private int plusPosition;
+    private int minusPosition; //上一张图
+    private int plusPosition; //下一张图
 
 
     @Override
@@ -59,6 +59,8 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
                     .load(LSConstant.image_uri + packDetails.getStickersList().get(imagePosition).getImage())
                     .into(viewBinding.detailsImg);
 
+            viewBinding.stickerTitle.setText(packDetails.getTitle());
+
 
             if (LSMKVUtil.getBoolean("IsStickerDetailsClear",false)){
                 sticker.clear();
@@ -70,7 +72,6 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
             LSMKVUtil.put("IsStickerDetailsClear", false);
         }
-
     }
 
 
@@ -264,16 +265,6 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
                 }
             }
         }
-    }
-
-
-
-    private void shareAny(Uri path){
-        Intent intent = new Intent();
-        intent.setAction(Intent.ACTION_SEND);
-        intent.setType("video/mp4");
-        intent.putExtra(Intent.EXTRA_STREAM,path);
-        startActivity(Intent.createChooser(intent,"Share to"));
     }
 
 

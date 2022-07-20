@@ -1,8 +1,11 @@
 package com.example.lovesticker.main.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +16,12 @@ import com.example.lovesticker.base.BaseFragment;
 import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.databinding.FragmentMineBinding;
 import com.example.lovesticker.main.viewmodel.MineViewModel;
+import com.example.lovesticker.mine.SetUpActivity;
+import com.example.lovesticker.mine.fragment.SavedPacksFragment;
+import com.example.lovesticker.util.mmkv.LSMKVUtil;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
+import com.gyf.immersionbar.ImmersionBar;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,7 +34,6 @@ public class MineFragment extends BaseFragment<MineViewModel, FragmentMineBindin
         // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static MineFragment newInstance() {
         MineFragment fragment = new MineFragment();
         return fragment;
@@ -39,6 +47,55 @@ public class MineFragment extends BaseFragment<MineViewModel, FragmentMineBindin
 
     @Override
     protected void initClickListener() {
+
+        viewBinding.mineViewPager.setAdapter(new FragmentStateAdapter(this) {
+            @NonNull
+            @Override
+            public Fragment createFragment(int position) {
+                switch (position){
+                    case 0: return new SavedPacksFragment();
+
+                    case 1: return new SavedPacksFragment();
+
+                    default: return new SavedPacksFragment();
+
+                }
+            }
+
+            @Override
+            public int getItemCount() {
+                return 3;
+            }
+        });
+
+        new TabLayoutMediator(viewBinding.mineTabLayout, viewBinding.mineViewPager, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                switch (position){
+                    case 0: tab.setText("MY PACKS");
+                            break;
+
+                    case 1: tab.setText("SAVED PACKS");
+                            break;
+
+                    case 2: tab.setText("SAVED STICKERS");
+                            break;
+                }
+
+
+            }
+        }).attach();
+
+        viewBinding.setUp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), SetUpActivity.class);
+                getContext().startActivity(intent);
+            }
+        });
+
+
+
 
     }
 

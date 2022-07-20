@@ -6,6 +6,14 @@ import android.os.Looper;
 
 import androidx.lifecycle.ViewModel;
 
+import com.example.lovesticker.sticker.model.AnimatedCategoriesBean;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class BaseViewModel extends ViewModel {
 //    private HandlerThread handlerThread;
 //    private Handler threadHandler;
@@ -38,4 +46,34 @@ public class BaseViewModel extends ViewModel {
 //            handlerThread = null;
 //        }
 //    }
+
+//    protected BaseRepository baseRepository = BaseRepository.getInstance();
+//    protected List<AnimatedCategoriesBean.Data> allCategoriesList;
+//
+//
+//
+//    protected void requestAllAnimatedCategoriesData(){
+//        baseRepository.getAllAnimatedCategoriesData().enqueue(new Callback<AnimatedCategoriesBean>() {
+//            @Override
+//            public void onResponse(Call<AnimatedCategoriesBean> call, Response<AnimatedCategoriesBean> response) {
+//                AnimatedCategoriesBean animatedCategoriesBean = response.body();
+//                if (animatedCategoriesBean != null){
+//
+//                    for (AnimatedCategoriesBean.Data data:animatedCategoriesBean.getData()){
+//                        allCategoriesList.add(data);
+//                    }
+//                }
+//
+//            }
+//
+//            @Override
+//            public void onFailure(Call<AnimatedCategoriesBean> call, Throwable t) {
+//
+//            }
+//        });
+//    }
+
+
+
+
 }

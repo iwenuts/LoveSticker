@@ -21,8 +21,8 @@ import retrofit2.Response;
 
 public class PackViewModel extends BaseViewModel {
     private MutableLiveData<List<StickerPacks>> spLiveData;
-    private MutableLiveData<List<StickerPacks.Stickers>> sLiveData;
     private BaseRepository baseRepository;
+
     private List<String> packTitleList;
     private List<Integer> eachPackNumberList;
     private List<Integer> isNewList;
@@ -58,8 +58,6 @@ public class PackViewModel extends BaseViewModel {
         baseRepository.getPackBean().enqueue(new Callback<PackBean>() {
             @Override
             public void onResponse(Call<PackBean> call, Response<PackBean> response) {
-
-                if (response == null) return;
                 PackBean packBean = response.body(); //requestInitialPackData()
 
                 if (packBean != null){
@@ -97,8 +95,8 @@ public class PackViewModel extends BaseViewModel {
         baseRepository.getNextPageData().enqueue(new Callback<PackBean>() {
             @Override
             public void onResponse(Call<PackBean> call, Response<PackBean> response) {
-                if (response == null) return;
                 PackBean packBean = response.body();  //requestInitialPackData()
+
                 if (packBean != null){
                     if (packBean.getData().getStickerPacksList() != null){
                         for (StickerPacks spData: packBean.getData().getStickerPacksList()) {

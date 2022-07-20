@@ -1,6 +1,7 @@
 package com.example.lovesticker.main.activity;
 
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -19,13 +20,12 @@ import com.example.lovesticker.databinding.ActivityMainBinding;
 import com.example.lovesticker.main.fragment.MineFragment;
 import com.example.lovesticker.main.fragment.PackFragment;
 import com.example.lovesticker.main.fragment.StickerFragment;
+import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.gyf.immersionbar.ImmersionBar;
 
 public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBinding> {
 
-    private Fragment packFragment,stickerFragment,mineFragment;
-    private Fragment[] fragments;
 
     @Override
     protected void initView() {
@@ -35,8 +35,6 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
         NavHostFragment navHostFragment = (NavHostFragment) fragmentManager.findFragmentById(R.id.fragment);
         NavController navController = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(viewBinding.bottomNavigationView,navController);
-
-
 
 
 
@@ -53,6 +51,5 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
     protected void initClickListener() {
 
     }
-
 
 }
