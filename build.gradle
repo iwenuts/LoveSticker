@@ -41,8 +41,8 @@ allprojects {
         jcenter()
 
         maven { url 'https://jitpack.io' }
-        maven { url 'https://artifacts.applovin.com/android' }
-        maven { url 'https://adcolony.bintray.com/AdColony&apos' }
+//        maven { url 'https://artifacts.applovin.com/android' }
+//        maven { url 'https://adcolony.bintray.com/AdColony&apos' }
         maven { url 'https://repo1.maven.org/maven2/' }
     }
 }

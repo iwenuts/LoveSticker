@@ -23,7 +23,7 @@ public class Sticker implements Parcelable {
         this.emojis = emojis;
     }
 
-    private Sticker(Parcel in) {
+    public Sticker(Parcel in) {
         imageFileName = in.readString();
         emojis = in.createStringArrayList();
         size = in.readLong();

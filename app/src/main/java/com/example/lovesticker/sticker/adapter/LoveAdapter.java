@@ -53,6 +53,7 @@ public class LoveAdapter extends RecyclerView.Adapter<LoveAdapter.ViewHolder> {
 
                 Intent intent = new Intent(context, SingleAnimatedDetailsActivity.class);
                 intent.putExtra("singleAnimatedDetailsImage",singleAnimatedDetailsImage);
+                intent.putExtra("singlePostcards",categorPostcards.get(holder.getAdapterPosition()));
                 context.startActivity(intent);
             }
         });

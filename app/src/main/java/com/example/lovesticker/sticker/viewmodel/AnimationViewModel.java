@@ -39,10 +39,7 @@ public class AnimationViewModel extends BaseViewModel {
                     LSMKVUtil.put("allAnimatedTotalPages", allAnimatedBean.getData().getTotalPages());
 
                     if (allAnimatedBean.getData().getPostcardsList() != null) {
-
-                        for (AllAnimatedBean.Postcards postcards : allAnimatedBean.getData().getPostcardsList()) {
-                            postcardsList.add(postcards);
-                        }
+                        postcardsList.addAll(allAnimatedBean.getData().getPostcardsList());
 
                         allAnimated.setValue(postcardsList);
 
@@ -69,7 +66,6 @@ public class AnimationViewModel extends BaseViewModel {
                             postcardsList.add(postcards);
                         }
 
-                        LSMKVUtil.put("allAnimatedRefreshFinish", true);
                     }
                 }
 

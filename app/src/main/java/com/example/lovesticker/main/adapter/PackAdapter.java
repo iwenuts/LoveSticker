@@ -81,7 +81,7 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
         holder.packPackage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LSMKVUtil.put("isStickerClear",true);
+//                LSMKVUtil.put("isStickerClear",true);
 //                Log.e("###", "onClick: " + holder.getAdapterPosition());
                 Intent intent = new Intent(activity, PackDetailsActivity.class);
                 intent.putExtra("stickerPack_value", (Serializable) allStickerPacks.get(holder.getAdapterPosition()));
@@ -89,7 +89,6 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
                 context.startActivity(intent);
             }
         });
-
 
         return holder;
     }

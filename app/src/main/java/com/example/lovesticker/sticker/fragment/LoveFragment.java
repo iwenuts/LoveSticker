@@ -124,12 +124,8 @@ public class LoveFragment extends Fragment {
             @Override
             public void onRefresh() {
                 viewModel.requestSurplusSingleAnimatedData(mLink.substring(1));
-//                loveAdapter.notifyDataSetChanged();
-                if (LSMKVUtil.getBoolean("singleRefreshFinish",false)){
-                    viewBinding.swipeLayout.setRefreshing(false);
-                }
-
-                LSMKVUtil.put("singleRefreshFinish", false);
+                loveAdapter.notifyDataSetChanged();
+                viewBinding.swipeLayout.setRefreshing(false);
 
             }
         });

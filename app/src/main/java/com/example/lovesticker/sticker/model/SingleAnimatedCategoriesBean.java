@@ -2,6 +2,7 @@ package com.example.lovesticker.sticker.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class SingleAnimatedCategoriesBean {
@@ -99,7 +100,7 @@ public class SingleAnimatedCategoriesBean {
         }
     }
 
-    public static class Postcards {
+    public static class Postcards implements Serializable {
         private int id;
         private int categoryId;
         private String categoryFullSlug;

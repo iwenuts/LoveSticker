@@ -45,6 +45,7 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
     @Override
     protected void initView() {
         viewBinding.loadingData.setVisibility(View.VISIBLE);
+
         viewModel.requestInitialAllAnimatedData();
         initRefresh();
 
@@ -84,20 +85,11 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
             public void onRefresh() {
                 viewModel.requestSurplusAllAnimatedData();
                 animationAdapter.notifyDataSetChanged();
-                if (LSMKVUtil.getBoolean("allAnimatedRefreshFinish",false)){
-                    viewBinding.swipeLayout.setRefreshing(false);
-                }
-                LSMKVUtil.put("allAnimatedRefreshFinish", false);
-
+                viewBinding.swipeLayout.setRefreshing(false);
 
             }
         });
     }
-
-
-
-
-
 
 
 

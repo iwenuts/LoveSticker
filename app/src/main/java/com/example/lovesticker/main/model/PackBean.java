@@ -2,6 +2,7 @@ package com.example.lovesticker.main.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
 public class PackBean {
@@ -17,7 +18,7 @@ public class PackBean {
         this.data = data;
     }
 
-    public static class Data{
+    public static class Data implements Serializable {
         private int totalPacks;
         private int totalPages;
 

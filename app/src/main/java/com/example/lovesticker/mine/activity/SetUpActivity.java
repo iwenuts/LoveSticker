@@ -1,11 +1,17 @@
 package com.example.lovesticker.mine.activity;
 
+import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.view.View;
 
+import androidx.annotation.RequiresApi;
+
+import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.databinding.ActivitySetUpBinding;
@@ -37,7 +43,7 @@ public class SetUpActivity extends BaseActivity<BaseViewModel, ActivitySetUpBind
         viewBinding.shareUs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                share(SetUpActivity.this,"","","");
             }
         });
 
@@ -75,6 +81,36 @@ public class SetUpActivity extends BaseActivity<BaseViewModel, ActivitySetUpBind
         } catch (Throwable e) {
             e.printStackTrace();
         }
+    }
 
+
+    public static void share(Context context, String shareText, String url, String parameter) {
+        Intent shareIntent = new Intent();
+        if (!(context instanceof Activity)) {
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        String shareTips;
+        String htmlTips;
+        if (url!=null) {
+            shareTips = String.format("%s\n\n%s", shareText, url);
+            htmlTips = String.format("%s\n\nUse my <a href= \"%s\">referrer link</a >", shareText, url);
+        }
+        else {
+            shareTips = String.format("%s\n\nhttps://play.google.com/store/apps/details?id=%s%s", shareText, context.getPackageName(), parameter);
+            htmlTips = String.format("%s\n\n Use my <a href=\"https://play.google.com/store/apps/details?id=%s%s\">referrer link</a >", shareText, context.getPackageName(), parameter);
+        }
+
+
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareTips);
+        shareIntent.putExtra(Intent.EXTRA_HTML_TEXT, htmlTips);
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+
+
+        Intent receiver = new Intent(context, SetUpActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, receiver, PendingIntent.FLAG_UPDATE_CURRENT);
+        //切记需要使用Intent.createChooser，否则会出现别样的应用选择框，您可以试试
+        shareIntent = Intent.createChooser(shareIntent, context.getString(R.string.app_name), pendingIntent.getIntentSender());
+        context.startActivity(shareIntent);
     }
 }

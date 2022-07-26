@@ -37,9 +37,9 @@
         android:layout_marginTop="15dp"
         app:defaultNavHost="true"
         app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/search"
-        app:navGraph="@navigation/mainnavigation" />
+        app:layout_constraintTop_toBottomOf="@+id/search" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
@@ -52,9 +52,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/mainmenu" />
-
-
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

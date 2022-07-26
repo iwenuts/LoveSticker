@@ -90,8 +90,8 @@ public class BaseRepository {
     public Call<PackBean> getNextPageData() {
         totalPages = LSMKVUtil.getInt("totalPages",1);
 //        if(currentPage >= totalPages) return null;
-        Log.e("###", "currentPage: " + currentPage);
-        return apiService.getAllPack(currentPage++,8);
+        currentPage = currentPage + 1;
+        return apiService.getAllPack(currentPage,8);
     }
 
     Date date = new Date();
@@ -110,7 +110,8 @@ public class BaseRepository {
     public Call<AllAnimatedBean> getNextAllAllAnimatedStickersData(){
         allAnimatedTotalPages = LSMKVUtil.getInt("allAnimatedTotalPages",1);
 //        if(currentPage >= allAnimatedTotalPages) return null;
-        return apiService.getAllAnimatedStickers(currentAllAllAnimated++,36,data,time);
+        currentAllAllAnimated = currentAllAllAnimated + 1;
+        return apiService.getAllAnimatedStickers(currentAllAllAnimated,36,data,time);
     }
 
 
@@ -125,11 +126,9 @@ public class BaseRepository {
     public Call<SingleAnimatedCategoriesBean> getNextSingleAnimatedCategoriesData(String link){
         singleAnimatedTotalPages = LSMKVUtil.getInt("singleAnimatedTotalPages",1);
 //        if (currentPage >= singleAnimatedTotalPages) return null;
+        currentSingleAnimated = currentSingleAnimated + 1;
         return apiService.getSingleAnimatedStickersCategories(link,36,currentSingleAnimated);
     }
-
-
-
 
     public interface ApiService {
 
@@ -140,6 +139,7 @@ public class BaseRepository {
 //                "appversion: 1.5.5",
 //                "appname: com.wastickerapps.whatsapp.stickers"
 //        })
+
         @GET("v0/postcards/get-stickers")
         Call<PackBean> getAllPack(@Query("page") int page,@Query("limit") int limit);
 
@@ -158,9 +158,6 @@ public class BaseRepository {
                                                  @Query("limit")int limit,@Query("page") int page);
 
     }
-
-
-
 
 
 }

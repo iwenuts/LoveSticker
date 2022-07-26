@@ -20,25 +20,21 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
--dontwarn com.tencent.bugly.**
--keep public class com.tencent.bugly.**{*;}
+-optimizationpasses 5
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontskipnonpubliclibraryclassmembers
+-dontpreverify
+-verbose
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
 
-#优化  不优化输入的类文件
--dontoptimize
--dontwarn android.annotation
 
- #崩溃日志保留行号
+-allowaccessmodification
+-keepattributes *Annotation*
 -renamesourcefileattribute SourceFile
-
-#debug模式保留行信息
 -keepattributes SourceFile,LineNumberTable
+-repackageclasses ''
 
-# Most of volatile fields are updated with AFU and should not be mangled
--keepclassmembernames class kotlinx.** {
-    volatile <fields>;
-}
-
-#序列化
 -keepclassmembers class * implements java.io.Serializable {
     static final long serialVersionUID;
     private static final java.io.ObjectStreamField[] serialPersistentFields;
@@ -48,16 +44,50 @@
     java.lang.Object readResolve();
 }
 
-# 删除log和打印，优化
-#-assumenosideeffects class android.util.Log {
-#   *;
-#}
--assumenosideeffects class java.io.PrintStream {
-    public *** println(...);
-    public *** print(...);
+-keep class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator *;
 }
 
-#------------------------------------ start google ---------------------------------------#
+# Preserve all native method names and the names of their classes.
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+-keepclasseswithmembernames class * {
+    public <init>(android.content.Context, android.util.AttributeSet);
+}
+
+-keepclasseswithmembernames class * {
+    public <init>(android.content.Context, android.util.AttributeSet, int);
+}
+
+# Preserve static fields of inner classes of R classes that might be accessed
+# through introspection.
+-keepclassmembers class **.R$* {
+  public static <fields>;
+}
+
+# Preserve the special static methods that are required in all enumeration classes.
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+-keep public class * {
+    public protected *;
+}
+
+-keepattributes *Annotation*
+-keepattributes Signature
+
+
+-keep class javax.** { * ;}
+-dontwarn com.google.**
+-keep class com.google.** { * ;}
+-dontwarn android.annotation
+-dontwarn javax.annotation.Nullable
+
+
 -keep class * extends java.util.ListResourceBundle {
     protected Object[][] getContents();
 }
@@ -76,8 +106,9 @@
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient {*;}
 -keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info {*;}
 
--keep public class com.google.android.gms.** { public protected *; }
-
+-keep public class com.google.android.gms.** {
+    public protected *;
+}
 -keep class com.google.android.material.** {*;}
 -keep class androidx.** {*;}
 -keep public class * extends androidx.**
@@ -85,14 +116,20 @@
 -dontwarn com.google.android.material.**
 -dontnote com.google.android.material.**
 -dontwarn androidx.**
-#-------------------------------------end google --------------------------------------#
 
 
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep class * extends com.bumptech.glide.module.AppGlideModule {
+ <init>(...);
+}
+-keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+-keep class com.bumptech.glide.load.data.ParcelFileDescriptorRewinder$InternalRewinder {
+  *** rewind();
+}
 
-# Retrofit does reflection on generic parameters. InnerClasses is required to use Signature and
-# EnclosingMethod is required to use InnerClasses.
-
-# Retrofit does reflection on method and parameter annotations.
 -keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
 
 # Retain service method parameters when optimizing.
@@ -122,7 +159,6 @@
 -keepattributes Exceptions
 -dontwarn javax.annotation.**
 
-#-------------------------------------- start okhttp okio----------------------------------------#
 -dontwarn org.conscrypt.**
 -dontwarn java.lang.instrument.**
 -dontwarn sun.misc.SignalHandler
@@ -139,43 +175,86 @@
 -keep class com.squareup.okio.**{*;}
 -keep public class org.codehaus.* { *; }
 -keep public class java.nio.* { *; }
-#--------------------------------- end okhttp okio----------------------------------------#
 
-#--------------------------------------- start util code---------------------------------------#
--keep public class com.blankj.utilcode.util.**  {*; }
-#-------------------------------------end  util code---------------------------------------#
+-keepattributes Signature
 
-#---------------------------------------start immersion bar---------------------------------------#
--keep class com.gyf.immersionbar.* {*;}
--dontwarn com.gyf.immersionbar.**
-#-------------------------------------end  immersion bar---------------------------------------#
+# For using GSON @Expose annotation
+-keepattributes *Annotation*
 
-#--------------------------------------- start gson  ---------------------------------------#
--keep class sun.misc.Unsafe { *;}
--keep class com.google.gson.stream.** { *;}
+# Gson specific classes
+-dontwarn sun.misc.**
+#-keep class com.google.gson.stream.** { *; }
+
+# Application classes that will be serialized/deserialized over Gson
+-keep class com.google.gson.examples.android.model.** { <fields>; }
+
+# Prevent proguard from stripping interface information from TypeAdapter, TypeAdapterFactory,
+# JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)
+-keep class * extends com.google.gson.TypeAdapter
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
 -keep class * implements com.google.gson.JsonDeserializer
-#-------------------------------------end  gson---------------------------------------#
+-keep class com.example.lovesticker.main.model.** { *; }
+-keep class com.example.lovesticker.sticker.model.** { *; }
 
-#--------------------------------------  start billing------------------------------------------#
+
+
+# Prevent R8 from leaving Data object members always null
+-keepclassmembers,allowobfuscation class * {
+  @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# Retain generic signatures of TypeToken and its subclasses with R8 version 3.0 and higher.
+-keep,allowobfuscation,allowshrinking class com.google.gson.reflect.TypeToken
+-keep,allowobfuscation,allowshrinking class * extends com.google.gson.reflect.TypeToken
+
+-keep public class com.blankj.utilcode.util.**  {*; }
+
+-keep class com.airbnb.lottie.LottieDrawable { *;}
+-keep class com.airbnb.lottie.utils.LottieValueAnimator { *;}
+-keep class com.airbnb.lottie.LottieAnimationView {*;}
+
+-keepclassmembers class * extends androidx.viewbinding.ViewBinding {
+    public static * inflate(android.view.LayoutInflater);
+    public static * inflate(android.view.LayoutInflater,android.view.ViewGroup,boolean);
+    public * getRoot();
+}
+
+-keep public class com.tencent.bugly.**{*;}
 
 -keep class com.android.vending.billing.**
--keep class com.change.art.main.tool.loder.mod.** {*;}
-#--------------------------------------- end billing ---------------------------------------#
 
--keep public class * implements com.bumptech.glide.module.GlideModule
--keep class * extends com.bumptech.glide.module.AppGlideModule {
- <init>(...);
-}
--keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
-  **[] $VALUES;
-  public *;
-}
--keep class com.bumptech.glide.load.data.ParcelFileDescriptorRewinder$InternalRewinder {
-  *** rewind();
+-keep class com.luck.picture.lib.** { *; }
+
+-keep class com.aliyun.openapiutil.** { *; }
+
+-keep class com.face.change.home.entity.** {*;}
+-keep class com.face.change.util.gpUtil.FSwapStrategy.bean.** {*;}
+-keep class com.face.change.process.entity.VideoUrl{*;}
+
+-keep class com.tencentcloudapi.facefusion.v20181201.models.** {*;}
+-keep class com.tencentcloudapi.common.** {*;}
+-keep class com.tencentcloudapi.faceid.v20180301.models.** {*;}
+-keep class com.tencentcloudapi.iai.v20200303.models.** {*;}
+-keep class com.tencentcloudapi.ft.v20200304.models.** {*;}
+
+-keep class com.umeng.** {*;}
+
+-keep class com.shuyu.gsyvideoplayer.video.** { *; }
+-dontwarn com.shuyu.gsyvideoplayer.video.**
+-keep class com.shuyu.gsyvideoplayer.video.base.** { *; }
+-dontwarn com.shuyu.gsyvideoplayer.video.base.**
+-keep class com.shuyu.gsyvideoplayer.utils.** { *; }
+-dontwarn com.shuyu.gsyvideoplayer.utils.**
+-keep class tv.danmaku.ijk.** { *; }
+-dontwarn tv.danmaku.ijk.**
+
+-keep public class * extends android.view.View{
+    *** get*();
+    void set*(***);
+    public <init>(android.content.Context);
+    public <init>(android.content.Context, java.lang.Boolean);
+    public <init>(android.content.Context, android.util.AttributeSet);
+    public <init>(android.content.Context, android.util.AttributeSet, int);
 }
 
--keepclassmembers class**.R$* {
-    public static<fields>;
-}

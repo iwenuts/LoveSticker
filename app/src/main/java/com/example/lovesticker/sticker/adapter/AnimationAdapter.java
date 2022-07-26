@@ -53,6 +53,7 @@ public class AnimationAdapter extends RecyclerView.Adapter<AnimationAdapter.View
 
                 Intent intent = new Intent(context, AnimationDetailsActivity.class);
                 intent.putExtra("detailsImage",detailsImage);
+                intent.putExtra("postcards",allPostcards.get(holder.getAdapterPosition()));
                 context.startActivity(intent);
 
             }

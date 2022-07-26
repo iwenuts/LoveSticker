@@ -13,6 +13,7 @@ import com.example.lovesticker.util.stickers.model.StickerPack;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import retrofit2.Call;
@@ -28,6 +29,7 @@ public class PackViewModel extends BaseViewModel {
     private List<Integer> isNewList;
     private List<Integer> isFreeList;
     private List<String> packImageList;
+    private int nowPage = 1;
 
 
 //    public PackViewModel() {
@@ -53,8 +55,8 @@ public class PackViewModel extends BaseViewModel {
 
 
     public void requestInitialPackData(){
-
         baseRepository = BaseRepository.getInstance();
+
         baseRepository.getPackBean().enqueue(new Callback<PackBean>() {
             @Override
             public void onResponse(Call<PackBean> call, Response<PackBean> response) {
@@ -65,14 +67,7 @@ public class PackViewModel extends BaseViewModel {
                     LSMKVUtil.put("totalPages", packBean.getData().getTotalPages());
 
                     if (packBean.getData().getStickerPacksList() != null){
-
-                        for (StickerPacks spData: packBean.getData().getStickerPacksList()) {
-                            stickerPacksList.add(spData);
-                        }
-                        //只有重新进入这个fragment中才会启动
-//                        if (packBean.getData().getTotalPages()!= 1){
-//                            requestSurplusPackData();
-//                        }
+                        stickerPacksList.addAll(packBean.getData().getStickerPacksList());
 
                         spLiveData.setValue(stickerPacksList);
 //                        sLiveData.setValue(stickersList);
@@ -99,12 +94,12 @@ public class PackViewModel extends BaseViewModel {
 
                 if (packBean != null){
                     if (packBean.getData().getStickerPacksList() != null){
-                        for (StickerPacks spData: packBean.getData().getStickerPacksList()) {
-                            Log.e("###", "onResponse spData: ");
-                            stickerPacksList.add(spData);
+                        nowPage = nowPage + 1;
+
+                        if (packBean.getData().getTotalPages() >= nowPage){
+                            stickerPacksList.addAll(packBean.getData().getStickerPacksList());
                         }
-                        LSMKVUtil.put("refreshFinish", true);
-//                        spLiveData.setValue(stickerPacksList);
+
                     }
                 }
             }

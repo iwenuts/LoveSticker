@@ -13,6 +13,7 @@ import com.example.lovesticker.databinding.FragmentMineBinding;
 import com.example.lovesticker.main.viewmodel.MineViewModel;
 import com.example.lovesticker.mine.activity.SetUpActivity;
 import com.example.lovesticker.mine.fragment.SavedPacksFragment;
+import com.example.lovesticker.mine.fragment.SavedStickerFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -48,16 +49,14 @@ public class MineFragment extends BaseFragment<MineViewModel, FragmentMineBindin
                 switch (position){
                     case 0: return new SavedPacksFragment();
 
-                    case 1: return new SavedPacksFragment();
-
-                    default: return new SavedPacksFragment();
+                    default: return new SavedStickerFragment();
 
                 }
             }
 
             @Override
             public int getItemCount() {
-                return 3;
+                return 2;
             }
         });
 
@@ -65,14 +64,12 @@ public class MineFragment extends BaseFragment<MineViewModel, FragmentMineBindin
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
                 switch (position){
-                    case 0: tab.setText("MY PACKS");
+                    case 0: tab.setText("SAVED PACKS");
                             break;
 
-                    case 1: tab.setText("SAVED PACKS");
+                    case 1: tab.setText("SAVED STICKERS");
                             break;
 
-                    case 2: tab.setText("SAVED STICKERS");
-                            break;
                 }
 
 

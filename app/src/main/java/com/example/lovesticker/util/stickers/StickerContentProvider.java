@@ -63,6 +63,8 @@ public class StickerContentProvider extends ContentProvider {
 
     public static final Uri AUTHORITY_URI = new Uri.Builder().scheme(ContentResolver.SCHEME_CONTENT).authority(BuildConfig.CONTENT_PROVIDER_AUTHORITY).appendPath(StickerContentProvider.METADATA).build();
 
+    List<String> stickersImgList = new ArrayList<>();
+
     /**
      * Do not change the values in the UriMatcher because otherwise, WhatsApp will not be able to fetch the stickers from the ContentProvider.
      */
@@ -108,34 +110,10 @@ public class StickerContentProvider extends ContentProvider {
             }
         }
 
+
+
         return true;
     }
-
-    @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, String selection,
-                        String[] selectionArgs, String sortOrder) {
-        final int code = MATCHER.match(uri);
-        if (code == METADATA_CODE) {
-            return getPackForAllStickerPacks(uri);
-        } else if (code == METADATA_CODE_FOR_SINGLE_PACK) {
-            return getCursorForSingleStickerPack(uri);
-        } else if (code == STICKERS_CODE) {
-            return getStickersForAStickerPack(uri);
-        } else {
-            throw new IllegalArgumentException("Unknown URI: " + uri);
-        }
-    }
-
-    @Nullable
-    @Override
-    public AssetFileDescriptor openAssetFile(@NonNull Uri uri, @NonNull String mode) {
-        final int matchCode = MATCHER.match(uri);
-        if (matchCode == STICKERS_ASSET_CODE || matchCode == STICKER_PACK_TRAY_ICON_CODE) {
-            return getImageAsset(uri);
-        }
-        return null;
-    }
-
 
     @Override
     public String getType(@NonNull Uri uri) {
@@ -154,6 +132,44 @@ public class StickerContentProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
         }
+    }
+
+
+    @Override
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, String selection,
+                        String[] selectionArgs, String sortOrder) {
+        final int code = MATCHER.match(uri);
+        if (code == METADATA_CODE) {
+            return getPackForAllStickerPacks(uri);
+        } else if (code == METADATA_CODE_FOR_SINGLE_PACK) {
+            return getCursorForSingleStickerPack(uri);
+        } else if (code == STICKERS_CODE) {
+            return getStickersForAStickerPack(uri);
+        } else {
+            throw new IllegalArgumentException("Unknown URI: " + uri);
+        }
+    }
+
+    private List<String> getImageAsset(){
+        if (getStickerPackList()!= null){
+            for (StickerPack stickerPack : getStickerPackList()) {
+                for (Sticker sticker : stickerPack.getStickers()) {
+                    stickersImgList.add(sticker.imageFileName);
+                }
+            }
+            return stickersImgList;
+        }
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public AssetFileDescriptor openAssetFile(@NonNull Uri uri, @NonNull String mode) {  //asset
+        final int matchCode = MATCHER.match(uri);
+        if (matchCode == STICKERS_ASSET_CODE || matchCode == STICKER_PACK_TRAY_ICON_CODE) {
+            return getImageAsset(uri);
+        }
+        return null;
     }
 
 //    private synchronized void readContentFile(@NonNull Context context) {

@@ -30,7 +30,7 @@ public class WhitelistCheck {
     private static final String QUERY_PATH = "is_whitelisted";
     private static final String QUERY_RESULT_COLUMN_NAME = "result";
 
-    static boolean isWhitelisted(@NonNull Context context, @NonNull String identifier) {
+    public static boolean isWhitelisted(@NonNull Context context, @NonNull String identifier) {
         try {
             if (!isWhatsAppConsumerAppInstalled(context.getPackageManager()) && !isWhatsAppSmbAppInstalled(context.getPackageManager())) {
                 return false;

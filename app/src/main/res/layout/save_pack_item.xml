@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/save_pack_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:text="Beauty！"
+        android:textSize="17sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"/>
+
+    <TextView
+        android:id="@+id/save_pack_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="20dp"
+        android:text="9 Stickers"
+        android:textSize="13sp"
+        app:layout_constraintBottom_toBottomOf="@+id/save_pack_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/save_pack_title" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pack_package"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingVertical="2dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/save_pack_title">
+
+        <ImageView
+            android:id="@+id/img1"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginLeft="18dp"
+            android:background="@color/item_bg"
+            android:scaleType="fitCenter"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+
+        <ImageView
+            android:id="@+id/img2"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginLeft="18dp"
+            android:background="@color/item_bg"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="@+id/img1"
+            app:layout_constraintLeft_toRightOf="@+id/img1"
+            app:layout_constraintTop_toTopOf="@+id/img1" />
+
+        <ImageView
+            android:id="@+id/img3"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginLeft="18dp"
+            android:background="@color/item_bg"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="@+id/img2"
+            app:layout_constraintLeft_toRightOf="@+id/img2"
+            app:layout_constraintTop_toTopOf="@+id/img2" />
+
+        <ImageView
+            android:id="@+id/pack_add"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/finished_adding"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/img3"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/pack_no_add"
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:src="@drawable/add_pack"
+            android:visibility="gone"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/img3"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/dividing_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/dividing_line_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pack_package" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

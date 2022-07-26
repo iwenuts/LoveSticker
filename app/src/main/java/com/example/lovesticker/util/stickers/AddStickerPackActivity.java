@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.lovesticker.BuildConfig;
@@ -27,17 +28,21 @@ import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.util.constant.LSConstant;
 
-public  class AddStickerPackActivity extends BaseActivity {
+public  class AddStickerPackActivity extends AppCompatActivity {
     private static final int ADD_PACK = 200;
     private static final String TAG = "AddStickerPackActivity";
 
-    private static AddStickerPackActivity instance = new AddStickerPackActivity();
+    private static AddStickerPackActivity instance;
 
     public static AddStickerPackActivity getInstance(){
+        if (instance == null){
+            instance =  new AddStickerPackActivity();
+        }
         return instance;
     }
 
-    protected void addStickerPackToWhatsApp(String identifier, String stickerPackName) {
+    //todo Toast.makeText的this是没有传值,会崩溃
+    public void addStickerPackToWhatsApp(String identifier, String stickerPackName) {
         try {
             //if neither WhatsApp Consumer or WhatsApp Business is installed, then tell user to install the apps.
             if (!WhitelistCheck.isWhatsAppConsumerAppInstalled(getPackageManager()) && !WhitelistCheck.isWhatsAppSmbAppInstalled(getPackageManager())) {
@@ -63,7 +68,7 @@ public  class AddStickerPackActivity extends BaseActivity {
 
     }
 
-    private void launchIntentToAddPackToSpecificPackage(String identifier, String stickerPackName, String whatsappPackageName) {
+    public void launchIntentToAddPackToSpecificPackage(String identifier, String stickerPackName, String whatsappPackageName) {
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
         intent.setPackage(whatsappPackageName);
         try {
@@ -74,7 +79,7 @@ public  class AddStickerPackActivity extends BaseActivity {
     }
 
     //Handle cases either of WhatsApp are set as default app to handle this intent. We still want users to see both options.
-    private void launchIntentToAddPackToChooser(String identifier, String stickerPackName) {
+    public void launchIntentToAddPackToChooser(String identifier, String stickerPackName) {
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
         try {
             startActivityForResult(Intent.createChooser(intent, getString(R.string.add_to_whatsapp)), ADD_PACK);
@@ -91,27 +96,6 @@ public  class AddStickerPackActivity extends BaseActivity {
         intent.putExtra(LSConstant.EXTRA_STICKER_PACK_AUTHORITY, BuildConfig.CONTENT_PROVIDER_AUTHORITY);
         intent.putExtra(LSConstant.EXTRA_STICKER_PACK_NAME, stickerPackName);
         return intent;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == ADD_PACK) {
-            if (resultCode == Activity.RESULT_CANCELED) {
-                if (data != null) {
-                    final String validationError = data.getStringExtra("validation_error");
-                    if (validationError != null) {
-                        if (BuildConfig.DEBUG) {
-                            //validation error should be shown to developer only, not users.
-                            MessageDialogFragment.newInstance(R.string.title_validation_error, validationError).show(getSupportFragmentManager(), "validation error");
-                        }
-                        Log.e(TAG, "Validation failed:" + validationError);
-                    }
-                } else {
-                    new StickerPackNotAddedMessageFragment().show(getSupportFragmentManager(), "sticker_pack_not_added");
-                }
-            }
-        }
     }
 
     public static final class StickerPackNotAddedMessageFragment extends DialogFragment {
@@ -155,18 +139,4 @@ public  class AddStickerPackActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void initView() {
-
-    }
-
-    @Override
-    protected void dataObserver() {
-
-    }
-
-    @Override
-    protected void initClickListener() {
-
-    }
 }

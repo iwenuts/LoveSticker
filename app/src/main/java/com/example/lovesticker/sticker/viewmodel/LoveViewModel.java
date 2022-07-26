@@ -21,7 +21,7 @@ public class LoveViewModel extends BaseViewModel {
     private BaseRepository baseRepository;
     private MutableLiveData<List<SingleAnimatedCategoriesBean.Postcards>> singleAnimatedLiveData;
     private List<SingleAnimatedCategoriesBean.Postcards> postcardsList = new ArrayList<>();
-    private int currentPage = 1;
+    private int nowPage = 1;
 
     public MutableLiveData<List<SingleAnimatedCategoriesBean.Postcards>> getSingleAnimatedLiveData(){
         if (singleAnimatedLiveData == null){
@@ -63,16 +63,15 @@ public class LoveViewModel extends BaseViewModel {
                 SingleAnimatedCategoriesBean singleAnimatedCategoriesBean = response.body();
 
                 if (singleAnimatedCategoriesBean != null){
-                    int increasePage = currentPage++;
+                    nowPage = nowPage + 1 ;
 
 //                    Log.e("###", "singleAnimatedTotalPages: " + singleAnimatedCategoriesBean.getData().getTotalPages());
 //                    Log.e("###", "increasePage: " + increasePage);
 
-                    if (singleAnimatedCategoriesBean.getData().getTotalPages() >= increasePage){
+                    if (singleAnimatedCategoriesBean.getData().getTotalPages() >= nowPage){
                         postcardsList.addAll(singleAnimatedCategoriesBean.getData().getPostcardsList());
                     }
 
-                    LSMKVUtil.put("singleRefreshFinish", true);
                 }
             }
 

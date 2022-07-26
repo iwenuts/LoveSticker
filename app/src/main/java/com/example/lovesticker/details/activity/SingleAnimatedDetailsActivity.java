@@ -14,9 +14,15 @@ import com.bumptech.glide.Glide;
 import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseViewModel;
+import com.example.lovesticker.base.LoveStickerApp;
 import com.example.lovesticker.databinding.ActivitySingleAnimatedDetailsBinding;
+import com.example.lovesticker.sticker.model.SingleAnimatedCategoriesBean;
 import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
+import com.example.lovesticker.util.room.InvokesData;
+import com.example.lovesticker.util.room.SaveData;
+import com.example.lovesticker.util.room.SaveStickerData;
+import com.google.gson.Gson;
 import com.gyf.immersionbar.ImmersionBar;
 
 import java.io.DataInputStream;
@@ -28,14 +34,15 @@ import java.net.URLConnection;
 
 public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, ActivitySingleAnimatedDetailsBinding> {
     private String singleAnimatedDetailsImage;
-
+    private SingleAnimatedCategoriesBean.Postcards postcards;
 
     @Override
     protected void initView() {
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
 
         singleAnimatedDetailsImage = getIntent().getStringExtra("singleAnimatedDetailsImage");
-        
+        postcards = (SingleAnimatedCategoriesBean.Postcards) getIntent().getSerializableExtra("singlePostcards");
+
         if (singleAnimatedDetailsImage != null){
             Glide.with(this)
                     .load(LSConstant.image_gif_uri + singleAnimatedDetailsImage)
@@ -43,26 +50,38 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
         }
 
 
-
-
     }
 
     @Override
     protected void initClickListener() {
 
+        if (!InvokesData.getInvokesData(SingleAnimatedDetailsActivity.this).querySaveStickerGson(postcards.getId())){
+            viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
+            viewBinding.collectedImage.setImageResource(R.drawable.collected);
+        }else {
+            viewBinding.isCollected.setBackgroundResource(R.drawable.not_collected_bg);
+            viewBinding.collectedImage.setImageResource(R.drawable.not_collected);
+        }
+
         viewBinding.isCollected.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!LSMKVUtil.getBoolean("animationDetailsCollected",false)){  //收藏
-                    viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
-                    viewBinding.collectedImage.setImageResource(R.drawable.collected);
-                    LSMKVUtil.put("animationDetailsCollected",true);
 
-
-                }else {  //未收藏
+                if (viewBinding.collectedImage.getDrawable().getConstantState().equals
+                        (getResources().getDrawable(R.drawable.collected).getConstantState())){ //点击收藏变未收藏
                     viewBinding.isCollected.setBackgroundResource(R.drawable.not_collected_bg);
                     viewBinding.collectedImage.setImageResource(R.drawable.not_collected);
-                    LSMKVUtil.put("animationDetailsCollected",false);
+
+                    if (!InvokesData.getInvokesData(SingleAnimatedDetailsActivity.this).querySaveStickerGson(postcards.getId())){
+                        InvokesData.getInvokesData(SingleAnimatedDetailsActivity.this).deleteSavePostcards(singleAnimatedDetailsImage);
+                    }
+                }else { //点击未收藏变收藏
+                    viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
+                    viewBinding.collectedImage.setImageResource(R.drawable.collected);
+
+                    InvokesData.getInvokesData(SingleAnimatedDetailsActivity.this).insertStickerData(
+                            new SaveStickerData(postcards.getId(),singleAnimatedDetailsImage));
+
 
                 }
 
