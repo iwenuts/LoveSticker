@@ -16,7 +16,6 @@ android {
     android.buildFeatures.viewBinding = true
 
     defaultConfig {
-        applicationId "com.example.lovesticker"
         minSdkVersion 21
         targetSdkVersion 30
 
@@ -47,7 +46,7 @@ android {
         }
 
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
