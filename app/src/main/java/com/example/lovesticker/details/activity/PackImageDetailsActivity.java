@@ -37,6 +37,8 @@ import com.example.lovesticker.util.room.InvokesData;
 import com.example.lovesticker.util.room.SaveData;
 
 import com.example.lovesticker.util.room.SaveStickerData;
+import com.example.lovesticker.util.score.RateController;
+import com.example.lovesticker.util.score.RateDialog;
 import com.example.lovesticker.util.stickers.AddStickerPackActivity;
 import com.example.lovesticker.util.stickers.WhitelistCheck;
 import com.example.lovesticker.util.stickers.model.Sticker;
@@ -181,6 +183,23 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
                     }
 
                 }else {  //点击未收藏变收藏
+                    RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener() {
+                        @Override
+                        public void onClickFiveStart() {
+
+                        }
+
+                        @Override
+                        public void onClick1To4Start() {
+
+                        }
+
+                        @Override
+                        public void onClickReject() {
+
+                        }
+                    });
+
                     viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
                     viewBinding.collectedImage.setImageResource(R.drawable.collected);
                     Log.e("###", "点击未收藏变收藏");
@@ -197,8 +216,24 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener() {
+                    @Override
+                    public void onClickFiveStart() {
+                        addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+                    }
 
-                addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+                    @Override
+                    public void onClick1To4Start() {
+                        addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+                    }
+
+                    @Override
+                    public void onClickReject() {
+                        addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+                    }
+                });
+
+
             }
         });
 

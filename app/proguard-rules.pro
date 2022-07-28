@@ -196,7 +196,7 @@
 -keep class * implements com.google.gson.JsonDeserializer
 -keep class com.example.lovesticker.main.model.** { *; }
 -keep class com.example.lovesticker.sticker.model.** { *; }
-
+-keep class com.example.lovesticker.util.model.** { *; }
 
 
 # Prevent R8 from leaving Data object members always null

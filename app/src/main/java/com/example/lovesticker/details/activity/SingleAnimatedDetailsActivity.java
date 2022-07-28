@@ -22,6 +22,8 @@ import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.InvokesData;
 import com.example.lovesticker.util.room.SaveData;
 import com.example.lovesticker.util.room.SaveStickerData;
+import com.example.lovesticker.util.score.RateController;
+import com.example.lovesticker.util.score.RateDialog;
 import com.google.gson.Gson;
 import com.gyf.immersionbar.ImmersionBar;
 
@@ -76,6 +78,23 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
                         InvokesData.getInvokesData(SingleAnimatedDetailsActivity.this).deleteSavePostcards(singleAnimatedDetailsImage);
                     }
                 }else { //点击未收藏变收藏
+                    RateController.getInstance().tryRateFinish(SingleAnimatedDetailsActivity.this, new RateDialog.RatingClickListener() {
+                        @Override
+                        public void onClickFiveStart() {
+
+                        }
+
+                        @Override
+                        public void onClick1To4Start() {
+
+                        }
+
+                        @Override
+                        public void onClickReject() {
+
+                        }
+                    });
+
                     viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
                     viewBinding.collectedImage.setImageResource(R.drawable.collected);
 
@@ -92,10 +111,40 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (singleAnimatedDetailsImage != null){
-                    showProgressDialog();
-                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
-                }
+                RateController.getInstance().tryRateFinish(SingleAnimatedDetailsActivity.this, new RateDialog.RatingClickListener() {
+                    @Override
+                    public void onClickFiveStart() {
+                        if (singleAnimatedDetailsImage != null){
+                            showProgressDialog();
+                            saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                        }
+
+                    }
+
+                    @Override
+                    public void onClick1To4Start() {
+                        if (singleAnimatedDetailsImage != null){
+                            showProgressDialog();
+                            saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                        }
+
+                    }
+
+                    @Override
+                    public void onClickReject() {
+                        if (singleAnimatedDetailsImage != null){
+                            showProgressDialog();
+                            saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                        }
+
+                    }
+                });
+
+
+//                if (singleAnimatedDetailsImage != null){
+//                    showProgressDialog();
+//                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+//                }
 
             }
         });

@@ -15,4 +15,5 @@
     <color name="dividing_line_color">#D8D8D8</color>
     <color name="loading_color">#6A6A6A</color>
     <color name="collected_bg_color">#83C73B</color>
+    <color name="gray">#808080</color>
 </resources>

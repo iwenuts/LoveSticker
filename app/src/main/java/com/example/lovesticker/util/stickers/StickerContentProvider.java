@@ -90,9 +90,12 @@ public class StickerContentProvider extends ContentProvider {
         Hawk.init(getContext()).build();
 
         final String authority = BuildConfig.CONTENT_PROVIDER_AUTHORITY;
-        if (!authority.startsWith(Objects.requireNonNull(getContext()).getPackageName())) {
-            throw new IllegalStateException("your authority (" + authority + ") for the content provider should start with your package name: " + getContext().getPackageName());
-        }
+        Log.e("###", "PackageName: " + Objects.requireNonNull(getContext()).getPackageName() );
+        Log.e("###", "authority: " + !authority.startsWith(Objects.requireNonNull(getContext()).getPackageName()) );
+
+//        if (!authority.startsWith(Objects.requireNonNull(getContext()).getPackageName())) {
+//            throw new IllegalStateException("your authority (" + authority + ") for the content provider should start with your package name: " + getContext().getPackageName());
+//        }
 
         //the call to get the metadata for the sticker packs.
         MATCHER.addURI(authority, METADATA, METADATA_CODE);

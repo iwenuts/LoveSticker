@@ -48,6 +48,8 @@ import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.InvokesData;
+import com.example.lovesticker.util.score.RateController;
+import com.example.lovesticker.util.score.RateDialog;
 import com.example.lovesticker.util.stickers.AddStickerPackActivity;
 import com.example.lovesticker.util.stickers.StickerContentProvider;
 import com.example.lovesticker.util.stickers.WhitelistCheck;
@@ -134,10 +136,24 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
 //                AddStickerPackActivity.addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
+                RateController.getInstance().tryRateFinish(PackDetailsActivity.this, new RateDialog.RatingClickListener() {
+                    @Override
+                    public void onClickFiveStart() {
+                        addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
+                    }
 
-                addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
+                    @Override
+                    public void onClick1To4Start() {
+                        addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
+                    }
+
+                    @Override
+                    public void onClickReject() {
+                        addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
+                    }
+                });
+
 
             }
         });

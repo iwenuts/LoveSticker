@@ -28,6 +28,8 @@ import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.InvokesData;
 import com.example.lovesticker.util.room.SaveData;
 import com.example.lovesticker.util.room.SaveStickerData;
+import com.example.lovesticker.util.score.RateController;
+import com.example.lovesticker.util.score.RateDialog;
 import com.example.lovesticker.util.stickers.model.StickerPack;
 import com.google.gson.Gson;
 import com.gyf.immersionbar.ImmersionBar;
@@ -95,6 +97,23 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
 
                 }else {  //点击未收藏变收藏
+                    RateController.getInstance().tryRateFinish(AnimationDetailsActivity.this, new RateDialog.RatingClickListener() {
+                        @Override
+                        public void onClickFiveStart() {
+
+                        }
+
+                        @Override
+                        public void onClick1To4Start() {
+
+                        }
+
+                        @Override
+                        public void onClickReject() {
+
+                        }
+                    });
+
                     viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
                     viewBinding.collectedImage.setImageResource(R.drawable.collected);
 
@@ -114,14 +133,40 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (detailsImage != null){
-                    showProgressDialog();
-                    saveLocal(LSConstant.image_gif_uri + detailsImage);
+                RateController.getInstance().tryRateFinish(AnimationDetailsActivity.this, new RateDialog.RatingClickListener() {
+                    @Override
+                    public void onClickFiveStart() {
+                        if (detailsImage != null){
+                            showProgressDialog();
+                            saveLocal(LSConstant.image_gif_uri + detailsImage);
 
 //                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
+                        }
 
+                    }
 
-                }
+                    @Override
+                    public void onClick1To4Start() {
+                        if (detailsImage != null){
+                            showProgressDialog();
+                            saveLocal(LSConstant.image_gif_uri + detailsImage);
+
+//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
+                        }
+
+                    }
+
+                    @Override
+                    public void onClickReject() {
+                        if (detailsImage != null){
+                            showProgressDialog();
+                            saveLocal(LSConstant.image_gif_uri + detailsImage);
+
+//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
+                        }
+
+                    }
+                });
 
 
             }
@@ -135,19 +180,6 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
             }
         });
 
-//        viewBinding.share.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {  //todo 网上找的分享到whatsapp
-//
-//                Uri uri = Uri.parse(LSConstant.image_gif_uri + detailsImage);
-//                Intent shareIntent = new Intent();
-//                shareIntent.setAction(Intent.ACTION_SEND);
-//                shareIntent.setPackage("com.whatsapp");
-//                shareIntent.putExtra(Intent.EXTRA_STREAM,uri);
-//                shareIntent.setType("image/*");
-//                startActivity(shareIntent);
-//            }
-//        });
     }
 
     @Override
@@ -237,32 +269,5 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
         return false;
     });
 
-
-
-
-    private void saveLocal2(Uri uri){
-        File imgFile = new File(getExternalFilesDir(null).getAbsolutePath() + File.separator + "sticker");
-        if (!imgFile.exists()){
-            imgFile.mkdirs();
-        }
-
-        try {
-            File file = new File(imgFile.getAbsolutePath() + File.separator + detailsImage);
-            InputStream inputStream =  getContentResolver().openInputStream(uri);
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-            byte[] buffer = new byte[1024];
-            int byteRead;
-            while (-1 != (byteRead = inputStream.read(buffer))){
-                fileOutputStream.write(buffer,0,byteRead);
-            }
-            inputStream.close();
-            fileOutputStream.flush();
-            fileOutputStream.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("###", "e: " + e.getMessage());
-        }
-    }
 
 }
