@@ -3,6 +3,7 @@ package com.example.lovesticker.details.activity;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -23,6 +24,7 @@ import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.base.LoveStickerApp;
 import com.example.lovesticker.databinding.ActivityAnimationDetailsBinding;
 import com.example.lovesticker.sticker.model.AllAnimatedBean;
+import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.InvokesData;
@@ -51,12 +53,17 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
     private String detailsImage;
     private AllAnimatedBean.Postcards postcards;
     private Gson gson = new Gson();
-    private HandlerThread mHandlerThread = new HandlerThread("mHandlerThread");
-    private Handler mHandlerInHandlerThread;
+    private int rewardInterval = 0;
 
     @Override
     protected void initView() {
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
+
+        if (LSMKVUtil.getBoolean("AnimationInterstitialAd",false)){
+            MaxADManager.tryShowInterstitialDetailAd();
+            LSMKVUtil.put("AnimationInterstitialAd",false);
+        }
+
 
         detailsImage = getIntent().getStringExtra("detailsImage");
 
@@ -67,7 +74,6 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
             Glide.with(this)
                     .load(LSConstant.image_gif_uri + detailsImage)
                     .into(viewBinding.detailsImg);
-
         }
 
     }
@@ -110,6 +116,11 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
                         @Override
                         public void onClickReject() {
+
+                        }
+
+                        @Override
+                        public void onClickCancel() {
 
                         }
                     });
@@ -158,6 +169,13 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
                     @Override
                     public void onClickReject() {
+                        rewardInterval = rewardInterval + 1;
+                        showRewardDialog(rewardInterval);
+
+                    }
+
+                    @Override
+                    public void onClickCancel() {
                         if (detailsImage != null){
                             showProgressDialog();
                             saveLocal(LSConstant.image_gif_uri + detailsImage);
@@ -166,21 +184,92 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
                         }
 
                     }
+
                 });
-
-
             }
         });
 
-
+        MaxADManager.loadInterstitialBackAd();
+        LSMKVUtil.put("AnimationDetailsBackAd",true);
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 finish();
             }
         });
 
     }
+
+    private void showRewardDialog(int intent) {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
+        try {
+            if (intent % 2 == 0){ //偶数 不弹激励广告
+                if (detailsImage != null){
+                    showProgressDialog();
+                    saveLocal(LSConstant.image_gif_uri + detailsImage);
+
+//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
+                }
+
+            }else { // 基数 弹激励广告
+
+                new AlertDialog.Builder(this)
+                        .setMessage("Watch an AD to unblock the content?")
+                        .setNegativeButton("Cancle", (dialog, which) -> {
+
+                        }).setPositiveButton("Watch ", (dialog, which) -> {
+                    try {
+                        showProgressDialog();
+                        MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                            @Override
+                            public void onRewardFail() {
+                                dismissProgressDialog();
+                            }
+
+                            @Override
+                            public void onRewardShown() {
+                                dismissProgressDialog();
+                            }
+
+                            @Override
+                            public void onRewarded() {
+                                if (detailsImage != null){
+                                    showProgressDialog();
+                                    saveLocal(LSConstant.image_gif_uri + detailsImage);
+
+//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
+                                }
+                            }
+
+                            @Override
+                            public void onTimeOut() {
+                                dismissProgressDialog();
+                                if (detailsImage != null){
+                                    showProgressDialog();
+                                    saveLocal(LSConstant.image_gif_uri + detailsImage);
+
+//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
+                                }
+                            }
+                        });
+                    } catch (Exception e) {
+
+                    }
+
+                }).setCancelable(false).show();
+
+            }
+
+
+
+        } catch (Exception e) {
+
+        }
+    }
+
+
+
+
 
     @Override
     protected void dataObserver() {

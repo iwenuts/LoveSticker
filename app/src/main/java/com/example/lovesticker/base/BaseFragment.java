@@ -11,12 +11,14 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewbinding.ViewBinding;
 
 import com.blankj.utilcode.util.ConvertUtils;
 import com.example.lovesticker.R;
+import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.logger.MLog;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;

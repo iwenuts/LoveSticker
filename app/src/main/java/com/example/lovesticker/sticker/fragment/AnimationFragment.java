@@ -1,23 +1,19 @@
 package com.example.lovesticker.sticker.fragment;
 
-import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 
-import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseFragment;
-import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.databinding.FragmentAnimationBinding;
 import com.example.lovesticker.sticker.adapter.AnimationAdapter;
 import com.example.lovesticker.sticker.model.AllAnimatedBean;
 import com.example.lovesticker.sticker.viewmodel.AnimationViewModel;
+import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 
 import java.util.List;
@@ -28,7 +24,8 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class AnimationFragment extends BaseFragment<AnimationViewModel, FragmentAnimationBinding> {
-    AnimationAdapter animationAdapter;
+    private AnimationAdapter animationAdapter;
+    private GridLayoutManager manager;
 
 
     public AnimationFragment() {
@@ -46,6 +43,8 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
     protected void initView() {
         viewBinding.loadingData.setVisibility(View.VISIBLE);
 
+        MaxADManager.loadInterstitialDetailAd();
+        LSMKVUtil.put("AnimationInterstitialAd",true);
         viewModel.requestInitialAllAnimatedData();
         initRefresh();
 
@@ -65,9 +64,10 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
                 if (postcards != null){
                     viewBinding.loadingData.setVisibility(View.GONE);
                     //Adapter
-                    GridLayoutManager manager = new GridLayoutManager(getContext(),2);
+                    manager = new GridLayoutManager(getContext(),2);
                     viewBinding.animationRecycler.setLayoutManager(manager);
-                    animationAdapter = new AnimationAdapter(postcards,getContext());
+                    animationAdapter = new AnimationAdapter(postcards,getContext(),getActivity(),onPositionClickedListener);
+
                     viewBinding.animationRecycler.setAdapter(animationAdapter);
 
 
@@ -75,6 +75,29 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
             }
         });
 
+    }
+
+    private final AnimationAdapter.OnPositionClickedListener onPositionClickedListener = position -> {
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (position == 6){
+                    return 2;
+                }else {
+                    return 1;
+                }
+
+            }
+        });
+    };
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (LSMKVUtil.getBoolean("AnimationDetailsBackAd",false)){
+            MaxADManager.tryShowInterstitialBackAd();
+            LSMKVUtil.put("AnimationDetailsBackAd",false);
+        }
 
     }
 
@@ -90,8 +113,5 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
             }
         });
     }
-
-
-
 
 }

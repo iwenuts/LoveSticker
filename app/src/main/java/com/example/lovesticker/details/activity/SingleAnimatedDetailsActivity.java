@@ -2,6 +2,7 @@ package com.example.lovesticker.details.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.base.LoveStickerApp;
 import com.example.lovesticker.databinding.ActivitySingleAnimatedDetailsBinding;
 import com.example.lovesticker.sticker.model.SingleAnimatedCategoriesBean;
+import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.InvokesData;
@@ -37,10 +39,17 @@ import java.net.URLConnection;
 public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, ActivitySingleAnimatedDetailsBinding> {
     private String singleAnimatedDetailsImage;
     private SingleAnimatedCategoriesBean.Postcards postcards;
+    private int rewardInterval = 0;
 
     @Override
     protected void initView() {
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
+
+        if (LSMKVUtil.getBoolean("SingleAnimatedInterstitialAd",false)){
+            MaxADManager.tryShowInterstitialDetailAd();
+            LSMKVUtil.put(" SingleAnimatedInterstitialAd",false);
+        }
+
 
         singleAnimatedDetailsImage = getIntent().getStringExtra("singleAnimatedDetailsImage");
         postcards = (SingleAnimatedCategoriesBean.Postcards) getIntent().getSerializableExtra("singlePostcards");
@@ -50,7 +59,6 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
                     .load(LSConstant.image_gif_uri + singleAnimatedDetailsImage)
                     .into(viewBinding.singleDetailsImg);
         }
-
 
     }
 
@@ -93,6 +101,11 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
                         public void onClickReject() {
 
                         }
+
+                        @Override
+                        public void onClickCancel() {
+
+                        }
                     });
 
                     viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
@@ -132,6 +145,13 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
 
                     @Override
                     public void onClickReject() {
+                        rewardInterval = rewardInterval + 1;
+                        showRewardDialog(rewardInterval);
+
+                    }
+
+                    @Override
+                    public void onClickCancel() {
                         if (singleAnimatedDetailsImage != null){
                             showProgressDialog();
                             saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
@@ -140,19 +160,15 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
                     }
                 });
 
-
-//                if (singleAnimatedDetailsImage != null){
-//                    showProgressDialog();
-//                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
-//                }
-
             }
         });
 
-
+        MaxADManager.loadInterstitialBackAd();
+        LSMKVUtil.put(" SingleAnimatedBackAd",true);
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 finish();
             }
         });
@@ -164,9 +180,68 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
 //                shareAny(uri);
 //            }
 //        });
-
-
     }
+
+    private void showRewardDialog(int intent) {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
+        try {
+            if (intent % 2 == 0){ //偶数 不弹激励广告
+                if (singleAnimatedDetailsImage != null){
+                    showProgressDialog();
+                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                }
+
+            }else { // 基数 弹激励广告
+
+                new AlertDialog.Builder(this)
+                        .setMessage("Watch an AD to unblock the content?")
+                        .setNegativeButton("Cancle", (dialog, which) -> {
+
+                        }).setPositiveButton("Watch ", (dialog, which) -> {
+                    try {
+                        showProgressDialog();
+                        MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                            @Override
+                            public void onRewardFail() {
+                                dismissProgressDialog();
+                            }
+
+                            @Override
+                            public void onRewardShown() {
+                                dismissProgressDialog();
+                            }
+
+                            @Override
+                            public void onRewarded() {
+                                if (singleAnimatedDetailsImage != null){
+                                    showProgressDialog();
+                                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                                }
+                            }
+
+                            @Override
+                            public void onTimeOut() {
+                                dismissProgressDialog();
+                                if (singleAnimatedDetailsImage != null){
+                                    showProgressDialog();
+                                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                                }
+                            }
+                        });
+                    } catch (Exception e) {
+
+                    }
+
+                }).setCancelable(false).show();
+
+            }
+
+
+
+        } catch (Exception e) {
+
+        }
+    }
+
 
     @Override
     protected void dataObserver() {

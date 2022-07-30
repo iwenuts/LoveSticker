@@ -10,7 +10,7 @@ stringfog {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 32
     buildToolsVersion '30.0.3'
 
     android.buildFeatures.viewBinding = true
@@ -50,6 +50,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
+        if (isBundleRelease()) {
+            println("bundle release apply")
+
+            apply plugin: 'com.google.gms.google-services'
+            apply plugin: 'applovin-quality-service'
+            applovin {
+                apiKey "iqDQ4XkBMEyaR_RP1VirnEN7vow7xTOpMH6mq5vEh2gwRS6fkQ-R47mNwAPmHqTEWmTiHpO_nCnKB_fmUkW9vF"
+            }
+        }
+
     }
 
     productFlavors{
@@ -58,14 +68,25 @@ android {
             applicationId "com.example.lovesticker"
             versionCode 100
             versionName "1.0.0"
-//
+            buildConfigField('String', 'INTERSTITIAL_Detail', '"YOUR_INTERSTITIAL_ID"')
+            buildConfigField('String', 'INTERSTITIAL_Back', '"YOUR_INTERSTITIAL_ID"')
+            buildConfigField('String', 'MAX_REWARD', '"MAX_REWARD"')
+            buildConfigField('String', 'MAX_MREC', '"MAX_MREC"')
+            buildConfigField('String', 'MAX_BANNER', '"MAX_BANNER"')
+            buildConfigField('String', 'APP_LOVIN_ID', '"wBoUPtps7bLwU5xddHu9qMTzdsScLZ3MI9EwyECTk0ZLxKMBVdpTTPBosSTFDrbuzxb3-4CmK5Fo-QR8DNl-15"')
         }
+
         publish{
             dimension "default"
             applicationId "wasticker.love.stickers.whatsapp.apps"
             versionCode 100
             versionName "1.0.0"
-
+            buildConfigField('String', 'INTERSTITIAL_Detail', '"da0cc10bc8c33b26"')
+            buildConfigField('String', 'INTERSTITIAL_Back', '"d33a8a3a0fa08431"')
+            buildConfigField('String', 'MAX_REWARD', '"56b2008403200185"')
+            buildConfigField('String', 'MAX_MREC', '"966e08e935a740b1"')
+            buildConfigField('String', 'MAX_BANNER', '"3811b8b163f7a60e"')
+            buildConfigField('String', 'APP_LOVIN_ID', '"wBoUPtps7bLwU5xddHu9qMTzdsScLZ3MI9EwyECTk0ZLxKMBVdpTTPBosSTFDrbuzxb3-4CmK5Fo-QR8DNl-15"')
         }
 
     }
@@ -74,6 +95,16 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+}
+
+def isBundleRelease() {
+    Gradle gradle = getGradle()
+    String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
+
+    if(tskReqStr.contains("bundle") && tskReqStr.contains("Release"))
+        return true
+
+    return false
 }
 
 dependencies {
@@ -152,23 +183,23 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.8.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
-////    // ad library
-//    implementation 'com.applovin:applovin-sdk:10.3.4'
-//    //ad colony
-//    implementation 'com.adcolony:sdk:4.6.5'
-//    implementation 'com.applovin.mediation:adcolony-adapter:4.6.5.0'
+//    // ad library
+    implementation 'com.applovin:applovin-sdk:10.3.4'
+    //ad colony
+    implementation 'com.adcolony:sdk:4.6.5'
+    implementation 'com.applovin.mediation:adcolony-adapter:4.6.5.0'
     // admob mediation
-//    implementation 'com.google.android.gms:play-services-ads:20.4.0'
-//    implementation 'com.applovin.mediation:google-adapter:20.4.0.1'
-//    // fb mediation
-//    implementation 'com.facebook.android:audience-network-sdk:6.8.0'
-//    implementation 'com.applovin.mediation:facebook-adapter:6.8.0.1'
-//    // vungle mediation
-//    implementation 'com.vungle:publisher-sdk-android:6.10.2'
-//    implementation 'com.applovin.mediation:vungle-adapter:6.10.2.0'
-//    // unity mediation
-//    implementation 'com.unity3d.ads:unity-ads:3.7.5'
-//    implementation 'com.applovin.mediation:unityads-adapter:3.7.5.1'
+    implementation 'com.google.android.gms:play-services-ads:20.4.0'
+    implementation 'com.applovin.mediation:google-adapter:20.4.0.1'
+    // fb mediation
+    implementation 'com.facebook.android:audience-network-sdk:6.8.0'
+    implementation 'com.applovin.mediation:facebook-adapter:6.8.0.1'
+    // vungle mediation
+    implementation 'com.vungle:publisher-sdk-android:6.10.2'
+    implementation 'com.applovin.mediation:vungle-adapter:6.10.2.0'
+    // unity mediation
+    implementation 'com.unity3d.ads:unity-ads:3.7.5'
+    implementation 'com.applovin.mediation:unityads-adapter:3.7.5.1'
 
 
     // core
@@ -189,6 +220,5 @@ dependencies {
 //    implementation  'com.scwang.smart:refresh-header-classics:2.0.1'    //经典刷新头
 
     implementation 'com.flurry.android:analytics:+'
-
 
 }

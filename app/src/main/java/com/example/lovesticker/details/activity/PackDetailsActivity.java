@@ -45,6 +45,7 @@ import com.example.lovesticker.databinding.ActivityPackDetailsBinding;
 import com.example.lovesticker.details.adapter.PackDetailsAdapter;
 import com.example.lovesticker.main.adapter.PackAdapter;
 import com.example.lovesticker.main.model.StickerPacks;
+import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.InvokesData;
@@ -77,6 +78,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     private Integer stickerPackNumber;
     private SelectPicPopupWindow selectPicPopupWindow;
     private Gson gson = new Gson();
+    private int rewardInterval = 0;
 
     private PopupWindow addSendPopupWindow;
     private ImageView popupWindowImg;
@@ -86,7 +88,12 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
     @Override
     protected void initView() {
+        Log.e("###", "PackDetails onCreate: ");
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
+
+        MaxADManager.loadInterstitialDetailAd();
+        LSMKVUtil.put("PackDetailsInterstitialAd",true);
+
         isSavedLayout = getIntent().getBooleanExtra("isSaved",false);
 
         if (isSavedLayout){
@@ -131,6 +138,18 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (LSMKVUtil.getBoolean("PackImageDetailsBackAd",false)){
+            MaxADManager.tryShowInterstitialBackAd();
+            LSMKVUtil.put("PackImageDetailsBackAd",false);
+        }
+
+    }
+
+
+
+    @Override
     protected void initClickListener() {
 
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
@@ -150,15 +169,21 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
                     @Override
                     public void onClickReject() {
+                        rewardInterval = rewardInterval + 1;
+                        showRewardDialog(rewardInterval);
+
+                    }
+
+                    @Override
+                    public void onClickCancel() {
                         addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
                     }
                 });
-
-
             }
         });
 
-
+        MaxADManager.loadInterstitialBackAd();
+        LSMKVUtil.put("PackDetailsBackAd",true);
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -175,6 +200,60 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
 
     }
+
+    private void showRewardDialog(int intent) {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
+        try {
+            if (intent % 2 == 0){ //偶数 不弹激励广告
+                addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
+
+            }else { // 基数 弹激励广告
+
+                new android.app.AlertDialog.Builder(this)
+                        .setMessage("Watch an AD to unblock the content?")
+                        .setNegativeButton("Cancle", (dialog, which) -> {
+
+                        }).setPositiveButton("Watch ", (dialog, which) -> {
+                    try {
+                        showProgressDialog();
+                        MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                            @Override
+                            public void onRewardFail() {
+                                dismissProgressDialog();
+                            }
+
+                            @Override
+                            public void onRewardShown() {
+                                dismissProgressDialog();
+                            }
+
+                            @Override
+                            public void onRewarded() {
+                                addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
+                            }
+
+                            @Override
+                            public void onTimeOut() {
+                                dismissProgressDialog();
+                                addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
+                            }
+                        });
+                    } catch (Exception e) {
+
+                    }
+
+                }).setCancelable(false).show();
+
+            }
+
+
+
+        } catch (Exception e) {
+
+        }
+    }
+
+
+
 
     private void DownloadImages() {
         List<String> stickersImg = new ArrayList();

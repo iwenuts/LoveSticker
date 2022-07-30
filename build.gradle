@@ -4,12 +4,17 @@ buildscript {
         maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://maven.aliyun.com/repository/google' }
 
-        mavenCentral()
+
 
         google()
         jcenter()
-
+        mavenCentral()
         maven { url 'https://jitpack.io' }
+
+        //         app lovin
+        maven { url 'https://artifacts.applovin.com/android' }
+
+        maven {url 'https://adcolony.bintray.com/AdColony&apos'}
     }
 
     dependencies {
@@ -21,7 +26,7 @@ buildscript {
 
 
 //        //app lovin
-//        classpath "com.applovin.quality:AppLovinQualityServiceGradlePlugin:3.9.10"
+        classpath "com.applovin.quality:AppLovinQualityServiceGradlePlugin:3.9.10"
 
 
         //google service  (if build gradle is below 4.1.0,use 4.3.8)
@@ -41,9 +46,9 @@ allprojects {
         jcenter()
 
         maven { url 'https://jitpack.io' }
-//        maven { url 'https://artifacts.applovin.com/android' }
-//        maven { url 'https://adcolony.bintray.com/AdColony&apos' }
-        maven { url 'https://repo1.maven.org/maven2/' }
+        maven { url 'https://artifacts.applovin.com/android' }
+        maven { url 'https://adcolony.bintray.com/AdColony&apos' }
+//        maven { url 'https://repo1.maven.org/maven2/' }
     }
 }
 

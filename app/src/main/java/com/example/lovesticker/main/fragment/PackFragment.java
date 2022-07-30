@@ -15,6 +15,9 @@ import com.example.lovesticker.databinding.FragmentPackBinding;
 import com.example.lovesticker.main.adapter.PackAdapter;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.main.viewmodel.PackViewModel;
+import com.example.lovesticker.util.ads.MaxADManager;
+import com.example.lovesticker.util.mmkv.LSMKVUtil;
+
 import java.util.List;
 
 /**
@@ -84,6 +87,16 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
             }
 
         });
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (LSMKVUtil.getBoolean("PackDetailsBackAd",false)){
+            MaxADManager.tryShowInterstitialBackAd();
+            LSMKVUtil.put("PackDetailsBackAd",false);
+        }
 
     }
 

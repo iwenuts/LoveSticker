@@ -263,7 +263,7 @@ public class RateDialog extends AppCompatActivity {
 
     public void onCancelClicked(View v) {
         if (sRatingClickListener != null) {
-            sRatingClickListener.onClickReject();
+            sRatingClickListener.onClickCancel();
         }
         ToastUtils.showShort("Thanks for your suggest!");
         //FlurryEvent.sendRate("Cancel");
@@ -338,6 +338,8 @@ public class RateDialog extends AppCompatActivity {
         void onClick1To4Start();
 
         void onClickReject();
+
+        void onClickCancel();
 
     }
 }

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +32,7 @@ import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.base.LoveStickerApp;
 import com.example.lovesticker.databinding.ActivityPackImageDetailsBinding;
 import com.example.lovesticker.main.model.StickerPacks;
+import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.InvokesData;
@@ -60,6 +62,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
     private StickerPacks packDetails;
     private StickerPack stickerPack;
     private List<Sticker> sticker = new ArrayList<>();
+    private int rewardInterval = 0;
 
     private int imagePosition;
     private int currentPosition; //当前图片所在位置
@@ -76,7 +79,17 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
     @Override
     protected void initView() {
+        Log.e("###", "PackImageDetails onCreate ");
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
+
+        if (LSMKVUtil.getBoolean("PackDetailsInterstitialAd",false)){
+            MaxADManager.tryShowInterstitialDetailAd();
+            LSMKVUtil.put("PackDetailsInterstitialAd",true);
+        }
+
+
+        MaxADManager.loadBannerIntoView(this,viewBinding.adContainer);
+
 
         packDetails = (StickerPacks) getIntent().getSerializableExtra("packDetails_value");
         imagePosition = getIntent().getIntExtra("position", 0);
@@ -198,6 +211,11 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
                         public void onClickReject() {
 
                         }
+
+                        @Override
+                        public void onClickCancel() {
+
+                        }
                     });
 
                     viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
@@ -229,6 +247,15 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
                     @Override
                     public void onClickReject() {
+                        rewardInterval = rewardInterval + 1;
+                        showRewardDialog(rewardInterval);
+
+
+//                        addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+                    }
+
+                    @Override
+                    public void onClickCancel() {
                         addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
                     }
                 });
@@ -238,10 +265,12 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         });
 
 
-
+        MaxADManager.loadInterstitialBackAd();
+        LSMKVUtil.put("PackImageDetailsBackAd",true);
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MaxADManager.loadInterstitialBackAd();
                 finish();
             }
         });
@@ -253,11 +282,60 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 //                shareAny(uri);
 //            }
 //        });
-
-
-
-
     }
+
+    private void showRewardDialog(int intent) {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
+        try {
+            if (intent % 2 == 0){ //偶数 不弹激励广告
+                addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+
+            }else { // 基数 弹激励广告
+
+                new AlertDialog.Builder(this)
+                        .setMessage("Watch an AD to unblock the content?")
+                        .setNegativeButton("Cancle", (dialog, which) -> {
+
+                        }).setPositiveButton("Watch ", (dialog, which) -> {
+                    try {
+                        showProgressDialog();
+                        MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                            @Override
+                            public void onRewardFail() {
+                                dismissProgressDialog();
+                            }
+
+                            @Override
+                            public void onRewardShown() {
+                                dismissProgressDialog();
+                            }
+
+                            @Override
+                            public void onRewarded() {
+                                addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+                            }
+
+                            @Override
+                            public void onTimeOut() {
+                                dismissProgressDialog();
+                                addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+                            }
+                        });
+                    } catch (Exception e) {
+
+                    }
+
+                }).setCancelable(false).show();
+
+            }
+
+
+
+        } catch (Exception e) {
+
+        }
+    }
+
+
 
     @Override
     protected void dataObserver() {

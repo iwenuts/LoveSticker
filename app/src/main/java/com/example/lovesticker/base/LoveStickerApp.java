@@ -4,7 +4,9 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import com.applovin.mediation.MaxAd;
 import com.example.lovesticker.main.model.StickerPacks;
+import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.event.LSEventUtil;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.SaveData;
@@ -33,7 +35,7 @@ public class LoveStickerApp extends Application {
     }
 
 
-    private static SaveData saveData;
+//    private static SaveData saveData;
 
     @Override
     public void onCreate() {
@@ -49,6 +51,12 @@ public class LoveStickerApp extends Application {
 
         // app event upload init
         LSEventUtil.init(applicationContext);
+
+        MaxADManager.enableDebugMaxAd(this);
+
+        MaxADManager.initMaxAd(this);
+
+
 
         // logger preset
         initLogger();

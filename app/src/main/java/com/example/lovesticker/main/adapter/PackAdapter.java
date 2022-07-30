@@ -7,11 +7,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -19,6 +21,7 @@ import com.example.lovesticker.R;
 import com.example.lovesticker.details.activity.PackDetailsActivity;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.main.viewmodel.PackViewModel;
+import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 
@@ -48,6 +51,7 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
         LinearLayout packPackage;
         ImageView newImage;
         ImageView img1,img2,img3,img4;
+        FrameLayout frameLayout;
         public ViewHolder(@NonNull View view) {
             super(view);
             itemName = view.findViewById(R.id.item_name);
@@ -58,6 +62,7 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
             img3 = view.findViewById(R.id.img3);
             img4 = view.findViewById(R.id.img4);
             newImage = view.findViewById(R.id.new_image);
+            frameLayout = view.findViewById(R.id.ad_container);
         }
     }
 
@@ -96,6 +101,15 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         stickerPacks = allStickerPacks.get(position);  //返回stickerPacks里面的数据
+
+        if (position == 3){
+            holder.frameLayout.setVisibility(View.VISIBLE);
+            MaxADManager.loadMrecIntoView((AppCompatActivity) activity,holder.frameLayout);
+        }else {
+            holder.frameLayout.setVisibility(View.GONE);
+        }
+
+
 
         holder.itemName.setText(stickerPacks.getTitle());
 

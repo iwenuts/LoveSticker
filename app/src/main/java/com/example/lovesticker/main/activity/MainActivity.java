@@ -25,6 +25,7 @@ import com.example.lovesticker.main.FixFragmentNavigator;
 import com.example.lovesticker.main.fragment.MineFragment;
 import com.example.lovesticker.main.fragment.PackFragment;
 import com.example.lovesticker.main.fragment.StickerFragment;
+import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.gyf.immersionbar.ImmersionBar;
@@ -61,6 +62,9 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
 //            }
             return  true;
         });
+
+        MaxADManager.initInterstitialDetailAd(this);
+        MaxADManager.initInterstitialBacklAd(this);
     }
 
 
