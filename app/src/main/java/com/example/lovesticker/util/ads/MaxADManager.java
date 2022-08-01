@@ -28,6 +28,7 @@ import com.applovin.mediation.ads.MaxInterstitialAd;
 import com.applovin.mediation.ads.MaxRewardedAd;
 import com.applovin.sdk.AppLovinMediationProvider;
 import com.applovin.sdk.AppLovinSdk;
+import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
 import com.blankj.utilcode.util.ConvertUtils;
@@ -53,12 +54,16 @@ public class MaxADManager implements LifecycleObserver {
 
     public static void initMaxAd(Context context){
         try {
-            String z = new String(EncodeUtils.base64Decode(APP_LOVIN_KEY.getBytes()), "utf-8");
-            instance.appLovinSdk = AppLovinSdk.getInstance(z,new AppLovinSdkSettings(context),context);
+            instance.appLovinSdk = AppLovinSdk.getInstance(APP_LOVIN_KEY,new AppLovinSdkSettings(context),context);
             instance.appLovinSdk.setMediationProvider(AppLovinMediationProvider.MAX);
-            instance.appLovinSdk.initializeSdk((AppLovinSdk.SdkInitializationListener) null);
+            instance.appLovinSdk.initializeSdk((new AppLovinSdk.SdkInitializationListener() {
+                @Override
+                public void onSdkInitialized(AppLovinSdkConfiguration config) {
 
-        } catch (UnsupportedEncodingException e) {
+                }
+            }));
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -79,40 +84,28 @@ public class MaxADManager implements LifecycleObserver {
 
 
 
-    // 初始化InterstitialDetail广告，在MainActivity启动时调用
-    public static void initInterstitialDetailAd(AppCompatActivity activity){
-//        Log.e("###", "initInterstitialDetailAd ");
-        instance.initInterstitialDetail(activity);
-    }
-
     // 加载InterstitialDetail广告，加载出来后不显示，等调用下面的方法的时候再显示
-    public static void loadInterstitialDetailAd(){
+    public static void loadInterstitialDetailAd(AppCompatActivity activity){
 //        Log.e("###", "loadInterstitialDetailAd ");
-        instance.loadInterstitialDetail();
+        instance.loadInterstitialDetail(activity);
     }
 
     // 展示InterstitialDetail广告
-    public static void tryShowInterstitialDetailAd(){
+    public static void tryShowInterstitialDetailAd(AppCompatActivity activity){
 //        Log.e("###", "tryShowInterstitialDetailAd ");
-        instance.tryShowInterstitialDetail();
-    }
-
-    // 初始化InterstitialBack广告，在MainActivity启动时调用
-    public static void initInterstitialBacklAd(AppCompatActivity activity){
-//        Log.e("###", "initInterstitialBacklAd ");
-        instance.initInterstitialDetailBack(activity);
+        instance.tryShowInterstitialDetail(activity);
     }
 
 
-    public static void loadInterstitialBackAd(){
+    public static void loadInterstitialBackAd(AppCompatActivity activity){
 //        Log.e("###", "loadInterstitialBackAd ");
-        instance.loadInterstitialBack();
+        instance.loadInterstitialBack(activity);
     }
 
 
-    public static void tryShowInterstitialBackAd(){
+    public static void tryShowInterstitialBackAd(AppCompatActivity activity){
 //        Log.e("###", "tryShowInterstitialBackAd ");
-        instance.tryShowInterstitialBack();
+        instance.tryShowInterstitialBack(activity);
     }
 
 
@@ -145,19 +138,70 @@ public class MaxADManager implements LifecycleObserver {
     }
 
 
+//    //interstitial_detail
+//    private MaxInterstitialAd interstitialDetail;
+//    private boolean adLoadingDetail = false;
+//    private boolean waitingIntersShow = false;
+//    private void initInterstitialDetail(AppCompatActivity activity) {
+//        if (appLovinSdk == null) return;
+//        if (interstitialDetail == null){
+//            interstitialDetail = new MaxInterstitialAd(INTERSTITIAL_Detail,appLovinSdk,activity);
+//        }
+//        interstitialDetail.setListener(new MaxAdListener() {
+//            @Override
+//            public void onAdLoaded(MaxAd ad) {
+//                adLoadingDetail = false;
+//                if(waitingIntersShow){
+//                    interstitialDetail.showAd();
+//                }
+//            }
+//
+//            @Override
+//            public void onAdDisplayed(MaxAd ad) {
+//                waitingIntersShow = false;
+//            }
+//
+//            @Override
+//            public void onAdHidden(MaxAd ad) {
+//
+//            }
+//
+//            @Override
+//            public void onAdClicked(MaxAd ad) {
+//
+//            }
+//
+//            @Override
+//            public void onAdLoadFailed(String adUnitId, MaxError error) {
+//                waitingIntersShow = false;
+//                adLoadingDetail = false;
+//            }
+//
+//            @Override
+//            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+//                waitingIntersShow = false;
+//                adLoadingDetail = false;
+//            }
+//        });
+//
+//
+//
+//    }
+
+
     //interstitial_detail
     private MaxInterstitialAd interstitialDetail;
-    private boolean adLoadingDetail = false;
     private boolean waitingIntersShow = false;
-    private void initInterstitialDetail(AppCompatActivity activity) {
-        if (appLovinSdk == null) return;
-        if (interstitialDetail == null){
-            interstitialDetail = new MaxInterstitialAd(INTERSTITIAL_Detail,appLovinSdk,activity);
-        }
+    private void loadInterstitialDetail(AppCompatActivity activity) {
+//        Log.e("###", "loadInterstitialDetail: "+ interstitialDetail );
+
+        if (interstitialDetail != null) return;
+
+        interstitialDetail = new MaxInterstitialAd(INTERSTITIAL_Detail,appLovinSdk,activity);
+
         interstitialDetail.setListener(new MaxAdListener() {
             @Override
             public void onAdLoaded(MaxAd ad) {
-                adLoadingDetail = false;
                 if(waitingIntersShow){
                     interstitialDetail.showAd();
                 }
@@ -170,7 +214,8 @@ public class MaxADManager implements LifecycleObserver {
 
             @Override
             public void onAdHidden(MaxAd ad) {
-
+                if(interstitialDetail != null) interstitialDetail.destroy();
+                interstitialDetail = null;
             }
 
             @Override
@@ -181,32 +226,27 @@ public class MaxADManager implements LifecycleObserver {
             @Override
             public void onAdLoadFailed(String adUnitId, MaxError error) {
                 waitingIntersShow = false;
-                adLoadingDetail = false;
+                if(interstitialDetail != null) interstitialDetail.destroy();
+                interstitialDetail = null;
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
                 waitingIntersShow = false;
-                adLoadingDetail = false;
+                if(interstitialDetail != null) interstitialDetail.destroy();
+                interstitialDetail = null;
             }
         });
-
-
         activity.getLifecycle().addObserver(this);
+
+        interstitialDetail.loadAd();
+
     }
 
-    private void loadInterstitialDetail() {
-        Log.e("###", "loadInterstitialDetail: "+ interstitialDetail );
-        if(interstitialDetail == null ) return;
-        if(!interstitialDetail.isReady() && !adLoadingDetail){
-            interstitialDetail.loadAd();
-            adLoadingDetail = true;
-        }
-    }
-
-    private void tryShowInterstitialDetail() {
+    private void tryShowInterstitialDetail(AppCompatActivity activity) {
         if(interstitialDetail == null ) {
-            waitingIntersShow = false;
+            waitingIntersShow = true;
+            loadInterstitialDetail(activity);
             return;
         }
         if(interstitialDetail.isReady()) interstitialDetail.showAd();
@@ -214,69 +254,116 @@ public class MaxADManager implements LifecycleObserver {
     }
 
 
+//    //interstitial_back
+//    private MaxInterstitialAd interstitialBack;
+//    private boolean adLoadingBack = false;
+//    private boolean waitingBackShow = false;
+//
+//    private void initInterstitialDetailBack(AppCompatActivity activity){
+//        if (appLovinSdk == null) return;
+//        if (interstitialBack == null){
+//            interstitialBack = new MaxInterstitialAd(INTERSTITIAL_Back,appLovinSdk,activity);
+//            interstitialBack.setListener(new MaxAdListener() {
+//                @Override
+//                public void onAdLoaded(MaxAd ad) {
+//                    if (waitingBackShow){
+//                        interstitialBack.showAd();
+//                    }
+//                }
+//
+//                @Override
+//                public void onAdDisplayed(MaxAd ad) {
+//                    waitingBackShow = false;
+//                }
+//
+//                @Override
+//                public void onAdHidden(MaxAd ad) {
+//                    interstitialBack.destroy();
+//                }
+//
+//                @Override
+//                public void onAdClicked(MaxAd ad) {
+//
+//                }
+//
+//                @Override
+//                public void onAdLoadFailed(String adUnitId, MaxError error) {
+//                    interstitialBack.destroy();
+//
+//                }
+//
+//                @Override
+//                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+//                    interstitialBack.destroy();
+//                }
+//            });
+//        }
+//        activity.getLifecycle().addObserver(this);
+//
+//    }
+
     //interstitial_back
     private MaxInterstitialAd interstitialBack;
-    private boolean adLoadingBack = false;
     private boolean waitingBackShow = false;
+    private void loadInterstitialBack(AppCompatActivity activity) {
 
-    private void initInterstitialDetailBack(AppCompatActivity activity){
-        if (appLovinSdk == null) return;
-        if (interstitialBack == null){
-            interstitialBack = new MaxInterstitialAd(INTERSTITIAL_Back,appLovinSdk,activity);
-            interstitialBack.setListener(new MaxAdListener() {
-                @Override
-                public void onAdLoaded(MaxAd ad) {
-                    if (waitingBackShow){
-                        interstitialBack.showAd();
-                    }
+        if (interstitialBack != null) return;
+
+        interstitialBack = new MaxInterstitialAd(INTERSTITIAL_Back,appLovinSdk,activity);
+
+        interstitialBack.setListener(new MaxAdListener() {
+            @Override
+            public void onAdLoaded(MaxAd ad) {
+                if(waitingBackShow){
+                    interstitialBack.showAd();
                 }
+            }
 
-                @Override
-                public void onAdDisplayed(MaxAd ad) {
-                    waitingBackShow = false;
-                }
+            @Override
+            public void onAdDisplayed(MaxAd ad) {
+                waitingBackShow = false;
+            }
 
-                @Override
-                public void onAdHidden(MaxAd ad) {
-                    interstitialBack.destroy();
-                }
+            @Override
+            public void onAdHidden(MaxAd ad) {
+                if(interstitialBack != null) interstitialBack.destroy();
+                interstitialBack = null;
+            }
 
-                @Override
-                public void onAdClicked(MaxAd ad) {
+            @Override
+            public void onAdClicked(MaxAd ad) {
 
-                }
+            }
 
-                @Override
-                public void onAdLoadFailed(String adUnitId, MaxError error) {
-                    interstitialBack.destroy();
+            @Override
+            public void onAdLoadFailed(String adUnitId, MaxError error) {
+                waitingBackShow = false;
+                if(interstitialBack != null) interstitialBack.destroy();
+                interstitialBack = null;
+            }
 
-                }
-
-                @Override
-                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-                    interstitialBack.destroy();
-                }
-            });
-        }
+            @Override
+            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
+                waitingBackShow = false;
+                if(interstitialBack != null) interstitialBack.destroy();
+                interstitialBack = null;
+            }
+        });
         activity.getLifecycle().addObserver(this);
 
+        interstitialBack.loadAd();
+
     }
 
-    private void loadInterstitialBack() {
-        if(interstitialBack == null ) return;
-        if(!interstitialBack.isReady() && !adLoadingBack){
-            interstitialBack.loadAd();
-            adLoadingBack = true;
-        }
-    }
-
-    private void tryShowInterstitialBack() {
+    private void tryShowInterstitialBack(AppCompatActivity activity) {
         if(interstitialBack == null ) {
-            waitingBackShow = false;
+            waitingBackShow = true;
+            loadInterstitialBack(activity);
             return;
         }
         if(interstitialBack.isReady()) interstitialBack.showAd();
         else waitingBackShow = true;
+
     }
 
 

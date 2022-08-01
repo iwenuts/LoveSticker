@@ -104,7 +104,10 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
 
         if (position == 3){
             holder.frameLayout.setVisibility(View.VISIBLE);
-            MaxADManager.loadMrecIntoView((AppCompatActivity) activity,holder.frameLayout);
+            if (LSMKVUtil.getBoolean("loadad",true)){
+                MaxADManager.loadMrecIntoView((AppCompatActivity) activity,holder.frameLayout);
+            }
+
         }else {
             holder.frameLayout.setVisibility(View.GONE);
         }

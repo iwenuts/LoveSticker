@@ -45,8 +45,9 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
     protected void initView() {
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
 
-        if (LSMKVUtil.getBoolean("SingleAnimatedInterstitialAd",false)){
-            MaxADManager.tryShowInterstitialDetailAd();
+        if (LSMKVUtil.getBoolean("SingleAnimatedInterstitialAd",false) &&
+                LSMKVUtil.getBoolean("loadad",true)){
+            MaxADManager.tryShowInterstitialDetailAd(this);
             LSMKVUtil.put(" SingleAnimatedInterstitialAd",false);
         }
 
@@ -163,12 +164,11 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
             }
         });
 
-        MaxADManager.loadInterstitialBackAd();
+        MaxADManager.loadInterstitialBackAd(this);
         LSMKVUtil.put(" SingleAnimatedBackAd",true);
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 finish();
             }
         });
@@ -184,58 +184,106 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
 
     private void showRewardDialog(int intent) {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
         try {
-            if (intent % 2 == 0){ //偶数 不弹激励广告
+            int rewarDinter = LSMKVUtil.getInt("rewardinter",1);
+
+            if (LSMKVUtil.getBoolean("loadad",true)){
+                if (intent == 1){
+                    new AlertDialog.Builder(this)
+                            .setMessage("Watch an AD to unblock the content?")
+                            .setNegativeButton("Cancle", (dialog, which) -> {
+
+                            }).setPositiveButton("Watch ", (dialog, which) -> {
+                        try {
+                            showProgressDialog();
+                            MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                                @Override
+                                public void onRewardFail() {
+                                    dismissProgressDialog();
+                                }
+
+                                @Override
+                                public void onRewardShown() {
+                                    dismissProgressDialog();
+                                }
+
+                                @Override
+                                public void onRewarded() {
+                                    if (singleAnimatedDetailsImage != null){
+                                        showProgressDialog();
+                                        saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                                    }
+                                }
+
+                                @Override
+                                public void onTimeOut() {
+                                    dismissProgressDialog();
+                                    if (singleAnimatedDetailsImage != null){
+                                        showProgressDialog();
+                                        saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                                    }
+                                }
+                            });
+                        } catch (Exception e) {
+
+                        }
+
+                    }).setCancelable(false).show();
+
+                }else if (intent % (rewarDinter+ 1) != 1){ //不弹激励广告
+                    if (singleAnimatedDetailsImage != null){
+                        showProgressDialog();
+                        saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                    }
+
+                }else { //  弹激励广告
+
+                    new AlertDialog.Builder(this)
+                            .setMessage("Watch an AD to unblock the content?")
+                            .setNegativeButton("Cancle", (dialog, which) -> {
+
+                            }).setPositiveButton("Watch ", (dialog, which) -> {
+                        try {
+                            showProgressDialog();
+                            MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                                @Override
+                                public void onRewardFail() {
+                                    dismissProgressDialog();
+                                }
+
+                                @Override
+                                public void onRewardShown() {
+                                    dismissProgressDialog();
+                                }
+
+                                @Override
+                                public void onRewarded() {
+                                    if (singleAnimatedDetailsImage != null){
+                                        showProgressDialog();
+                                        saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                                    }
+                                }
+
+                                @Override
+                                public void onTimeOut() {
+                                    dismissProgressDialog();
+                                    if (singleAnimatedDetailsImage != null){
+                                        showProgressDialog();
+                                        saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                                    }
+                                }
+                            });
+                        } catch (Exception e) {
+
+                        }
+
+                    }).setCancelable(false).show();
+                }
+            }else {
                 if (singleAnimatedDetailsImage != null){
                     showProgressDialog();
                     saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
                 }
-
-            }else { // 基数 弹激励广告
-
-                new AlertDialog.Builder(this)
-                        .setMessage("Watch an AD to unblock the content?")
-                        .setNegativeButton("Cancle", (dialog, which) -> {
-
-                        }).setPositiveButton("Watch ", (dialog, which) -> {
-                    try {
-                        showProgressDialog();
-                        MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
-                            @Override
-                            public void onRewardFail() {
-                                dismissProgressDialog();
-                            }
-
-                            @Override
-                            public void onRewardShown() {
-                                dismissProgressDialog();
-                            }
-
-                            @Override
-                            public void onRewarded() {
-                                if (singleAnimatedDetailsImage != null){
-                                    showProgressDialog();
-                                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
-                                }
-                            }
-
-                            @Override
-                            public void onTimeOut() {
-                                dismissProgressDialog();
-                                if (singleAnimatedDetailsImage != null){
-                                    showProgressDialog();
-                                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
-                                }
-                            }
-                        });
-                    } catch (Exception e) {
-
-                    }
-
-                }).setCancelable(false).show();
-
             }
-
-
 
         } catch (Exception e) {
 

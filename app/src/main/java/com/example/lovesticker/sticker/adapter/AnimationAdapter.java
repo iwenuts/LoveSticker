@@ -20,6 +20,7 @@ import com.example.lovesticker.details.activity.AnimationDetailsActivity;
 import com.example.lovesticker.sticker.model.AllAnimatedBean;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
+import com.example.lovesticker.util.mmkv.LSMKVUtil;
 
 import java.util.List;
 
@@ -85,7 +86,10 @@ public class AnimationAdapter extends RecyclerView.Adapter<AnimationAdapter.View
         if (position == 6){
             holder.frameLayout.setVisibility(View.VISIBLE);
             holder.img.setVisibility(View.GONE);
-            MaxADManager.loadMrecIntoView((AppCompatActivity) activity,holder.frameLayout);
+            if (LSMKVUtil.getBoolean("loadad",true)){
+                MaxADManager.loadMrecIntoView((AppCompatActivity) activity,holder.frameLayout);
+            }
+
 
         }else {
             holder.frameLayout.setVisibility(View.GONE);

@@ -54,13 +54,15 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
     private AllAnimatedBean.Postcards postcards;
     private Gson gson = new Gson();
     private int rewardInterval = 0;
+    private int rewardChange = 0;
 
     @Override
     protected void initView() {
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
 
-        if (LSMKVUtil.getBoolean("AnimationInterstitialAd",false)){
-            MaxADManager.tryShowInterstitialDetailAd();
+        if (LSMKVUtil.getBoolean("AnimationInterstitialAd",false) &&
+                LSMKVUtil.getBoolean("loadad",true)){
+            MaxADManager.tryShowInterstitialDetailAd(this);
             LSMKVUtil.put("AnimationInterstitialAd",false);
         }
 
@@ -189,7 +191,7 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
             }
         });
 
-        MaxADManager.loadInterstitialBackAd();
+        MaxADManager.loadInterstitialBackAd(this);
         LSMKVUtil.put("AnimationDetailsBackAd",true);
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,64 +203,122 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
     }
 
-    private void showRewardDialog(int intent) {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
+    private void showRewardDialog(int intent) {  //间隔出现激励弹窗 ex:第一次出现，第二次不出现......
         try {
-            if (intent % 2 == 0){ //偶数 不弹激励广告
+            int rewarDinter = LSMKVUtil.getInt("rewardinter",1);
+
+            if (LSMKVUtil.getBoolean("loadad",true)){
+                if (intent == 1){
+
+                    new AlertDialog.Builder(this)
+                            .setMessage("Watch an AD to unblock the content?")
+                            .setNegativeButton("Cancle", (dialog, which) -> {
+
+                            }).setPositiveButton("Watch ", (dialog, which) -> {
+                        try {
+                            showProgressDialog();
+                            MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                                @Override
+                                public void onRewardFail() {
+                                    dismissProgressDialog();
+                                }
+
+                                @Override
+                                public void onRewardShown() {
+                                    dismissProgressDialog();
+                                }
+
+                                @Override
+                                public void onRewarded() {
+                                    if (detailsImage != null){
+                                        showProgressDialog();
+                                        saveLocal(LSConstant.image_gif_uri + detailsImage);
+
+//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
+                                    }
+                                }
+
+                                @Override
+                                public void onTimeOut() {
+                                    dismissProgressDialog();
+                                    if (detailsImage != null){
+                                        showProgressDialog();
+                                        saveLocal(LSConstant.image_gif_uri + detailsImage);
+
+//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
+                                    }
+                                }
+                            });
+                        } catch (Exception e) {
+
+                        }
+
+                    }).setCancelable(false).show();
+
+                } else if (intent % (rewarDinter+ 1) != 1){ //不弹激励广告
+                    if (detailsImage != null){
+                        showProgressDialog();
+                        saveLocal(LSConstant.image_gif_uri + detailsImage);
+
+//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
+                    }
+
+                }else { //弹激励广告
+
+                    new AlertDialog.Builder(this)
+                            .setMessage("Watch an AD to unblock the content?")
+                            .setNegativeButton("Cancle", (dialog, which) -> {
+
+                            }).setPositiveButton("Watch ", (dialog, which) -> {
+                        try {
+                            showProgressDialog();
+                            MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                                @Override
+                                public void onRewardFail() {
+                                    dismissProgressDialog();
+                                }
+
+                                @Override
+                                public void onRewardShown() {
+                                    dismissProgressDialog();
+                                }
+
+                                @Override
+                                public void onRewarded() {
+                                    if (detailsImage != null){
+                                        showProgressDialog();
+                                        saveLocal(LSConstant.image_gif_uri + detailsImage);
+
+//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
+                                    }
+                                }
+
+                                @Override
+                                public void onTimeOut() {
+                                    dismissProgressDialog();
+                                    if (detailsImage != null){
+                                        showProgressDialog();
+                                        saveLocal(LSConstant.image_gif_uri + detailsImage);
+
+//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
+                                    }
+                                }
+                            });
+                        } catch (Exception e) {
+
+                        }
+
+                    }).setCancelable(false).show();
+                }
+            }else {
                 if (detailsImage != null){
                     showProgressDialog();
                     saveLocal(LSConstant.image_gif_uri + detailsImage);
 
 //                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
                 }
-
-            }else { // 基数 弹激励广告
-
-                new AlertDialog.Builder(this)
-                        .setMessage("Watch an AD to unblock the content?")
-                        .setNegativeButton("Cancle", (dialog, which) -> {
-
-                        }).setPositiveButton("Watch ", (dialog, which) -> {
-                    try {
-                        showProgressDialog();
-                        MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
-                            @Override
-                            public void onRewardFail() {
-                                dismissProgressDialog();
-                            }
-
-                            @Override
-                            public void onRewardShown() {
-                                dismissProgressDialog();
-                            }
-
-                            @Override
-                            public void onRewarded() {
-                                if (detailsImage != null){
-                                    showProgressDialog();
-                                    saveLocal(LSConstant.image_gif_uri + detailsImage);
-
-//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
-                                }
-                            }
-
-                            @Override
-                            public void onTimeOut() {
-                                dismissProgressDialog();
-                                if (detailsImage != null){
-                                    showProgressDialog();
-                                    saveLocal(LSConstant.image_gif_uri + detailsImage);
-
-//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
-                                }
-                            }
-                        });
-                    } catch (Exception e) {
-
-                    }
-
-                }).setCancelable(false).show();
-
             }
+
 
 
 

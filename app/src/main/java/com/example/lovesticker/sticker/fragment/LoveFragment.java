@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -78,7 +79,7 @@ public class LoveFragment extends Fragment {
 
     protected void initView() {
         if (getArguments() != null){
-            MaxADManager.loadInterstitialDetailAd();
+            MaxADManager.loadInterstitialDetailAd((AppCompatActivity) getActivity());
             LSMKVUtil.put(" SingleAnimatedInterstitialAd",true);
 
             mLink = getArguments().getString("link");
@@ -136,8 +137,9 @@ public class LoveFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (LSMKVUtil.getBoolean("SingleAnimatedBackAd",false)){
-            MaxADManager.tryShowInterstitialBackAd();
+        if (LSMKVUtil.getBoolean("SingleAnimatedBackAd",false) &&
+                LSMKVUtil.getBoolean("loadad",true)){
+            MaxADManager.tryShowInterstitialBackAd((AppCompatActivity) getActivity());
             LSMKVUtil.put(" SingleAnimatedBackAd",false);
         }
 

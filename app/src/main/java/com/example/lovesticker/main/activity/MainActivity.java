@@ -25,10 +25,15 @@ import com.example.lovesticker.main.FixFragmentNavigator;
 import com.example.lovesticker.main.fragment.MineFragment;
 import com.example.lovesticker.main.fragment.PackFragment;
 import com.example.lovesticker.main.fragment.StickerFragment;
+import com.example.lovesticker.main.model.LoveStickerBean;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.gyf.immersionbar.ImmersionBar;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBinding> {
 
@@ -63,8 +68,25 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
             return  true;
         });
 
-        MaxADManager.initInterstitialDetailAd(this);
-        MaxADManager.initInterstitialBacklAd(this);
+        LoveStickerData.getInstance().getLoveStickerData().enqueue(new Callback<LoveStickerBean>() {
+            @Override
+            public void onResponse(Call<LoveStickerBean> call, Response<LoveStickerBean> response) {
+                LoveStickerBean loveStickerBean = response.body();
+                if (loveStickerBean != null){
+                    LSMKVUtil.put("loadad",loveStickerBean.getLoadad());
+                    LSMKVUtil.put("rewardinter",loveStickerBean.getRewardinter());
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoveStickerBean> call, Throwable t) {
+
+            }
+        });
+
+
+
     }
 
 

@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -93,8 +94,9 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
     @Override
     public void onResume() {
         super.onResume();
-        if (LSMKVUtil.getBoolean("PackDetailsBackAd",false)){
-            MaxADManager.tryShowInterstitialBackAd();
+        if (LSMKVUtil.getBoolean("PackDetailsBackAd",false) &&
+                LSMKVUtil.getBoolean("loadad",true)){
+            MaxADManager.tryShowInterstitialBackAd((AppCompatActivity) getActivity());
             LSMKVUtil.put("PackDetailsBackAd",false);
         }
 

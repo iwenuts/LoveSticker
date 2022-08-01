@@ -82,13 +82,15 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         Log.e("###", "PackImageDetails onCreate ");
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
 
-        if (LSMKVUtil.getBoolean("PackDetailsInterstitialAd",false)){
-            MaxADManager.tryShowInterstitialDetailAd();
+        if (LSMKVUtil.getBoolean("PackDetailsInterstitialAd",false) &&
+                LSMKVUtil.getBoolean("loadad",true)){
+            MaxADManager.tryShowInterstitialDetailAd(this);
             LSMKVUtil.put("PackDetailsInterstitialAd",true);
         }
 
-
-        MaxADManager.loadBannerIntoView(this,viewBinding.adContainer);
+        if (LSMKVUtil.getBoolean("loadad",true)){
+            MaxADManager.loadBannerIntoView(this,viewBinding.adContainer);
+        }
 
 
         packDetails = (StickerPacks) getIntent().getSerializableExtra("packDetails_value");
@@ -265,12 +267,11 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         });
 
 
-        MaxADManager.loadInterstitialBackAd();
+        MaxADManager.loadInterstitialBackAd(this);
         LSMKVUtil.put("PackImageDetailsBackAd",true);
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MaxADManager.loadInterstitialBackAd();
                 finish();
             }
         });
@@ -286,52 +287,91 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
     private void showRewardDialog(int intent) {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
         try {
-            if (intent % 2 == 0){ //偶数 不弹激励广告
+            int rewarDinter = LSMKVUtil.getInt("rewardinter",1);
+
+            if (LSMKVUtil.getBoolean("loadad",true)){
+                if (intent == 1){
+                    new AlertDialog.Builder(this)
+                            .setMessage("Watch an AD to unblock the content?")
+                            .setNegativeButton("Cancle", (dialog, which) -> {
+
+                            }).setPositiveButton("Watch ", (dialog, which) -> {
+                        try {
+                            showProgressDialog();
+                            MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                                @Override
+                                public void onRewardFail() {
+                                    dismissProgressDialog();
+                                }
+
+                                @Override
+                                public void onRewardShown() {
+                                    dismissProgressDialog();
+                                }
+
+                                @Override
+                                public void onRewarded() {
+                                    addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+                                }
+
+                                @Override
+                                public void onTimeOut() {
+                                    dismissProgressDialog();
+                                    addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+                                }
+                            });
+                        } catch (Exception e) {
+
+                        }
+
+                    }).setCancelable(false).show();
+
+                }else if (intent % (rewarDinter+ 1) != 1){ // 不弹激励广告
+                    addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+
+                }else { // 弹激励广告
+
+                    new AlertDialog.Builder(this)
+                            .setMessage("Watch an AD to unblock the content?")
+                            .setNegativeButton("Cancle", (dialog, which) -> {
+
+                            }).setPositiveButton("Watch ", (dialog, which) -> {
+                        try {
+                            showProgressDialog();
+                            MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                                @Override
+                                public void onRewardFail() {
+                                    dismissProgressDialog();
+                                }
+
+                                @Override
+                                public void onRewardShown() {
+                                    dismissProgressDialog();
+                                }
+
+                                @Override
+                                public void onRewarded() {
+                                    addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+                                }
+
+                                @Override
+                                public void onTimeOut() {
+                                    dismissProgressDialog();
+                                    addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+                                }
+                            });
+                        } catch (Exception e) {
+
+                        }
+
+                    }).setCancelable(false).show();
+                }
+            }else {
                 addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
-
-            }else { // 基数 弹激励广告
-
-                new AlertDialog.Builder(this)
-                        .setMessage("Watch an AD to unblock the content?")
-                        .setNegativeButton("Cancle", (dialog, which) -> {
-
-                        }).setPositiveButton("Watch ", (dialog, which) -> {
-                    try {
-                        showProgressDialog();
-                        MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
-                            @Override
-                            public void onRewardFail() {
-                                dismissProgressDialog();
-                            }
-
-                            @Override
-                            public void onRewardShown() {
-                                dismissProgressDialog();
-                            }
-
-                            @Override
-                            public void onRewarded() {
-                                addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
-                            }
-
-                            @Override
-                            public void onTimeOut() {
-                                dismissProgressDialog();
-                                addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
-                            }
-                        });
-                    } catch (Exception e) {
-
-                    }
-
-                }).setCancelable(false).show();
-
             }
 
-
-
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 

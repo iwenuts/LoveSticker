@@ -1,5 +1,6 @@
 package com.example.lovesticker.sticker.fragment;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -43,7 +44,7 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
     protected void initView() {
         viewBinding.loadingData.setVisibility(View.VISIBLE);
 
-        MaxADManager.loadInterstitialDetailAd();
+        MaxADManager.loadInterstitialDetailAd((AppCompatActivity) getActivity());
         LSMKVUtil.put("AnimationInterstitialAd",true);
         viewModel.requestInitialAllAnimatedData();
         initRefresh();
@@ -94,8 +95,9 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
     @Override
     public void onResume() {
         super.onResume();
-        if (LSMKVUtil.getBoolean("AnimationDetailsBackAd",false)){
-            MaxADManager.tryShowInterstitialBackAd();
+        if (LSMKVUtil.getBoolean("AnimationDetailsBackAd",false) &&
+                LSMKVUtil.getBoolean("loadad",true)){
+            MaxADManager.tryShowInterstitialBackAd((AppCompatActivity) getActivity());
             LSMKVUtil.put("AnimationDetailsBackAd",false);
         }
 

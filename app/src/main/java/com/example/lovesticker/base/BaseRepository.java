@@ -2,6 +2,7 @@ package com.example.lovesticker.base;
 
 import android.util.Log;
 
+import com.example.lovesticker.main.model.LoveStickerBean;
 import com.example.lovesticker.main.model.PackBean;
 import com.example.lovesticker.sticker.model.AllAnimatedBean;
 import com.example.lovesticker.sticker.model.AnimatedCategoriesBean;
@@ -80,7 +81,6 @@ public class BaseRepository {
     public PackBean getLocalPackBean(){
         return packBean;
     }
-
 
     public Call<PackBean> getPackBean(){
         Log.e("###", "getPackBean: ");
