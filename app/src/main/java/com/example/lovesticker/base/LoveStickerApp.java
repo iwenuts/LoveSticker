@@ -52,7 +52,7 @@ public class LoveStickerApp extends Application {
         // app event upload init
         LSEventUtil.init(applicationContext);
 
-        MaxADManager.enableDebugMaxAd(this);
+//        MaxADManager.enableDebugMaxAd(this);
 
         MaxADManager.initMaxAd(this);
 

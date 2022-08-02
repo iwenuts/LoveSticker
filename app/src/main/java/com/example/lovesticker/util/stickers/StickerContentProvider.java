@@ -90,8 +90,9 @@ public class StickerContentProvider extends ContentProvider {
         Hawk.init(getContext()).build();
 
         final String authority = BuildConfig.CONTENT_PROVIDER_AUTHORITY;
-        Log.e("###", "PackageName: " + Objects.requireNonNull(getContext()).getPackageName() );
-        Log.e("###", "authority: " + !authority.startsWith(Objects.requireNonNull(getContext()).getPackageName()) );
+
+//        Log.e("###", "PackageName: " + Objects.requireNonNull(getContext()).getPackageName() );
+//        Log.e("###", "authority: " + !authority.startsWith(Objects.requireNonNull(getContext()).getPackageName()) );
 
 //        if (!authority.startsWith(Objects.requireNonNull(getContext()).getPackageName())) {
 //            throw new IllegalStateException("your authority (" + authority + ") for the content provider should start with your package name: " + getContext().getPackageName());
@@ -112,8 +113,6 @@ public class StickerContentProvider extends ContentProvider {
                 MATCHER.addURI(authority, STICKERS_ASSET + "/" + stickerPack.identifier + "/" + sticker.imageFileName, STICKERS_ASSET_CODE);
             }
         }
-
-
 
         return true;
     }

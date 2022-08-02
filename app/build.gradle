@@ -27,15 +27,6 @@ android {
             abiFilters 'arm64-v8a','armeabi-v7a'
         }
 
-        def contentProviderAuthority = applicationId + ".stickercontentprovider"
-        // Creates a placeholder property to use in the manifest.
-        manifestPlaceholders =
-                [contentProviderAuthority: contentProviderAuthority]
-        // Adds a new field for the authority to the BuildConfig class.
-        buildConfigField("String",
-                "CONTENT_PROVIDER_AUTHORITY",
-                "\"${contentProviderAuthority}\"")
-
     }
 
 
@@ -53,7 +44,6 @@ android {
         if (isBundleRelease()) {
             println("bundle release apply")
 
-            apply plugin: 'com.google.gms.google-services'
             apply plugin: 'applovin-quality-service'
             applovin {
                 apiKey "iqDQ4XkBMEyaR_RP1VirnEN7vow7xTOpMH6mq5vEh2gwRS6fkQ-R47mNwAPmHqTEWmTiHpO_nCnKB_fmUkW9vF"
@@ -68,6 +58,16 @@ android {
             applicationId "com.example.lovesticker"
             versionCode 100
             versionName "1.0.0"
+
+            def contentProviderAuthority = applicationId + ".stickercontentprovider"
+            // Creates a placeholder property to use in the manifest.
+            manifestPlaceholders =
+                    [contentProviderAuthority: contentProviderAuthority]
+            // Adds a new field for the authority to the BuildConfig class.
+            buildConfigField("String",
+                    "CONTENT_PROVIDER_AUTHORITY",
+                    "\"${contentProviderAuthority}\"")
+
             buildConfigField('String', 'INTERSTITIAL_Detail', '"YOUR_INTERSTITIAL_ID"')
             buildConfigField('String', 'INTERSTITIAL_Back', '"YOUR_INTERSTITIAL_ID"')
             buildConfigField('String', 'MAX_REWARD', '"MAX_REWARD"')
@@ -79,8 +79,18 @@ android {
         publish{
             dimension "default"
             applicationId "wasticker.love.stickers.whatsapp.apps"
-            versionCode 100
-            versionName "1.0.0"
+            versionCode 102
+            versionName "1.0.2"
+
+            def contentProviderAuthority = applicationId + ".stickercontentprovider"
+            // Creates a placeholder property to use in the manifest.
+            manifestPlaceholders =
+                    [contentProviderAuthority: contentProviderAuthority]
+            // Adds a new field for the authority to the BuildConfig class.
+            buildConfigField("String",
+                    "CONTENT_PROVIDER_AUTHORITY",
+                    "\"${contentProviderAuthority}\"")
+
             buildConfigField('String', 'INTERSTITIAL_Detail', '"da0cc10bc8c33b26"')
             buildConfigField('String', 'INTERSTITIAL_Back', '"d33a8a3a0fa08431"')
             buildConfigField('String', 'MAX_REWARD', '"56b2008403200185"')
