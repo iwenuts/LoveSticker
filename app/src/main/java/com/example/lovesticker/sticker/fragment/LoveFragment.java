@@ -23,7 +23,6 @@ import com.example.lovesticker.sticker.adapter.LoveAdapter;
 import com.example.lovesticker.sticker.model.SingleAnimatedCategoriesBean;
 import com.example.lovesticker.sticker.viewmodel.LoveViewModel;
 import com.example.lovesticker.util.ads.MaxADManager;
-import com.example.lovesticker.util.inteface.ImageListener;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 
 import java.util.List;
@@ -34,7 +33,7 @@ public class LoveFragment extends Fragment {
     private String mLink;
     private LoveAdapter loveAdapter;
     private LoveViewModel viewModel;
-    private static ImageListener imageListener;
+
     private List<SingleAnimatedCategoriesBean.Postcards> mPostcards;
     private GridLayoutManager manager;
 
@@ -72,11 +71,6 @@ public class LoveFragment extends Fragment {
     }
 
 
-    public void setGetListener(ImageListener imageListener2){
-        imageListener = imageListener2;
-    }
-
-
     protected void initView() {
         if (getArguments() != null){
             MaxADManager.loadInterstitialDetailAd((AppCompatActivity) getActivity());
@@ -111,9 +105,6 @@ public class LoveFragment extends Fragment {
                     viewBinding.loveRecycler.setAdapter(loveAdapter);
 //                    imageListener.onImageClick(postcards);
 
-                    if (imageListener != null){
-                        imageListener.onImage(postcards);
-                    }
                 }
             }
         });

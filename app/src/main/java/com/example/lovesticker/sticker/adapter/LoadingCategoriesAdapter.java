@@ -23,10 +23,7 @@ import com.example.lovesticker.base.LoveStickerApp;
 import com.example.lovesticker.main.fragment.StickerFragment;
 import com.example.lovesticker.sticker.fragment.LoveFragment;
 import com.example.lovesticker.sticker.model.AnimatedCategoriesBean;
-import com.example.lovesticker.sticker.model.SingleAnimatedCategoriesBean;
-import com.example.lovesticker.util.constant.LSConstant;
-import com.example.lovesticker.util.inteface.ImageListener;
-import com.example.lovesticker.util.mmkv.LSMKVUtil;
+
 
 import java.util.List;
 

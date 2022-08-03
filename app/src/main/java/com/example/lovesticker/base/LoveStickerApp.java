@@ -46,17 +46,12 @@ public class LoveStickerApp extends Application {
         // mkv init
         LSMKVUtil.initMKV(applicationContext);
 
-        // Hawk
-//        Hawk.init(applicationContext).build();
-
-        // app event upload init
-        LSEventUtil.init(applicationContext);
-
 //        MaxADManager.enableDebugMaxAd(this);
 
         MaxADManager.initMaxAd(this);
 
-
+        // app event upload init
+        LSEventUtil.init(applicationContext);
 
         // logger preset
         initLogger();
@@ -71,12 +66,6 @@ public class LoveStickerApp extends Application {
 
     }
 
-//    public static SaveData getSaveData(){
-//        if (saveData == null){
-//            saveData = new SaveData();
-//        }
-//        return saveData;
-//    }
 
     private void initLogger() {
         FormatStrategy formatStrategy = PrettyFormatStrategy.newBuilder()

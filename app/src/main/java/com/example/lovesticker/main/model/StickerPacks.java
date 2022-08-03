@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.util.List;
 
 public class StickerPacks implements Serializable{
+    private String licenseAgreementWebsite;
+    private String privacyPolicyWebsite;
     private int id;
     private String title;
     private int isNew;
@@ -14,9 +16,6 @@ public class StickerPacks implements Serializable{
     private String publisher;
     private String trayImageFile;
     private String publisherWebsite;
-    private String privacyPolicyWebsite;
-    private String licenseAgreementWebsite;
-
 
     @SerializedName("stickers")
     private List<Stickers> stickersList;

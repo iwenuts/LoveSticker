@@ -14,7 +14,6 @@ import com.example.lovesticker.sticker.adapter.LoadingCategoriesAdapter;
 import com.example.lovesticker.sticker.fragment.LoveFragment;
 import com.example.lovesticker.sticker.model.AnimatedCategoriesBean;
 import com.example.lovesticker.sticker.model.SingleAnimatedCategoriesBean;
-import com.example.lovesticker.util.inteface.ImageListener;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.gyf.immersionbar.ImmersionBar;
 

@@ -20,11 +20,11 @@ public class AnimatedCategoriesBean {
     }
 
     public static class CategoriesData implements Serializable {
+        private String icon;
+        private String title;
         private int id;
         private String type;
         private String link;
-        private String icon;
-        private String title;
 
         public int getId() {
             return id;

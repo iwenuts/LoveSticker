@@ -1,12 +1,13 @@
 package com.example.lovesticker.main.model;
 
 public class LoveStickerBean {
+    private int rewardinter;
     private int uv;
     private String content;
     private String pkg;
     private Boolean isForce;
     private Boolean loadad;
-    private int rewardinter;
+
 
     public int getUv() {
         return uv;
