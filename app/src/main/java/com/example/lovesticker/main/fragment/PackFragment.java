@@ -1,8 +1,14 @@
 package com.example.lovesticker.main.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,16 +16,26 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.example.lovesticker.BuildConfig;
 import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseFragment;
 import com.example.lovesticker.databinding.FragmentPackBinding;
+import com.example.lovesticker.main.activity.CustomDialog;
+import com.example.lovesticker.main.activity.LoveStickerData;
+import com.example.lovesticker.main.activity.MainActivity;
 import com.example.lovesticker.main.adapter.PackAdapter;
+import com.example.lovesticker.main.model.LoveStickerBean;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.main.viewmodel.PackViewModel;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A simple {@link Fragment} subclass.

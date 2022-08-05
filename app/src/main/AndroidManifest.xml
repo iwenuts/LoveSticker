@@ -19,9 +19,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-
-        <activity android:name=".util.score.RateDialog" android:theme="@style/dialog_style"/>
-        <activity android:name=".mine.activity.SetUpActivity"/>
+        <activity android:name=".main.activity.CustomDialog"></activity>
+        <activity
+            android:name=".util.score.RateDialog"
+            android:theme="@style/dialog_style" />
+        <activity android:name=".mine.activity.SetUpActivity" />
         <activity android:name=".sticker.activity.LoadingCategoriesActivity" />
         <activity android:name=".details.activity.SingleAnimatedDetailsActivity" />
         <activity android:name=".details.activity.AnimationDetailsActivity" />
@@ -41,19 +43,11 @@
             android:enabled="true"
             android:exported="true"
             android:readPermission="com.whatsapp.sticker.READ" />
-
         <provider
             android:name="com.google.android.gms.ads.MobileAdsInitProvider"
             android:authorities="${applicationId}.mobileadsinitprovider"
             android:exported="false"
             tools:node="remove" />
-
     </application>
-
-<!--    to be able to query the whitelist status in WhatsApp-->
-<!--    <queries>-->
-<!--        <package android:name="com.whatsapp" />-->
-<!--        <package android:name="com.whatsapp.w4b" />-->
-<!--    </queries>-->
 
 </manifest>

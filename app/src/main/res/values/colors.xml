@@ -16,4 +16,5 @@
     <color name="loading_color">#6A6A6A</color>
     <color name="collected_bg_color">#83C73B</color>
     <color name="gray">#808080</color>
+    <color name="upgrade_text">#757575</color>
 </resources>

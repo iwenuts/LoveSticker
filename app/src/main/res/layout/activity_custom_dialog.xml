@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    tools:context=".main.activity.CustomDialog">
+
+    <ImageView
+        android:id="@+id/upgrade_img"
+        android:layout_width="250dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="5dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/upgrade_img"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/upgrade_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New version"
+        android:textSize="28sp"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@+id/upgrade_img"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <TextView
+        android:id="@+id/upgrade_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:gravity="center|left"
+        android:text="The lastest version 1.2.2,Update July 07，2022"
+        android:textSize="22sp"
+        android:textColor="@color/upgrade_text"
+        app:layout_constraintTop_toBottomOf="@+id/upgrade_title"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+
+    <ImageView
+        android:id="@+id/now_update"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="15dp"
+        android:src="@drawable/now_update_bt"
+        android:scaleType="fitXY"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/upgrade_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <ImageView
+        android:id="@+id/later"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="15dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/later_bt"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="@+id/upgrade_content"
+        app:layout_constraintTop_toBottomOf="@+id/upgrade_content" />
+
+    <ImageView
+        android:id="@+id/update"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/upgrade_bt"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@+id/later"
+        app:layout_constraintRight_toRightOf="@+id/upgrade_content"
+        app:layout_constraintTop_toTopOf="@+id/later" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

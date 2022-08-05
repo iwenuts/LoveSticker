@@ -30,7 +30,7 @@ public class SelectPicPopupWindow extends PopupWindow {
         //设置SelectPicPopupWindow的View
         this.setContentView(menuview);
         //设置SelectPicPopupWindow**弹出窗体的宽
-        this.setWidth(ViewGroup.LayoutParams.FILL_PARENT);
+        this.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
         //设置SelectPicPopupWindow弹出窗体的高
         //修改高度显示，解决被手机底部虚拟键挡住的问题
         this.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);

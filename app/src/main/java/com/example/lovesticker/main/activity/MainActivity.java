@@ -1,12 +1,20 @@
 package com.example.lovesticker.main.activity;
 
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
 import androidx.navigation.NavGraphNavigator;
@@ -17,6 +25,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.lovesticker.BuildConfig;
 import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseViewModel;
@@ -26,6 +35,7 @@ import com.example.lovesticker.main.fragment.MineFragment;
 import com.example.lovesticker.main.fragment.PackFragment;
 import com.example.lovesticker.main.fragment.StickerFragment;
 import com.example.lovesticker.main.model.LoveStickerBean;
+import com.example.lovesticker.main.viewmodel.MainViewModel;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -65,17 +75,48 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
 //            if (item.isChecked()){
 //                return true;
 //            }
-            return  true;
+            return true;
         });
 
         LoveStickerData.getInstance().getLoveStickerData().enqueue(new Callback<LoveStickerBean>() {
             @Override
             public void onResponse(Call<LoveStickerBean> call, Response<LoveStickerBean> response) {
-                LoveStickerBean loveStickerBean = response.body();
-                if (loveStickerBean != null){
-                    LSMKVUtil.put("loadad",loveStickerBean.getLoadad());
-                    LSMKVUtil.put("rewardinter",loveStickerBean.getRewardinter());
 
+                LoveStickerBean loveStickerBean = response.body();
+
+                if (loveStickerBean != null) {
+
+//                    Log.e("###",  "BuildConfig : " + BuildConfig.VERSION_CODE + " " + "getUv: "+  loveStickerBean.getUv() );
+
+                    if (BuildConfig.VERSION_CODE < loveStickerBean.getUv()) {
+                        Log.e("###", "loveStickerBean " );
+                        CustomDialog customDialog = new CustomDialog(MainActivity.this);
+                        customDialog.setTitle("New version");
+                        customDialog.setMessage(loveStickerBean.getContent());
+                        customDialog.setCancel("", new CustomDialog.IOnCancelListener() {
+                            @Override
+                            public void onCancel(CustomDialog dialog) {
+                                Toast.makeText(MainActivity.this, "Cancellation successful！", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        customDialog.setConfirm("", dialog -> {
+                            String packageName = TextUtils.isEmpty(loveStickerBean.getPkg())
+                                    ? getPackageName()
+                                    : loveStickerBean.getPkg();
+
+                            gotoGooglePlayCBC(MainActivity.this, packageName);
+
+                        });
+                        customDialog.setNowUpDate(dialog -> {
+                            String packageName = TextUtils.isEmpty(loveStickerBean.getPkg())
+                                    ? getPackageName()
+                                    : loveStickerBean.getPkg();
+
+                            gotoGooglePlayCBC(MainActivity.this, packageName);
+                        });
+                        customDialog.setCanceledOnTouchOutside(false);
+                        customDialog.show();
+                    }
                 }
             }
 
@@ -85,14 +126,12 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
             }
         });
 
-
-
     }
-
 
 
     @Override
     protected void dataObserver() {
+
 
     }
 
@@ -101,6 +140,26 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
 
     }
 
+    public void gotoGooglePlayCBC(Context context, String packageName) {
+        if (TextUtils.isEmpty(packageName)) return;
+        try {
+            Intent launchIntent = new Intent(Intent.ACTION_VIEW);
+            launchIntent.setPackage("com.android.vending");
+            launchIntent.setData(Uri.parse("market://details?id=" + packageName));
+            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(launchIntent);
+        } catch (ActivityNotFoundException ee) {
+            try {
+                Intent launchIntent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse("https://play.google.com/store/apps/details?id=" + packageName));
+                launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                context.startActivity(launchIntent);
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     private NavGraph initNavGraph(NavigatorProvider provider, FixFragmentNavigator fragmentNavigator) {
         NavGraph navGraph = new NavGraph(new NavGraphNavigator(provider));
@@ -126,7 +185,5 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
         return navGraph;
 
     }
-
-
 
 }
