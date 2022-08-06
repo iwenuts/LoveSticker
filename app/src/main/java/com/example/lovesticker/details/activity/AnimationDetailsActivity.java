@@ -105,27 +105,6 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
 
                 }else {  //点击未收藏变收藏
-                    RateController.getInstance().tryRateFinish(AnimationDetailsActivity.this, new RateDialog.RatingClickListener() {
-                        @Override
-                        public void onClickFiveStart() {
-
-                        }
-
-                        @Override
-                        public void onClick1To4Start() {
-
-                        }
-
-                        @Override
-                        public void onClickReject() {
-
-                        }
-
-                        @Override
-                        public void onClickCancel() {
-
-                        }
-                    });
 
                     viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
                     viewBinding.collectedImage.setImageResource(R.drawable.collected);
@@ -146,48 +125,19 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RateController.getInstance().tryRateFinish(AnimationDetailsActivity.this, new RateDialog.RatingClickListener() {
-                    @Override
-                    public void onClickFiveStart() {
-                        if (detailsImage != null){
-                            showProgressDialog();
-                            saveLocal(LSConstant.image_gif_uri + detailsImage);
+                if (LSMKVUtil.getBoolean("loadad",true)){
+                    rewardInterval = rewardInterval + 1;
+                    showRewardDialog(rewardInterval);
+                }else {
+                    if (detailsImage != null){
+                        showProgressDialog();
+                        saveLocal(LSConstant.image_gif_uri + detailsImage);
 
 //                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
-                        }
-
                     }
 
-                    @Override
-                    public void onClick1To4Start() {
-                        if (detailsImage != null){
-                            showProgressDialog();
-                            saveLocal(LSConstant.image_gif_uri + detailsImage);
+                }
 
-//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
-                        }
-
-                    }
-
-                    @Override
-                    public void onClickReject() {
-                        rewardInterval = rewardInterval + 1;
-                        showRewardDialog(rewardInterval);
-
-                    }
-
-                    @Override
-                    public void onClickCancel() {
-                        if (detailsImage != null){
-                            showProgressDialog();
-                            saveLocal(LSConstant.image_gif_uri + detailsImage);
-
-//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
-                        }
-
-                    }
-
-                });
             }
         });
 
@@ -207,9 +157,7 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
         try {
             int rewarDinter = LSMKVUtil.getInt("rewardinter",1);
 
-            if (LSMKVUtil.getBoolean("loadad",true)){
-                if (intent == 1){
-
+             if (intent == 1){
                     new AlertDialog.Builder(this)
                             .setMessage("Watch an AD to unblock the content?")
                             .setNegativeButton("Cancle", (dialog, which) -> {
@@ -307,29 +255,13 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
                         } catch (Exception e) {
 
                         }
-
                     }).setCancelable(false).show();
                 }
-            }else {
-                if (detailsImage != null){
-                    showProgressDialog();
-                    saveLocal(LSConstant.image_gif_uri + detailsImage);
-
-//                     getImgCachePath(LSConstant.image_gif_uri + detailsImage,AnimationDetailsActivity.this);
-                }
-            }
-
-
-
 
         } catch (Exception e) {
 
         }
     }
-
-
-
-
 
     @Override
     protected void dataObserver() {
@@ -414,6 +346,29 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
         if (msg.what == 0) {
             shareAny(getExternalFilesDir(null).getAbsolutePath() + File.separator + "sticker" + File.separator + detailsImage);
             dismissProgressDialog();
+
+            RateController.getInstance().tryRateFinish(AnimationDetailsActivity.this, new RateDialog.RatingClickListener() {
+
+                @Override
+                public void onClickFiveStart() {
+
+                }
+
+                @Override
+                public void onClick1To4Start() {
+
+                }
+
+                @Override
+                public void onClickReject() {
+
+                }
+
+                @Override
+                public void onClickCancel() {
+
+                }
+            });
         }
         return false;
     });

@@ -84,12 +84,14 @@ public class AnimationAdapter extends RecyclerView.Adapter<AnimationAdapter.View
         Log.e("###", "AnimationAdapter position: " + position);
 
         if (position == 6){
-            holder.frameLayout.setVisibility(View.VISIBLE);
-            holder.img.setVisibility(View.GONE);
             if (LSMKVUtil.getBoolean("loadad",true)){
+                holder.frameLayout.setVisibility(View.VISIBLE);
+                holder.img.setVisibility(View.GONE);
                 MaxADManager.loadMrecIntoView((AppCompatActivity) activity,holder.frameLayout);
+            }else {
+                holder.frameLayout.setVisibility(View.GONE);
+                holder.img.setVisibility(View.VISIBLE);
             }
-
 
         }else {
             holder.frameLayout.setVisibility(View.GONE);

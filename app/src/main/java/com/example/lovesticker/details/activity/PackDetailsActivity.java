@@ -114,7 +114,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         if (stickerPacks != null && stickerPackNumber != 0){
             viewBinding.packTitle.setText(stickerPacks.getTitle());
 
-            Log.e("###", "imageitem: " + stickerPacks.getStickersList().get(0).getImage());
+//            Log.e("###", "imageitem: " + stickerPacks.getStickersList().get(0).getImage());
             //Adapter
             GridLayoutManager manager = new GridLayoutManager(this,2);
             viewBinding.packImageDetails.setLayoutManager(manager);
@@ -157,29 +157,15 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             @Override
             public void onClick(View v) {
 //                AddStickerPackActivity.addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
-                RateController.getInstance().tryRateFinish(PackDetailsActivity.this, new RateDialog.RatingClickListener() {
-                    @Override
-                    public void onClickFiveStart() {
-                        addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
-                    }
 
-                    @Override
-                    public void onClick1To4Start() {
-                        addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
-                    }
+                if (LSMKVUtil.getBoolean("loadad",true)){
+                    rewardInterval = rewardInterval + 1;
+                    showRewardDialog(rewardInterval);
 
-                    @Override
-                    public void onClickReject() {
-                        rewardInterval = rewardInterval + 1;
-                        showRewardDialog(rewardInterval);
+                }else {
+                    addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
+                }
 
-                    }
-
-                    @Override
-                    public void onClickCancel() {
-                        addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
-                    }
-                });
             }
         });
 
@@ -205,10 +191,9 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     private void showRewardDialog(int intent) {  //间隔出现激励弹窗 ex:第一次出现，第二次不出现......
         try {
             int rewarDinter = LSMKVUtil.getInt("rewardinter",1);
+//            Log.e("###", "rewardinter: " + rewarDinter);
 
-            if (LSMKVUtil.getBoolean("loadad",true)){
                 if (intent == 1){
-
                     new AlertDialog.Builder(this)
                             .setMessage("Watch an AD to unblock the content?")
                             .setNegativeButton("Cancle", (dialog, which) -> {
@@ -284,10 +269,6 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
                     }).setCancelable(false).show();
                 }
-
-            }else {
-                addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
-            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -443,7 +424,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     protected void addStickerPackToWhatsApp(String identifier, String stickerPackName) {
         try {
             //if neither WhatsApp Consumer or WhatsApp Business is installed, then tell user to install the apps.
-            if (!WhitelistCheck.isWhatsAppConsumerAppInstalled(getPackageManager()) && !WhitelistCheck.isWhatsAppSmbAppInstalled(getPackageManager())) {
+            if (!WhitelistCheck.isWhatsAppConsumerAppInstalled(getPackageManager()) || !WhitelistCheck.isWhatsAppSmbAppInstalled(getPackageManager())) {
                 Toast.makeText(this, R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
                 return;
             }
@@ -470,29 +451,35 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                     popupWindowSubtitle.setText("Almost completed…");
                 }, 1000);
 
-
                 launchIntentToAddPackToChooser(identifier, stickerPackName);
+
             } else if (!stickerPackWhitelistedInWhatsAppConsumer) {
                 launchIntentToAddPackToSpecificPackage(identifier, stickerPackName, WhitelistCheck.CONSUMER_WHATSAPP_PACKAGE_NAME);
             } else if (!stickerPackWhitelistedInWhatsAppSmb) {
                 launchIntentToAddPackToSpecificPackage(identifier, stickerPackName, WhitelistCheck.SMB_WHATSAPP_PACKAGE_NAME);
             } else {
-                Toast.makeText(this, R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.not_whitelisted, Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             Log.e("###", "error adding sticker pack to WhatsApp", e);
-            Toast.makeText(this, R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.error_adding, Toast.LENGTH_LONG).show();
         }
 
     }
 
     private void launchIntentToAddPackToSpecificPackage(String identifier, String stickerPackName, String whatsappPackageName) {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            popupWindowImg.setImageResource(R.drawable.finish_add);
+            popupWindowHeadline.setText("Add to WhatsApp");
+            popupWindowSubtitle.setText("Done！");
+        }, 1000);
+
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
         intent.setPackage(whatsappPackageName);
         try {
             startActivityForResult(intent, LSConstant.ADD_PACK);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.not_add_package, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -508,7 +495,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         try {
             startActivityForResult(Intent.createChooser(intent, getString(R.string.add_to_whatsapp)), LSConstant.ADD_PACK);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.not_add_package_selector, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -529,6 +516,29 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         if (requestCode == LSConstant.ADD_PACK) {
             if (resultCode == Activity.RESULT_CANCELED) {
                 if (data != null) {
+                    RateController.getInstance().tryRateFinish(PackDetailsActivity.this, new RateDialog.RatingClickListener(){
+
+                        @Override
+                        public void onClickFiveStart() {
+
+                        }
+
+                        @Override
+                        public void onClick1To4Start() {
+
+                        }
+
+                        @Override
+                        public void onClickReject() {
+
+                        }
+
+                        @Override
+                        public void onClickCancel() {
+
+                        }
+                    }); //评分
+
                     final String validationError = data.getStringExtra("validation_error");
                     if (validationError != null) {
                         if (BuildConfig.DEBUG) {

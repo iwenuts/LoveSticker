@@ -6,24 +6,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
 import androidx.navigation.NavGraphNavigator;
-import androidx.navigation.Navigation;
 import androidx.navigation.NavigatorProvider;
 import androidx.navigation.fragment.FragmentNavigator;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import com.example.lovesticker.BuildConfig;
 import com.example.lovesticker.R;
@@ -35,10 +26,7 @@ import com.example.lovesticker.main.fragment.MineFragment;
 import com.example.lovesticker.main.fragment.PackFragment;
 import com.example.lovesticker.main.fragment.StickerFragment;
 import com.example.lovesticker.main.model.LoveStickerBean;
-import com.example.lovesticker.main.viewmodel.MainViewModel;
-import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.gyf.immersionbar.ImmersionBar;
 
 import retrofit2.Call;
@@ -85,11 +73,12 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
                 LoveStickerBean loveStickerBean = response.body();
 
                 if (loveStickerBean != null) {
-
+//                        Log.e("###", "loveStickerBean " );
 //                    Log.e("###",  "BuildConfig : " + BuildConfig.VERSION_CODE + " " + "getUv: "+  loveStickerBean.getUv() );
+                    LSMKVUtil.put("rewardinter",loveStickerBean.getRewardinter());
+                    LSMKVUtil.put("loadad",loveStickerBean.getLoadad());
 
                     if (BuildConfig.VERSION_CODE < loveStickerBean.getUv()) {
-                        Log.e("###", "loveStickerBean " );
                         CustomDialog customDialog = new CustomDialog(MainActivity.this);
                         customDialog.setTitle("New version");
                         customDialog.setMessage(loveStickerBean.getContent());

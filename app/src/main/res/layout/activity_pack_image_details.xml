@@ -130,7 +130,7 @@
             android:layout_height="match_parent"
             android:layout_marginVertical="10dp"
             android:layout_marginLeft="20dp"
-            android:text="@string/send_whatsApp"
+            android:text="@string/add_to_whatsapp"
             android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold"

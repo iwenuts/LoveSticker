@@ -77,17 +77,19 @@ public class LoveAdapter extends RecyclerView.Adapter<LoveAdapter.ViewHolder> {
         onPositionClickedListener.onPositionClicked(position);
 
         if (postcards != null){
-
             if (position == 6){
-                holder.frameLayout.setVisibility(View.VISIBLE);
-                holder.img.setVisibility(View.GONE);
                 if (LSMKVUtil.getBoolean("loadad",true)){
+                    holder.frameLayout.setVisibility(View.VISIBLE);
+                    holder.img.setVisibility(View.GONE);
                     MaxADManager.loadMrecIntoView((AppCompatActivity) activity,holder.frameLayout);
+                }else {
+                    holder.frameLayout.setVisibility(View.GONE);
+                    holder.img.setVisibility(View.VISIBLE);
                 }
 
             }else {
                 holder.frameLayout.setVisibility(View.GONE);
-                holder.img.setVisibility(View.VISIBLE);
+                holder.img.setVisibility(View.GONE);
             }
 
             String imageJPG = postcards.getImage().replaceAll("gif","jpg");

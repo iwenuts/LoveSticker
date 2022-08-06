@@ -36,7 +36,7 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
     private StickerPacks stickerPacks;
     private OnItemClickListener listener;
 
-    public PackAdapter(List<StickerPacks> allStickerPacks, PackViewModel packViewModel, Context context,Activity activity) {
+    public PackAdapter(List<StickerPacks> allStickerPacks, PackViewModel packViewModel, Context context, Activity activity) {
         this.allStickerPacks = allStickerPacks;
         this.packViewModel = packViewModel;
         this.context = context;
@@ -50,8 +50,9 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
         TextView packNumber;
         LinearLayout packPackage;
         ImageView newImage;
-        ImageView img1,img2,img3,img4;
+        ImageView img1, img2, img3, img4;
         FrameLayout frameLayout;
+
         public ViewHolder(@NonNull View view) {
             super(view);
             itemName = view.findViewById(R.id.item_name);
@@ -67,12 +68,12 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
     }
 
 
-    public interface OnItemClickListener{
+    public interface OnItemClickListener {
         void onItemClick(int itemPosition);
 
     }
 
-    private void setItemListener(OnItemClickListener itemListener){
+    private void setItemListener(OnItemClickListener itemListener) {
         this.listener = listener;
     }
 
@@ -80,7 +81,7 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.pack_item,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.pack_item, parent, false);
         ViewHolder holder = new ViewHolder(view);
 
         holder.packPackage.setOnClickListener(new View.OnClickListener() {
@@ -90,7 +91,7 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
 //                Log.e("###", "onClick: " + holder.getAdapterPosition());
                 Intent intent = new Intent(activity, PackDetailsActivity.class);
                 intent.putExtra("stickerPack_value", (Serializable) allStickerPacks.get(holder.getAdapterPosition()));
-                intent.putExtra("stickerPack_number",packViewModel.getEachPackNumber().get(holder.getAdapterPosition()) );
+                intent.putExtra("stickerPack_number", packViewModel.getEachPackNumber().get(holder.getAdapterPosition()));
                 context.startActivity(intent);
             }
         });
@@ -102,24 +103,25 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         stickerPacks = allStickerPacks.get(position);  //返回stickerPacks里面的数据
 
-        if (position == 3){
-            holder.frameLayout.setVisibility(View.VISIBLE);
-            if (LSMKVUtil.getBoolean("loadad",true)){
-                MaxADManager.loadMrecIntoView((AppCompatActivity) activity,holder.frameLayout);
+        if (position == 3) {
+            if (LSMKVUtil.getBoolean("loadad", true)) {
+                holder.frameLayout.setVisibility(View.VISIBLE);
+                MaxADManager.loadMrecIntoView((AppCompatActivity) activity, holder.frameLayout);
+            }else {
+                holder.frameLayout.setVisibility(View.GONE);
             }
 
-        }else {
+        } else {
             holder.frameLayout.setVisibility(View.GONE);
         }
-
 
 
         holder.itemName.setText(stickerPacks.getTitle());
 
 
-        if (stickerPacks.getIsNew() == 1){
+        if (stickerPacks.getIsNew() == 1) {
             holder.newImage.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             holder.newImage.setVisibility(View.GONE);
         }
 
@@ -127,7 +129,7 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
         holder.packNumber.setText(packViewModel.getEachPackNumber().get(position) + " Stickers");
 
 
-        if (stickerPacks.getStickersList().size() != 0){
+        if (stickerPacks.getStickersList().size() != 0) {
             Glide.with(context)
                     .load(LSConstant.image_uri + stickerPacks.getStickersList().get(0).getImage())
                     .into(holder.img1);

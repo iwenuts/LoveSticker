@@ -82,12 +82,15 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if (position == 6){
-                    return 2;
+                if (LSMKVUtil.getBoolean("loadad",true)){
+                    if (position == 6){
+                        return 2;
+                    }else {
+                        return 1;
+                    }
                 }else {
                     return 1;
                 }
-
             }
         });
     };

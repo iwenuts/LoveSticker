@@ -82,14 +82,14 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         Log.e("###", "PackImageDetails onCreate ");
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
 
-        if (LSMKVUtil.getBoolean("PackDetailsInterstitialAd",false) &&
-                LSMKVUtil.getBoolean("loadad",true)){
+        if (LSMKVUtil.getBoolean("PackDetailsInterstitialAd", false) &&
+                LSMKVUtil.getBoolean("loadad", true)) {
             MaxADManager.tryShowInterstitialDetailAd(this);
-            LSMKVUtil.put("PackDetailsInterstitialAd",true);
+            LSMKVUtil.put("PackDetailsInterstitialAd", true);
         }
 
-        if (LSMKVUtil.getBoolean("loadad",true)){
-            MaxADManager.loadBannerIntoView(this,viewBinding.adContainer);
+        if (LSMKVUtil.getBoolean("loadad", true)) {
+            MaxADManager.loadBannerIntoView(this, viewBinding.adContainer);
         }
 
 
@@ -108,7 +108,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             viewBinding.stickerTitle.setText(packDetails.getTitle());
 
 
-            if (LSMKVUtil.getBoolean("IsStickerDetailsClear",false)){
+            if (LSMKVUtil.getBoolean("IsStickerDetailsClear", false)) {
                 sticker.clear();
             }
 
@@ -121,60 +121,59 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
     }
 
 
-
     @Override
     protected void initClickListener() {
 
-            viewBinding.previousPage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (currentPosition > 0){
-                        minusPosition = currentPosition -1;
+        viewBinding.previousPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentPosition > 0) {
+                    minusPosition = currentPosition - 1;
 
-                        Glide.with(PackImageDetailsActivity.this)
-                                .load(LSConstant.image_uri + packDetails.getStickersList().get(minusPosition).getImage())
-                                .into(viewBinding.detailsImg);
+                    Glide.with(PackImageDetailsActivity.this)
+                            .load(LSConstant.image_uri + packDetails.getStickersList().get(minusPosition).getImage())
+                            .into(viewBinding.detailsImg);
 
-                        currentPosition = minusPosition;
-                    }else{
-                        Glide.with(PackImageDetailsActivity.this)
-                                .load(LSConstant.image_uri + packDetails.getStickersList().get(0).getImage())
-                                .into(viewBinding.detailsImg);
-                    }
-
-
+                    currentPosition = minusPosition;
+                } else {
+                    Glide.with(PackImageDetailsActivity.this)
+                            .load(LSConstant.image_uri + packDetails.getStickersList().get(0).getImage())
+                            .into(viewBinding.detailsImg);
                 }
-            });
 
 
-            viewBinding.nextPage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (currentPosition < stickerPackNumber -1){
-                        plusPosition = currentPosition +1;
+            }
+        });
 
-                        Glide.with(PackImageDetailsActivity.this)
-                                .load(LSConstant.image_uri + packDetails.getStickersList().get(plusPosition).getImage())
-                                .into(viewBinding.detailsImg);
 
-                        currentPosition = plusPosition;
+        viewBinding.nextPage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentPosition < stickerPackNumber - 1) {
+                    plusPosition = currentPosition + 1;
 
-                    }else {
-                        Glide.with(PackImageDetailsActivity.this)
-                                .load(LSConstant.image_uri + packDetails.getStickersList().get(stickerPackNumber -1).getImage())
-                                .into(viewBinding.detailsImg);
-                    }
+                    Glide.with(PackImageDetailsActivity.this)
+                            .load(LSConstant.image_uri + packDetails.getStickersList().get(plusPosition).getImage())
+                            .into(viewBinding.detailsImg);
 
+                    currentPosition = plusPosition;
+
+                } else {
+                    Glide.with(PackImageDetailsActivity.this)
+                            .load(LSConstant.image_uri + packDetails.getStickersList().get(stickerPackNumber - 1).getImage())
+                            .into(viewBinding.detailsImg);
                 }
-            });
 
-        Log.e("###", "querySavePackGson: "+ InvokesData.getInvokesData(PackImageDetailsActivity.this).querySavePackGson(packDetails.getId()) );
+            }
+        });
 
-        if (!InvokesData.getInvokesData(PackImageDetailsActivity.this).querySavePackGson(packDetails.getId())){
+        Log.e("###", "querySavePackGson: " + InvokesData.getInvokesData(PackImageDetailsActivity.this).querySavePackGson(packDetails.getId()));
+
+        if (!InvokesData.getInvokesData(PackImageDetailsActivity.this).querySavePackGson(packDetails.getId())) {
             viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
             viewBinding.collectedImage.setImageResource(R.drawable.collected);
 
-        }else {
+        } else {
             viewBinding.isCollected.setBackgroundResource(R.drawable.not_collected_bg);
             viewBinding.collectedImage.setImageResource(R.drawable.not_collected);
         }
@@ -186,46 +185,25 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 //                Log.e("###", "onClick: "+ viewBinding.collectedImage.getDrawable().equals(getResources().getDrawable(R.drawable.collected)) );
 
                 if (viewBinding.collectedImage.getDrawable().getConstantState().equals
-                        (getResources().getDrawable(R.drawable.collected).getConstantState())){  //点击收藏变未收藏
+                        (getResources().getDrawable(R.drawable.collected).getConstantState())) {  //点击收藏变未收藏
 
                     viewBinding.isCollected.setBackgroundResource(R.drawable.not_collected_bg);
                     viewBinding.collectedImage.setImageResource(R.drawable.not_collected);
                     Log.e("###", "点击收藏变未收藏");
 
-                    if (!InvokesData.getInvokesData(PackImageDetailsActivity.this).querySavePackGson(packDetails.getId())){
+                    if (!InvokesData.getInvokesData(PackImageDetailsActivity.this).querySavePackGson(packDetails.getId())) {
 //                        Log.e("###", "delete" );
                         InvokesData.getInvokesData(PackImageDetailsActivity.this).deleteSavePacks(gson.toJson(packDetails));
                     }
 
-                }else {  //点击未收藏变收藏
-                    RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener() {
-                        @Override
-                        public void onClickFiveStart() {
-
-                        }
-
-                        @Override
-                        public void onClick1To4Start() {
-
-                        }
-
-                        @Override
-                        public void onClickReject() {
-
-                        }
-
-                        @Override
-                        public void onClickCancel() {
-
-                        }
-                    });
+                } else {  //点击未收藏变收藏
 
                     viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
                     viewBinding.collectedImage.setImageResource(R.drawable.collected);
                     Log.e("###", "点击未收藏变收藏");
 
                     InvokesData.getInvokesData(PackImageDetailsActivity.this).insertPackData(
-                            new SaveData(packDetails.getId(),gson.toJson(packDetails)));
+                            new SaveData(packDetails.getId(), gson.toJson(packDetails)));
 
                 }
 
@@ -236,39 +214,19 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener() {
-                    @Override
-                    public void onClickFiveStart() {
-                        addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
-                    }
+                if (LSMKVUtil.getBoolean("loadad", true)) {
+                    rewardInterval = rewardInterval + 1;
+                    showRewardDialog(rewardInterval);
 
-                    @Override
-                    public void onClick1To4Start() {
-                        addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
-                    }
-
-                    @Override
-                    public void onClickReject() {
-                        rewardInterval = rewardInterval + 1;
-                        showRewardDialog(rewardInterval);
-
-
-//                        addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
-                    }
-
-                    @Override
-                    public void onClickCancel() {
-                        addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
-                    }
-                });
-
-
+                } else {
+                    addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
+                }
             }
         });
 
 
         MaxADManager.loadInterstitialBackAd(this);
-        LSMKVUtil.put("PackImageDetailsBackAd",true);
+        LSMKVUtil.put("PackImageDetailsBackAd", true);
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -287,88 +245,85 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
     private void showRewardDialog(int intent) {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
         try {
-            int rewarDinter = LSMKVUtil.getInt("rewardinter",1);
+            int rewarDinter = LSMKVUtil.getInt("rewardinter", 1);
 
-            if (LSMKVUtil.getBoolean("loadad",true)){
-                if (intent == 1){
-                    new AlertDialog.Builder(this)
-                            .setMessage("Watch an AD to unblock the content?")
-                            .setNegativeButton("Cancle", (dialog, which) -> {
+            if (intent == 1) {
+                new AlertDialog.Builder(this)
+                        .setMessage("Watch an AD to unblock the content?")
+                        .setNegativeButton("Cancle", (dialog, which) -> {
 
-                            }).setPositiveButton("Watch ", (dialog, which) -> {
-                        try {
-                            showProgressDialog();
-                            MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
-                                @Override
-                                public void onRewardFail() {
-                                    dismissProgressDialog();
-                                }
+                        }).setPositiveButton("Watch ", (dialog, which) -> {
+                    try {
+                        showProgressDialog();
+                        MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                            @Override
+                            public void onRewardFail() {
+                                dismissProgressDialog();
+                            }
 
-                                @Override
-                                public void onRewardShown() {
-                                    dismissProgressDialog();
-                                }
+                            @Override
+                            public void onRewardShown() {
+                                dismissProgressDialog();
+                            }
 
-                                @Override
-                                public void onRewarded() {
-                                    addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
-                                }
+                            @Override
+                            public void onRewarded() {
+                                addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
+                            }
 
-                                @Override
-                                public void onTimeOut() {
-                                    dismissProgressDialog();
-                                    addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
-                                }
-                            });
-                        } catch (Exception e) {
+                            @Override
+                            public void onTimeOut() {
+                                dismissProgressDialog();
+                                addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
+                            }
+                        });
+                    } catch (Exception e) {
 
-                        }
+                    }
 
-                    }).setCancelable(false).show();
+                }).setCancelable(false).show();
 
-                }else if (intent % (rewarDinter+ 1) != 1){ // 不弹激励广告
-                    addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+            } else if (intent % (rewarDinter + 1) != 1) { // 不弹激励广告
+                addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
 
-                }else { // 弹激励广告
+            } else { // 弹激励广告
 
-                    new AlertDialog.Builder(this)
-                            .setMessage("Watch an AD to unblock the content?")
-                            .setNegativeButton("Cancle", (dialog, which) -> {
+                new AlertDialog.Builder(this)
+                        .setMessage("Watch an AD to unblock the content?")
+                        .setNegativeButton("Cancle", (dialog, which) -> {
 
-                            }).setPositiveButton("Watch ", (dialog, which) -> {
-                        try {
-                            showProgressDialog();
-                            MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
-                                @Override
-                                public void onRewardFail() {
-                                    dismissProgressDialog();
-                                }
+                        }).setPositiveButton("Watch ", (dialog, which) -> {
+                    try {
+                        showProgressDialog();
+                        MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                            @Override
+                            public void onRewardFail() {
+                                dismissProgressDialog();
+                            }
 
-                                @Override
-                                public void onRewardShown() {
-                                    dismissProgressDialog();
-                                }
+                            @Override
+                            public void onRewardShown() {
+                                dismissProgressDialog();
+                            }
 
-                                @Override
-                                public void onRewarded() {
-                                    addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
-                                }
+                            @Override
+                            public void onRewarded() {
+                                addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
+                            }
 
-                                @Override
-                                public void onTimeOut() {
-                                    dismissProgressDialog();
-                                    addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
-                                }
-                            });
-                        } catch (Exception e) {
+                            @Override
+                            public void onTimeOut() {
+                                dismissProgressDialog();
+                                addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
+                            }
+                        });
+                    } catch (Exception e) {
 
-                        }
+                    }
 
-                    }).setCancelable(false).show();
-                }
-            }else {
-                addStickerPackToWhatsApp(packDetails.getIdentifier(),packDetails.getTitle());
+                }).setCancelable(false).show();
             }
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -376,13 +331,12 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
     }
 
 
-
     @Override
     protected void dataObserver() {
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    private void AddSendStatus(){
+    private void AddSendStatus() {
         //弹窗出现外部为阴影
         WindowManager.LayoutParams attributes = getWindow().getAttributes();
         attributes.alpha = 0.5f;
@@ -391,7 +345,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         //PopupWindow
         addSendPopupWindow = new PopupWindow();
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View menuview = inflater.inflate(R.layout.item_send_status,null);
+        View menuview = inflater.inflate(R.layout.item_send_status, null);
         popupWindowImg = menuview.findViewById(R.id.send_logo);
         popupWindowHeadline = menuview.findViewById(R.id.status_text);
         popupWindowSubtitle = menuview.findViewById(R.id.subtitle);
@@ -427,19 +381,19 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         popupWindowHeadline.setText("Concenting WhatsApp");
         popupWindowSubtitle.setText("The pack in preparation…");
 
-        for (int i = 0; i< packDetails.getStickersList().size();i++){
+        for (int i = 0; i < packDetails.getStickersList().size(); i++) {
             stickersImg.add(LSConstant.image_uri + packDetails.getStickersList().get(i).getImage());
         }
 
         try {
-            if (stickersImg != null){
-                for (int i = 0; i< stickersImg.size();i++){
+            if (stickersImg != null) {
+                for (int i = 0; i < stickersImg.size(); i++) {
                     File myDir = new File(getFilesDir() + "/" + "stickers asset" + "/" + packDetails.getIdentifier());
-                    if (!myDir.exists()){
+                    if (!myDir.exists()) {
                         myDir.mkdirs();
                     }
                     String imageName = packDetails.getStickersList().get(i).getImage();
-                    File file = new File(myDir,imageName);
+                    File file = new File(myDir, imageName);
                     if (file.exists()) file.delete();
 
                     URL url = new URL(stickersImg.get(i));
@@ -454,7 +408,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
                     fo.close();
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
 
@@ -464,7 +418,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
     protected void addStickerPackToWhatsApp(String identifier, String stickerPackName) {
         try {
             //if neither WhatsApp Consumer or WhatsApp Business is installed, then tell user to install the apps.
-            if (!WhitelistCheck.isWhatsAppConsumerAppInstalled(getPackageManager()) && !WhitelistCheck.isWhatsAppSmbAppInstalled(getPackageManager())) {
+            if (!WhitelistCheck.isWhatsAppConsumerAppInstalled(getPackageManager()) || !WhitelistCheck.isWhatsAppSmbAppInstalled(getPackageManager())) {
                 Toast.makeText(this, R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
                 return;
             }
@@ -477,15 +431,15 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
                 DownloadImages();
 
-                stickerPack = new StickerPack(packDetails.getIdentifier(),packDetails.getTitle(),packDetails.getTrayImageFile(),
-                        packDetails.getTrayImageFile(),"",packDetails.getPublisherWebsite(),packDetails.getPrivacyPolicyWebsite(),
-                        packDetails.getLicenseAgreementWebsite(),"",false,false,sticker);
+                stickerPack = new StickerPack(packDetails.getIdentifier(), packDetails.getTitle(), packDetails.getTrayImageFile(),
+                        packDetails.getTrayImageFile(), "", packDetails.getPublisherWebsite(), packDetails.getPrivacyPolicyWebsite(),
+                        packDetails.getLicenseAgreementWebsite(), "", false, false, sticker);
 
                 Log.e("###", "PackImageDetailsStickerPack: " + stickerPack);
 
                 stickerPack.setStickers(sticker);
 
-                Hawk.put("stickerPack",stickerPack);
+                Hawk.put("stickerPack", stickerPack);
 
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     popupWindowImg.setImageResource(R.drawable.connection);
@@ -500,22 +454,29 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             } else if (!stickerPackWhitelistedInWhatsAppSmb) {
                 launchIntentToAddPackToSpecificPackage(identifier, stickerPackName, WhitelistCheck.SMB_WHATSAPP_PACKAGE_NAME);
             } else {
-                Toast.makeText(this, R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, R.string.not_whitelisted, Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             Log.e("###", "error adding sticker pack to WhatsApp", e);
-            Toast.makeText(this, R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.error_adding, Toast.LENGTH_LONG).show();
         }
 
     }
 
     private void launchIntentToAddPackToSpecificPackage(String identifier, String stickerPackName, String whatsappPackageName) {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            popupWindowImg.setImageResource(R.drawable.finish_add);
+            popupWindowHeadline.setText("Add to WhatsApp");
+            popupWindowSubtitle.setText("Done！");
+
+        }, 1000);
+
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
         intent.setPackage(whatsappPackageName);
         try {
             startActivityForResult(intent, LSConstant.ADD_PACK);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.not_add_package, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -532,7 +493,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         try {
             startActivityForResult(Intent.createChooser(intent, getString(R.string.add_to_whatsapp)), LSConstant.ADD_PACK);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(this, R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.not_add_package_selector, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -553,6 +514,29 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         if (requestCode == LSConstant.ADD_PACK) {
             if (resultCode == Activity.RESULT_CANCELED) {
                 if (data != null) {
+                    RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener(){
+
+                        @Override
+                        public void onClickFiveStart() {
+
+                        }
+
+                        @Override
+                        public void onClick1To4Start() {
+
+                        }
+
+                        @Override
+                        public void onClickReject() {
+
+                        }
+
+                        @Override
+                        public void onClickCancel() {
+
+                        }
+                    });
+
                     final String validationError = data.getStringExtra("validation_error");
                     if (validationError != null) {
                         if (BuildConfig.DEBUG) {
