@@ -51,6 +51,13 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
             LSMKVUtil.put(" SingleAnimatedInterstitialAd", false);
         }
 
+        if (LSMKVUtil.getBoolean("loadad", true)) {
+            viewBinding.adContainer.setVisibility(View.VISIBLE);
+            MaxADManager.loadBannerIntoView(this, viewBinding.adContainer);
+        }else {
+            viewBinding.adContainer.setVisibility(View.GONE);
+        }
+
 
         singleAnimatedDetailsImage = getIntent().getStringExtra("singleAnimatedDetailsImage");
         postcards = (SingleAnimatedCategoriesBean.Postcards) getIntent().getSerializableExtra("singlePostcards");

@@ -66,6 +66,13 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
             LSMKVUtil.put("AnimationInterstitialAd",false);
         }
 
+        if (LSMKVUtil.getBoolean("loadad", true)) {
+            viewBinding.adContainer.setVisibility(View.VISIBLE);
+            MaxADManager.loadBannerIntoView(this, viewBinding.adContainer);
+        }else {
+            viewBinding.adContainer.setVisibility(View.GONE);
+        }
+
 
         detailsImage = getIntent().getStringExtra("detailsImage");
 

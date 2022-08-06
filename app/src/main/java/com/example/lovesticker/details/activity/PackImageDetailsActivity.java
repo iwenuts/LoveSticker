@@ -89,7 +89,10 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         }
 
         if (LSMKVUtil.getBoolean("loadad", true)) {
+            viewBinding.adContainer.setVisibility(View.VISIBLE);
             MaxADManager.loadBannerIntoView(this, viewBinding.adContainer);
+        }else {
+            viewBinding.adContainer.setVisibility(View.GONE);
         }
 
 
