@@ -77,6 +77,7 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
 //                    Log.e("###",  "BuildConfig : " + BuildConfig.VERSION_CODE + " " + "getUv: "+  loveStickerBean.getUv() );
                     LSMKVUtil.put("rewardinter",loveStickerBean.getRewardinter());
                     LSMKVUtil.put("loadad",loveStickerBean.getLoadad());
+                    LSMKVUtil.put("isForce",loveStickerBean.getForce());
 
                     if (BuildConfig.VERSION_CODE < loveStickerBean.getUv()) {
                         CustomDialog customDialog = new CustomDialog(MainActivity.this);

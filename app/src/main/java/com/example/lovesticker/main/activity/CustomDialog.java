@@ -138,7 +138,6 @@ public class CustomDialog extends Dialog implements View.OnClickListener{
                 if (nowUpDateListener != null){
                     nowUpDateListener.onNowUpdate(this);
                 }
-                dismiss();
                 break;
         }
     }
