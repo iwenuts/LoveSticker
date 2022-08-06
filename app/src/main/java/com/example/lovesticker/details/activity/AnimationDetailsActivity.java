@@ -167,7 +167,7 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
              if (intent == 1){
                     new AlertDialog.Builder(this)
                             .setMessage("Watch an AD to unblock the content?")
-                            .setNegativeButton("Cancle", (dialog, which) -> {
+                            .setNegativeButton("Cancel", (dialog, which) -> {
 
                             }).setPositiveButton("Watch ", (dialog, which) -> {
                         try {
@@ -222,7 +222,7 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
                     new AlertDialog.Builder(this)
                             .setMessage("Watch an AD to unblock the content?")
-                            .setNegativeButton("Cancle", (dialog, which) -> {
+                            .setNegativeButton("Cancel", (dialog, which) -> {
 
                             }).setPositiveButton("Watch ", (dialog, which) -> {
                         try {
