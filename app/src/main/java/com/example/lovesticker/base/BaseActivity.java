@@ -24,7 +24,10 @@ import androidx.viewbinding.ViewBinding;
 
 import com.blankj.utilcode.util.ConvertUtils;
 import com.example.lovesticker.R;
+import com.example.lovesticker.details.activity.AnimationDetailsActivity;
 import com.example.lovesticker.util.logger.MLog;
+import com.example.lovesticker.util.score.RateController;
+import com.example.lovesticker.util.score.RateDialog;
 import com.gyf.immersionbar.BarHide;
 import com.gyf.immersionbar.ImmersionBar;
 
@@ -181,22 +184,22 @@ public abstract class BaseActivity<VM extends BaseViewModel, VB> extends AppComp
         }
     }
 
-    protected void shareAny(String path){
-        Intent whatsappIntent = new Intent(android.content.Intent.ACTION_SEND);
-        whatsappIntent.setType("image/*");
-        whatsappIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));//add image path
-        startActivity(Intent.createChooser(whatsappIntent, "Share image using"));
-
-
-//        Intent shareIntent = new Intent();
-//        shareIntent.setAction(Intent.ACTION_SEND);
-////        shareIntent.setPackage("com.whatsapp");
-////        shareIntent.putExtra(Intent.EXTRA_TEXT,title + "\n\nLink : " + link );
-//        shareIntent.setType("image/gif");
-//        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
+//    protected void shareAny(String path){
+//        Intent whatsappIntent = new Intent(android.content.Intent.ACTION_SEND);
+//        whatsappIntent.setType("image/*");
+//        whatsappIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));//add image path
+//        startActivity(Intent.createChooser(whatsappIntent, "Share image using"));
 //
-//        startActivity(Intent.createChooser(shareIntent, "Share image using"));
-    }
+//
+////        Intent shareIntent = new Intent();
+////        shareIntent.setAction(Intent.ACTION_SEND);
+//////        shareIntent.setPackage("com.whatsapp");
+//////        shareIntent.putExtra(Intent.EXTRA_TEXT,title + "\n\nLink : " + link );
+////        shareIntent.setType("image/gif");
+////        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));
+////
+////        startActivity(Intent.createChooser(shareIntent, "Share image using"));
+//    }
 
 
 

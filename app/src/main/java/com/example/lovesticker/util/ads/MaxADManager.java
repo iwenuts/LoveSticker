@@ -633,7 +633,7 @@ public class MaxADManager implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void onActivityResume(LifecycleOwner owner){
-        Log.e("###","on activity resume :" + owner.toString());
+//        Log.e("###","on activity resume :" + owner.toString());
         if(bannerAdMap.get(owner.toString()) != null){
             bannerAdMap.get(owner.toString()).startAutoRefresh();
         }
@@ -645,7 +645,7 @@ public class MaxADManager implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onActivityStop(LifecycleOwner owner){
-        Log.e("###","on activity stop :" + owner.toString());
+//        Log.e("###","on activity stop :" + owner.toString());
         if(bannerAdMap.get(owner.toString()) != null){
             bannerAdMap.get(owner.toString()).stopAutoRefresh();
         }
@@ -657,7 +657,7 @@ public class MaxADManager implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     public void onActivityDestroy(LifecycleOwner owner){
-        Log.e("###","on activity destroy :" + owner.toString());
+//        Log.e("###","on activity destroy :" + owner.toString());
         if(bannerAdMap.get(owner.toString()) != null){
             bannerAdMap.get(owner.toString()).destroy();
             bannerAdMap.remove(owner.toString());

@@ -335,7 +335,10 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                         file = new File(myTrayr, srs[2]);
 //                        Log.e("###", "stickerPacksSize: " + getFileSize(file));
                         fileStorage(file, stickersImg.get(i));
+
                     }
+
+
 //                          File myDir = new File(getFilesDir() + "/" + "stickers_asset" + "/" + stickerPacks.getIdentifier());
 //                            if (!myDir.exists()) {
 //                                myDir.mkdirs();
@@ -420,7 +423,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                     false, sticker);
 //            Log.e("###", "stickerPack: " + stickerPack);
 
-            List<StickerPack> packs = new ArrayList<>();
+            ArrayList<StickerPack> packs = new ArrayList<>();
             packs.add(stickerPack);
 //            stickerPack.setStickers(sticker);
 

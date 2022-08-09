@@ -1,6 +1,7 @@
 package com.example.lovesticker.details.activity;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -55,6 +56,7 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
     private Gson gson = new Gson();
     private int rewardInterval = 0;
     private int rewardChange = 0;
+    public static int REQUEST_Animation_CODE = 1;
 
     @Override
     protected void initView() {
@@ -167,9 +169,7 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
              if (intent == 1){
                     new AlertDialog.Builder(this)
                             .setMessage("Watch an AD to unblock the content?")
-                            .setNegativeButton("Cancel", (dialog, which) -> {
-
-                            }).setPositiveButton("Watch ", (dialog, which) -> {
+                            .setPositiveButton("Watch ", (dialog, which) -> {
                         try {
                             showProgressDialog();
                             MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
@@ -181,6 +181,7 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
                                 @Override
                                 public void onRewardShown() {
                                     dismissProgressDialog();
+
                                 }
 
                                 @Override
@@ -204,9 +205,7 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
                                     }
                                 }
                             });
-                        } catch (Exception e) {
-
-                        }
+                        } catch (Exception e) { }
 
                     }).setCancelable(false).show();
 
@@ -222,9 +221,7 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
                     new AlertDialog.Builder(this)
                             .setMessage("Watch an AD to unblock the content?")
-                            .setNegativeButton("Cancel", (dialog, which) -> {
-
-                            }).setPositiveButton("Watch ", (dialog, which) -> {
+                            .setPositiveButton("Watch ", (dialog, which) -> {
                         try {
                             showProgressDialog();
                             MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
@@ -236,6 +233,7 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
                                 @Override
                                 public void onRewardShown() {
                                     dismissProgressDialog();
+
                                 }
 
                                 @Override
@@ -311,39 +309,36 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
     private void saveLocal(String imgAddress){
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                File imgFile = new File(getExternalFilesDir(null).getAbsolutePath() + File.separator + "sticker");
-                if (!imgFile.exists()){
-                    imgFile.mkdirs();
-                }
-                File file = new File(imgFile.getAbsolutePath() + File.separator + detailsImage);
-
-                byte[] b = new byte[1024];
-                try {
-                    URL url = new URL(imgAddress);
-                    URLConnection urlConnection = url.openConnection();
-                    urlConnection.connect();
-                    DataInputStream di = new DataInputStream(urlConnection.getInputStream());
-                    // output
-                    FileOutputStream fo = new FileOutputStream(file);
-                    // copy the actual file
-                    // (it would better to use a buffer bigger than this)
-                    while (-1 != di.read(b, 0, 1))
-                        fo.write(b, 0, 1);
-                    di.close();
-                    fo.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Log.e("###", "e: " +e.getMessage());
-                    System.exit(1);
-                }
-
-                Message msg = new Message();
-                msg.what = 0;
-                handler.sendMessage(msg);
+        new Thread(() -> {
+            File imgFile = new File(getExternalFilesDir(null).getAbsolutePath() + File.separator + "sticker");
+            if (!imgFile.exists()){
+                imgFile.mkdirs();
             }
+            File file = new File(imgFile.getAbsolutePath() + File.separator + detailsImage);
+
+            byte[] b = new byte[1024];
+            try {
+                URL url = new URL(imgAddress);
+                URLConnection urlConnection = url.openConnection();
+                urlConnection.connect();
+                DataInputStream di = new DataInputStream(urlConnection.getInputStream());
+                // output
+                FileOutputStream fo = new FileOutputStream(file);
+                // copy the actual file
+                // (it would better to use a buffer bigger than this)
+                while (-1 != di.read(b, 0, 1))
+                    fo.write(b, 0, 1);
+                di.close();
+                fo.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("###", "e: " +e.getMessage());
+                System.exit(1);
+            }
+
+            Message msg = new Message();
+            msg.what = 0;
+            handler.sendMessage(msg);
         }).start();
 
     }
@@ -354,6 +349,22 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
             shareAny(getExternalFilesDir(null).getAbsolutePath() + File.separator + "sticker" + File.separator + detailsImage);
             dismissProgressDialog();
 
+        }
+        return false;
+    });
+
+    protected void shareAny(String path){
+        Intent whatsappIntent = new Intent(android.content.Intent.ACTION_SEND);
+        whatsappIntent.setType("image/gif");
+        whatsappIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));//add image path
+        startActivityForResult(Intent.createChooser(whatsappIntent, "Share image using"),REQUEST_Animation_CODE);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_Animation_CODE){
             RateController.getInstance().tryRateFinish(AnimationDetailsActivity.this, new RateDialog.RatingClickListener() {
 
                 @Override
@@ -377,8 +388,5 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
                 }
             });
         }
-        return false;
-    });
-
-
+    }
 }

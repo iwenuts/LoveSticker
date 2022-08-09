@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
+
     <application
         android:name=".base.LoveStickerApp"
         android:allowBackup="true"
@@ -19,7 +20,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".main.activity.CustomDialog"></activity>
+        <activity android:name=".main.view.AdDialog"></activity>
+        <activity android:name=".main.view.CustomDialog" />
         <activity
             android:name=".util.score.RateDialog"
             android:theme="@style/dialog_style" />

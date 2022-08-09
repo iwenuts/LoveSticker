@@ -18,28 +18,30 @@ import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
+import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+        import androidx.annotation.NonNull;
+        import androidx.annotation.Nullable;
 
-import com.blankj.utilcode.util.ConvertUtils;
-import com.example.lovesticker.BuildConfig;
-import com.example.lovesticker.util.stickers.model.Sticker;
-import com.example.lovesticker.util.stickers.model.StickerPack;
-import com.orhanobut.hawk.Hawk;
+        import com.blankj.utilcode.util.ConvertUtils;
+        import com.example.lovesticker.BuildConfig;
+        import com.example.lovesticker.util.stickers.model.Sticker;
+        import com.example.lovesticker.util.stickers.model.StickerPack;
+        import com.orhanobut.hawk.Hawk;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+        import java.io.File;
+        import java.io.IOException;
+        import java.io.InputStream;
+        import java.util.ArrayList;
+        import java.util.Collections;
+        import java.util.List;
+        import java.util.Objects;
 
 public class StickerContentProvider extends ContentProvider {
-    private StickerPack stickerPack;
-
+//    private StickerPack stickerPack;
+      private ArrayList<StickerPack> stickerPack;
     /**
      * Do not change the strings listed below, as these are used by WhatsApp. And changing these will break the interface between sticker app and WhatsApp.
      */
@@ -183,14 +185,17 @@ public class StickerContentProvider extends ContentProvider {
 //        }
 //    }
 
-    private List<StickerPack> getStickerPackList() {
+    private ArrayList<StickerPack> getStickerPackList() {
         stickerPack = Hawk.get("stickerPack");
 
+//        if (stickerPack != null){
+//            stickerPackList.add(stickerPack);
+//        }
         if (stickerPack != null){
-            stickerPackList.add(stickerPack);
+            return stickerPack;
+        }else {
+            return new ArrayList<StickerPack>();
         }
-
-        return stickerPackList;
 
     }
 
@@ -270,6 +275,8 @@ public class StickerContentProvider extends ContentProvider {
             throw new IllegalArgumentException("path segments should be 3, uri is: " + uri);
         }
         String fileName = pathSegments.get(pathSegments.size() - 1);
+        Log.e("###", "fileName: " + fileName);
+
         final String identifier = pathSegments.get(pathSegments.size() - 2);
         if (TextUtils.isEmpty(identifier)) {
             throw new IllegalArgumentException("identifier is empty, uri: " + uri);
@@ -294,9 +301,28 @@ public class StickerContentProvider extends ContentProvider {
         return null;
     }
 
+//    private AssetFileDescriptor fetchFile(@NonNull Uri uri, @NonNull AssetManager am, @NonNull String fileName, @NonNull String identifier) {
+//        try {
+//            return am.openFd(identifier + "/" + fileName);
+//        } catch (IOException e) {
+//            Log.e(Objects.requireNonNull(getContext()).getPackageName(), "IOException when getting asset file, uri:" + uri, e);
+//            return null;
+//        }
+//    }
+
     private AssetFileDescriptor fetchFile(@NonNull Uri uri, @NonNull AssetManager am, @NonNull String fileName, @NonNull String identifier) {
         try {
-            return am.openFd(identifier + "/" + fileName);
+            File file;
+            if(fileName.endsWith(".png")){
+                file = new File(getContext().getFilesDir()+  "/" + "stickers_asset" + "/" + identifier + "/try/", fileName);
+            } else {
+                file = new File(getContext().getFilesDir()+  "/" + "stickers_asset" + "/" + identifier + "/", fileName);
+            }
+            if (!file.exists()) {
+                Log.d("fetFile", "StickerPack dir not found");
+            }
+            Log.d("fetchFile", "StickerPack " + file.getPath());
+            return new AssetFileDescriptor(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY), 0L, -1L);
         } catch (IOException e) {
             Log.e(Objects.requireNonNull(getContext()).getPackageName(), "IOException when getting asset file, uri:" + uri, e);
             return null;

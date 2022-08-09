@@ -85,7 +85,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         if (LSMKVUtil.getBoolean("PackDetailsInterstitialAd", false) &&
                 LSMKVUtil.getBoolean("loadad", true)) {
             MaxADManager.tryShowInterstitialDetailAd(this);
-            LSMKVUtil.put("PackDetailsInterstitialAd", true);
+            LSMKVUtil.put("PackDetailsInterstitialAd", false);
         }
 
         if (LSMKVUtil.getBoolean("loadad", true)) {
@@ -253,9 +253,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             if (intent == 1) {
                 new AlertDialog.Builder(this)
                         .setMessage("Watch an AD to unblock the content?")
-                        .setNegativeButton("Cancel", (dialog, which) -> {
-
-                        }).setPositiveButton("Watch ", (dialog, which) -> {
+                        .setPositiveButton("Watch ", (dialog, which) -> {
                     try {
                         showProgressDialog();
                         MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
@@ -293,9 +291,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
                 new AlertDialog.Builder(this)
                         .setMessage("Watch an AD to unblock the content?")
-                        .setNegativeButton("Cancel", (dialog, which) -> {
-
-                        }).setPositiveButton("Watch ", (dialog, which) -> {
+                        .setPositiveButton("Watch ", (dialog, which) -> {
                     try {
                         showProgressDialog();
                         MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {

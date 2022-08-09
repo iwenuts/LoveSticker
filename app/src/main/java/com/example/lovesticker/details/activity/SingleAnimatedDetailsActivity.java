@@ -1,5 +1,6 @@
 package com.example.lovesticker.details.activity;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -37,6 +38,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, ActivitySingleAnimatedDetailsBinding> {
+    private static final int REQUEST_Single_CODE = 2;
     private String singleAnimatedDetailsImage;
     private SingleAnimatedCategoriesBean.Postcards postcards;
     private int rewardInterval = 0;
@@ -293,7 +295,22 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
         if (msg.what == 0) {
             shareAny(getExternalFilesDir(null).getAbsolutePath() + File.separator + "sticker" + File.separator + singleAnimatedDetailsImage);
             dismissProgressDialog();
+        }
+        return false;
+    });
 
+    protected void shareAny(String path){
+        Intent whatsappIntent = new Intent(android.content.Intent.ACTION_SEND);
+        whatsappIntent.setType("image/gif");
+        whatsappIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));//add image path
+        startActivityForResult(Intent.createChooser(whatsappIntent, "Share image using"),REQUEST_Single_CODE);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_Single_CODE){
             RateController.getInstance().tryRateFinish(SingleAnimatedDetailsActivity.this, new RateDialog.RatingClickListener() {
 
                 @Override
@@ -317,8 +334,5 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
                 }
             });
         }
-        return false;
-    });
-
-
+    }
 }

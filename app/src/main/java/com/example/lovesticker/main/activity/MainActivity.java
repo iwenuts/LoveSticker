@@ -1,11 +1,12 @@
 package com.example.lovesticker.main.activity;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
@@ -21,13 +22,18 @@ import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.databinding.ActivityMainBinding;
-import com.example.lovesticker.main.FixFragmentNavigator;
+import com.example.lovesticker.main.view.CustomDialog;
+import com.example.lovesticker.main.view.FixFragmentNavigator;
 import com.example.lovesticker.main.fragment.MineFragment;
 import com.example.lovesticker.main.fragment.PackFragment;
 import com.example.lovesticker.main.fragment.StickerFragment;
 import com.example.lovesticker.main.model.LoveStickerBean;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.gyf.immersionbar.ImmersionBar;
+import com.permissionx.guolindev.PermissionX;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,6 +71,8 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
 //            }
             return true;
         });
+
+        permissionsRD();
 
         LoveStickerData.getInstance().getLoveStickerData().enqueue(new Callback<LoveStickerBean>() {
             @Override
@@ -173,6 +181,30 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
 
         navGraph.setStartDestination(destination1.getId());
         return navGraph;
+
+    }
+
+    private void permissionsRD(){
+        List<String> permissions = new ArrayList<>();
+        permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+
+        PermissionX.init(this)
+                .permissions(permissions)
+                .onExplainRequestReason((scope, deniedList) -> {
+                    scope.showRequestReasonDialog(deniedList, "The permission to be " +
+                                    "reapplied is the permission that the program must rely on",
+                            "I understand", "cancel");
+                }).request((allGranted, grantedList, deniedList) -> {
+            if (allGranted) {
+
+            }else {
+                Toast.makeText(this, "You have denied permission to " +
+                        "read and write photos and files on your device", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
