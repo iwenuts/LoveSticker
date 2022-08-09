@@ -160,7 +160,8 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             ArrayList<String> emoji = new ArrayList<>();
             emoji.add("");
             for (int i = 0; i < stickerPackNumber; i++) {
-                sticker.add(new Sticker(stickerPacks.getStickersList().get(i).getImage(), emoji));
+                String name = stickerPacks.getStickersList().get(i).getImage();
+                sticker.add(new Sticker(name.substring(name.lastIndexOf("/")+1), emoji));
             }
 //            LSMKVUtil.put("isStickerClear",false);
         }
@@ -327,53 +328,23 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 //                    Log.e("###", "fileTraySize: " + getFileSize(fileTray));
                     fileStorage(fileTray, trayImage);
 
-                    for (int i = 0; i < stickersImg.size()/4; i++) {
+                    for (int i = 0; i < stickersImg.size(); i++) {
                         String imageName = stickerPacks.getStickersList().get(i).getImage();
                         String[] srs = imageName.split("/");
-
 
                         file = new File(myTrayr, srs[2]);
 //                        Log.e("###", "stickerPacksSize: " + getFileSize(file));
                         fileStorage(file, stickersImg.get(i));
-
                     }
-
-
-//                          File myDir = new File(getFilesDir() + "/" + "stickers_asset" + "/" + stickerPacks.getIdentifier());
-//                            if (!myDir.exists()) {
-//                                myDir.mkdirs();
-//                            }
-//                            Log.e("###", "srs[0]: " + srs[0] + " " + "srs[1]" + srs[1] + "srs[2]" + srs[2]);
-//                            file = new File(myDir.getAbsolutePath() + File.separator + srs[2]);
-
-//                        url2bitmap(stickersImg.get(i), PackDetailsActivity.this, 1002, srs[2]);
-//                        File myDir = new File(getFilesDir() + "/" + "stickers_asset" + "/" + stickerPacks.getIdentifier());
-//                        if (!myDir.exists()) {
-//                            myDir.mkdirs();
-//                        }
-//                        Log.e("###", "file1: " + file);
-
-
-//                        byte[] b = new byte[1024];
-//                        String trayImage = LSConstant.image_uri + stickerPacks.getTrayImageFile();
-//                        file = new File(myDir.getAbsolutePath() + File.separator + "trayImage");
-//                        Log.e("###", "file: " + file);
-//                        URL url = new URL(trayImage);
-//                        URLConnection urlConnection = url.openConnection();
-//                        urlConnection.connect();
-//                        DataInputStream di = new DataInputStream(urlConnection.getInputStream());
-//                        // output
-//                        FileOutputStream fo = new FileOutputStream(file);
-//                        // copy the actual file
-//                        // (it would better to use a buffer bigger than this)
-//                        while (-1 != di.read(b, 0, 1))
-//                            fo.write(b, 0, 1);
-//                        di.close();
-//                        fo.close();
                 } catch (Exception e) {
                     e.getMessage();
                 }
 
+//                try {
+//                    Thread.sleep(10000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
                 Message msg = new Message();
                 msg.what = 0;
                 handler.sendMessage(msg);
@@ -382,9 +353,9 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     }
 
     private void fileStorage(File file, String data) {
-//        if (file.exists() && getFileSize(file)>0) {
-//            return;
-//        }
+        if (file.exists() && getFileSize(file)>0) {
+            return;
+        }
         byte[] b = new byte[1024];
         try {
             URL url = new URL(data);
@@ -399,8 +370,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 fo.write(b, 0, 1);
             di.close();
             fo.close();
-            Log.e("###", "file: " + file);
-            Log.e("###", "getFileSize: " + getFileSize(file));
+            Log.e("###", "Size: " + getFileSize(file) +" file: " + file);
         } catch (IOException e) {
             e.printStackTrace();
             Log.e("###", "e: " + e.getMessage());
@@ -427,18 +397,9 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             packs.add(stickerPack);
 //            stickerPack.setStickers(sticker);
 
-            Hawk.put("stickerPack", stickerPack);
+            Hawk.put("sticker_packs", packs);
 
             if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
-                //ask users which app to add the pack to.
-//                new Handler(Looper.getMainLooper()).postDelayed(this::AddSendStatus, 1000);
-
-
-//                new Handler(Looper.getMainLooper()).postDelayed(() -> {
-//                    popupWindowImg.setImageResource(R.drawable.connection);
-//                    popupWindowHeadline.setText("Connection Succeeded");
-//                    popupWindowSubtitle.setText("Almost completed…");
-//                }, 1000);
                 launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
 
             } else if (!stickerPackWhitelistedInWhatsAppConsumer) {
@@ -656,122 +617,6 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         }
     }
 
-//    public void url2bitmap(String imgPath, Context context, int savePathType, String fileName) {
-//
-//        HttpURLConnection conn = null;
-//        InputStream is = null;
-//        try {
-//            URL url = new URL(imgPath);
-//            //开启连接
-//            conn = (HttpURLConnection) url.openConnection();
-//            //设置连接超时
-//            conn.setConnectTimeout(5000);
-//            //设置请求方式
-//            conn.setRequestMethod("GET");
-//            //conn.connect();
-//            if (conn.getResponseCode() == 200) {
-//                is = conn.getInputStream();
-//                Bitmap b = BitmapFactory.decodeStream(is);
-//                if (b != null) {
-//                    //saveImageToGallery(context, b);
-//                    if (savePathType == 1001) {
-////                        addBitmapToAlbum(context, b, fileName, "png", Bitmap.CompressFormat.PNG);
-//                        saveImageToTrayImage(context, b, fileName);
-//                    } else if (savePathType == 1002) {
-//                        saveImageToGallery(context, b, fileName);
-//                    }
-//
-//                }
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        } finally {
-//            try {
-//                //用完记得关闭
-//                is.close();
-//                conn.disconnect();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//    }
-//
-//    public static void addBitmapToAlbum(Context context, Bitmap bitmap, String displayName, String mimeType, Bitmap.CompressFormat compressFormat) {
-//        ContentValues values = new ContentValues();
-//        values.put(MediaStore.MediaColumns.DISPLAY_NAME, displayName);
-//        values.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//            values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM);
-//        } else {
-//            values.put(MediaStore.MediaColumns.DATA, Environment.getExternalStorageDirectory().getPath() + "/"
-//                    + Environment.DIRECTORY_DCIM + "/" + displayName);
-//        }
-//        ContentResolver resolver = context.getContentResolver();
-//        Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-//        if (uri != null) {
-//            OutputStream outputStream = null;
-//            try {
-//                outputStream = resolver.openOutputStream(uri);
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//            if (outputStream != null) {
-//                bitmap.compress(compressFormat, 100, outputStream);
-//                try {
-//                    outputStream.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    }
-//
-//    public void saveImageToGallery(Context context, Bitmap bmp, String fileName) {
-//        // 首先保存图片
-//        File appDir = new File(getFilesDir() + "/" + "stickers_asset" + "/" + stickerPacks.getIdentifier());
-//        if (!appDir.exists()) {
-//            appDir.mkdirs();
-//        }
-//
-////        file = new File(appDir, fileName);
-//
-////        Log.e("###", "isFileExists: "+ !FileUtils.isFileExists(file));
-//
-//        try {
-//            FileOutputStream fos = new FileOutputStream(file);
-//            bmp.compress(Bitmap.CompressFormat.WEBP, 90, fos);
-//            fos.flush();
-//            fos.close();
-//            Log.e("###", "getFileSize: " + getFileSize(file));
-//            Log.e("###", "fileTrayImage: " + file.getAbsolutePath());
-//        } catch (Exception e) {
-//            Log.e("###", "saveImageToGallery: " + e.getMessage());
-//            e.printStackTrace();
-//        }
-//
-//
-//    }
-//
-//    public void saveImageToTrayImage(Context context, Bitmap bmp, String fileName) {
-//        File appDir = new File(getFilesDir() + "/" + "stickers_asset" + "/" + stickerPacks.getIdentifier());
-//        if (!appDir.exists()) {
-//            appDir.mkdirs();
-//        }
-//        fileTrayImage = new File(appDir, fileName);
-//
-//        Log.e("###", "fileTrayImage: " + fileTrayImage.getAbsolutePath());
-//
-//        try {
-//            FileOutputStream fos = new FileOutputStream(fileTrayImage);
-//            bmp.compress(Bitmap.CompressFormat.WEBP, 90, fos);
-//            fos.flush();
-//            fos.close();
-//        } catch (Exception e) {
-//            Log.e("###", "saveImageToTrayImage: " + e.getMessage());
-//            e.printStackTrace();
-//        }
-//    }
 
     private long getFileSize(File file) {
         long size = 0;
