@@ -40,8 +40,8 @@ import android.util.Log;
         import java.util.Objects;
 
 public class StickerContentProvider extends ContentProvider {
-//    private StickerPack stickerPack;
-      private ArrayList<StickerPack> stickerPack;
+    private StickerPack stickerPack;
+//    private List<StickerPack> stickerPack;
     /**
      * Do not change the strings listed below, as these are used by WhatsApp. And changing these will break the interface between sticker app and WhatsApp.
      */
@@ -185,18 +185,14 @@ public class StickerContentProvider extends ContentProvider {
 //        }
 //    }
 
-    private ArrayList<StickerPack> getStickerPackList() {
+    private List<StickerPack> getStickerPackList() {
         stickerPack = Hawk.get("stickerPack");
 
-//        if (stickerPack != null){
-//            stickerPackList.add(stickerPack);
-//        }
         if (stickerPack != null){
-            return stickerPack;
-        }else {
-            return new ArrayList<StickerPack>();
+            stickerPackList.add(stickerPack);
         }
 
+        return stickerPackList;
     }
 
 

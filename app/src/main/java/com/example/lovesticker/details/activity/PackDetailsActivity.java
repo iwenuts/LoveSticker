@@ -423,11 +423,11 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                     false, sticker);
 //            Log.e("###", "stickerPack: " + stickerPack);
 
-            ArrayList<StickerPack> packs = new ArrayList<>();
+            List<StickerPack> packs = new ArrayList<>();
             packs.add(stickerPack);
 //            stickerPack.setStickers(sticker);
 
-            Hawk.put("stickerPack", packs);
+            Hawk.put("stickerPack", stickerPack);
 
             if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
                 //ask users which app to add the pack to.
