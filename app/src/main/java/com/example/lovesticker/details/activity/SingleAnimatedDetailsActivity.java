@@ -7,11 +7,13 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
 
+import com.blankj.utilcode.util.UriUtils;
 import com.bumptech.glide.Glide;
 import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
@@ -42,6 +44,11 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
     private String singleAnimatedDetailsImage;
     private SingleAnimatedCategoriesBean.Postcards postcards;
     private int rewardInterval = 0;
+
+    private Uri saveUri;
+    private Boolean isLoadAD = false;
+    private Boolean isDownload = false;
+    private Boolean isNoAd = false;
 
     @Override
     protected void initView() {
@@ -115,7 +122,10 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
                 if (LSMKVUtil.getBoolean("loadad", true)) {
                     rewardInterval = rewardInterval + 1;
                     showRewardDialog(rewardInterval);
+                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
                 } else {
+                    isNoAd = true;
+                    isLoadAD = false;
                     if (singleAnimatedDetailsImage != null) {
                         showProgressDialog();
                         saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
@@ -148,11 +158,10 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
             int rewarDinter = LSMKVUtil.getInt("rewardinter", 1);
 
             if (intent == 1) {
+                isNoAd = false;
                 new AlertDialog.Builder(this)
                         .setMessage("Watch an AD to unblock the content?")
-                        .setNegativeButton("Cancel", (dialog, which) -> {
-
-                        }).setPositiveButton("Watch ", (dialog, which) -> {
+                        .setPositiveButton("Watch ", (dialog, which) -> {
                     try {
                         showProgressDialog();
                         MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
@@ -168,18 +177,18 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
 
                             @Override
                             public void onRewarded() {
-                                if (singleAnimatedDetailsImage != null) {
-                                    showProgressDialog();
-                                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                                isLoadAD = true;
+                                if (isLoadAD && isDownload) {
+                                    shareAny(saveUri);
                                 }
                             }
 
                             @Override
                             public void onTimeOut() {
                                 dismissProgressDialog();
-                                if (singleAnimatedDetailsImage != null) {
-                                    showProgressDialog();
-                                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                                isLoadAD = true;
+                                if (isLoadAD && isDownload) {
+                                    shareAny(saveUri);
                                 }
                             }
                         });
@@ -190,13 +199,15 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
                 }).setCancelable(false).show();
 
             } else if (intent % (rewarDinter + 1) != 1) { //不弹激励广告
+                isNoAd = true;
+                isLoadAD = false;
                 if (singleAnimatedDetailsImage != null) {
                     showProgressDialog();
                     saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
                 }
 
             } else { //  弹激励广告
-
+                isNoAd = false;
                 new AlertDialog.Builder(this)
                         .setMessage("Watch an AD to unblock the content?")
                         .setNegativeButton("Cancel", (dialog, which) -> {
@@ -217,18 +228,19 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
 
                             @Override
                             public void onRewarded() {
-                                if (singleAnimatedDetailsImage != null) {
-                                    showProgressDialog();
-                                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                                isLoadAD = true;
+                                if (isLoadAD && isDownload) {
+                                    shareAny(saveUri);
                                 }
+
                             }
 
                             @Override
                             public void onTimeOut() {
                                 dismissProgressDialog();
-                                if (singleAnimatedDetailsImage != null) {
-                                    showProgressDialog();
-                                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                                isLoadAD = true;
+                                if (isLoadAD && isDownload) {
+                                    shareAny(saveUri);
                                 }
                             }
                         });
@@ -253,56 +265,69 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
 
     private void saveLocal(String imgAddress) {
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                File imgFile = new File(getExternalFilesDir(null).getAbsolutePath() + File.separator + "sticker");
-                if (!imgFile.exists()) {
-                    imgFile.mkdirs();
-                }
-                File file = new File(imgFile.getAbsolutePath() + File.separator + singleAnimatedDetailsImage);
-
-                byte[] b = new byte[1024];
-                try {
-                    URL url = new URL(imgAddress);
-                    URLConnection urlConnection = url.openConnection();
-                    urlConnection.connect();
-                    DataInputStream di = new DataInputStream(urlConnection.getInputStream());
-                    // output
-                    FileOutputStream fo = new FileOutputStream(file);
-                    // copy the actual file
-                    // (it would better to use a buffer bigger than this)
-                    while (-1 != di.read(b, 0, 1))
-                        fo.write(b, 0, 1);
-                    di.close();
-                    fo.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Log.e("###", "e: " + e.getMessage());
-                    System.exit(1);
-                }
-
-                Message msg = new Message();
-                msg.what = 0;
-                handler.sendMessage(msg);
+        new Thread(() -> {
+            File imgFile = new File(getExternalFilesDir(null).getAbsolutePath() + File.separator + "sticker");
+            if (!imgFile.exists()) {
+                imgFile.mkdirs();
             }
+            File file = new File(imgFile.getAbsolutePath() + File.separator + singleAnimatedDetailsImage);
+
+            fileStorage(file, imgAddress);
+
+            Message msg = new Message();
+            msg.what = 0;
+            msg.obj = file;
+            handler.sendMessage(msg);
         }).start();
 
+    }
+
+    private void fileStorage(File file, String data) {
+        if (file.exists() && getFileSize(file) > 0) {
+            return;
+        }
+        byte[] b = new byte[1024];
+        try {
+            URL url = new URL(data);
+            URLConnection urlConnection = url.openConnection();
+            urlConnection.connect();
+            DataInputStream di = new DataInputStream(urlConnection.getInputStream());
+            // output
+            FileOutputStream fo = new FileOutputStream(file);
+            // copy the actual file
+            // (it would better to use a buffer bigger than this)
+            while (-1 != di.read(b, 0, 1))
+                fo.write(b, 0, 1);
+            di.close();
+            fo.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("###", "e: " + e.getMessage());
+            System.exit(1);
+        }
     }
 
     private final Handler handler = new Handler(msg -> {
         //回到主线程（UI线程），处理UI
         if (msg.what == 0) {
-            shareAny(getExternalFilesDir(null).getAbsolutePath() + File.separator + "sticker" + File.separator + singleAnimatedDetailsImage);
-            dismissProgressDialog();
+            isDownload = true;
+            File file = (File) msg.obj;
+            saveUri = UriUtils.file2Uri(file);
+
+            if (isNoAd) {
+                shareAny(saveUri);
+                dismissProgressDialog();
+            } else if (isDownload && isLoadAD) {
+                shareAny(saveUri);
+            }
         }
         return false;
     });
 
-    protected void shareAny(String path){
+    protected void shareAny(Uri uri){
         Intent whatsappIntent = new Intent(android.content.Intent.ACTION_SEND);
-        whatsappIntent.setType("image/gif");
-        whatsappIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(path));//add image path
+        whatsappIntent.setType("image/*");
+        whatsappIntent.putExtra(Intent.EXTRA_STREAM, uri);//add image path
         startActivityForResult(Intent.createChooser(whatsappIntent, "Share image using"),REQUEST_Single_CODE);
 
     }

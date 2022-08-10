@@ -33,6 +33,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -186,17 +187,15 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                AddStickerPackActivity.addStickerPackToWhatsApp(stickerPacks.getIdentifier(),stickerPacks.getTitle());
 
-//                if (LSMKVUtil.getBoolean("loadad", true)) {
-//                    rewardInterval = rewardInterval + 1;
-//                    showRewardDialog(rewardInterval);
-//
-//                } else {
-//                    addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
-//                }
+                if (LSMKVUtil.getBoolean("loadad", true)) {
+                    rewardInterval = rewardInterval + 1;
+                    showRewardDialog(rewardInterval);
 
-                addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
+                } else {
+                    addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
+                }
+
             }
         });
 
@@ -234,11 +233,13 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                                     @Override
                                     public void onRewardFail() {
                                         dismissProgressDialog();
+
                                     }
 
                                     @Override
                                     public void onRewardShown() {
                                         dismissProgressDialog();
+
                                     }
 
                                     @Override
@@ -304,9 +305,9 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
     private void DownloadImages() {
         List<String> stickersImg = new ArrayList();
-//        popupWindowImg.setImageResource(R.drawable.concenting);
-//        popupWindowHeadline.setText("Concenting WhatsApp");
-//        popupWindowSubtitle.setText("The pack in preparation…");
+        popupWindowImg.setImageResource(R.drawable.concenting);
+        popupWindowHeadline.setText("Concenting WhatsApp");
+        popupWindowSubtitle.setText("The pack in preparation…");
         for (int i = 0; i < stickerPacks.getStickersList().size(); i++) {
             stickersImg.add(LSConstant.image_uri + stickerPacks.getStickersList().get(i).getImage());
         }
@@ -318,14 +319,12 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                     String[] trayImageName = stickerPacks.getTrayImageFile().split("/");
                     String trayImage = LSConstant.image_uri + stickerPacks.getTrayImageFile();
 
-//                    url2bitmap(trayImage, PackDetailsActivity.this, 1002, trayImageName[2]);
                     File myTrayr = new File(getFilesDir() + "/" + "stickers_asset" + "/" + stickerPacks.getIdentifier());
                     if (!myTrayr.exists()) {
                         myTrayr.mkdirs();
                     }
 
                     fileTray = new File(myTrayr, trayImageName[2]);
-//                    Log.e("###", "fileTraySize: " + getFileSize(fileTray));
                     fileStorage(fileTray, trayImage);
 
                     for (int i = 0; i < stickersImg.size(); i++) {
@@ -333,18 +332,11 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                         String[] srs = imageName.split("/");
 
                         file = new File(myTrayr, srs[2]);
-//                        Log.e("###", "stickerPacksSize: " + getFileSize(file));
                         fileStorage(file, stickersImg.get(i));
                     }
                 } catch (Exception e) {
                     e.getMessage();
                 }
-
-//                try {
-//                    Thread.sleep(10000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
                 Message msg = new Message();
                 msg.what = 0;
                 handler.sendMessage(msg);
@@ -353,7 +345,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     }
 
     private void fileStorage(File file, String data) {
-        if (file.exists() && getFileSize(file)>0) {
+        if (file.exists() && getFileSize(file) > 0) {
             return;
         }
         byte[] b = new byte[1024];
@@ -391,13 +383,17 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                     stickerPacks.getPublisherWebsite(), stickerPacks.getPrivacyPolicyWebsite(),
                     stickerPacks.getLicenseAgreementWebsite(), "1", false,
                     false, sticker);
-//            Log.e("###", "stickerPack: " + stickerPack);
 
             List<StickerPack> packs = new ArrayList<>();
             packs.add(stickerPack);
 //            stickerPack.setStickers(sticker);
+            LSMKVUtil.put("isAfferentValue",true);
 
-            Hawk.put("sticker_packs", packs);
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                popupWindowImg.setImageResource(R.drawable.finish_add);
+                popupWindowHeadline.setText("Add to WhatsApp");
+                popupWindowSubtitle.setText("Done！");
+            }, 2000);
 
             if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
                 launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
@@ -434,6 +430,30 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         });
     }
 
+    View.OnClickListener itemsOnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            selectPicPopupWindow.dismiss();
+            if (v.getId() == R.id.delete) {
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(PackDetailsActivity.this)
+                        .setTitle("Delete this pack？")
+                        .setMessage("If you detele this sticker pack，it will also be deleted  from WhatsApp.")
+                        .setCancelable(false)
+                        .setPositiveButton("DELETE", (dialog, which) -> {
+
+                            if (!InvokesData.getInvokesData(PackDetailsActivity.this).querySavePackGson(stickerPacks.getId())) {
+//                        Log.e("###", "delete" );
+                                InvokesData.getInvokesData(PackDetailsActivity.this).deleteSavePacks(gson.toJson(stickerPacks));
+                            }
+
+                        }).setNegativeButton("CANCEL", (dialog, which) -> {
+                            dialog.dismiss();
+                        });
+                alertDialog.show();
+            }
+        }
+    };
+
     @SuppressLint("UseCompatLoadingForDrawables")
     private void AddSendStatus() {
         //弹窗出现外部为阴影
@@ -460,43 +480,24 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
         //设置弹窗位置
         addSendPopupWindow.showAtLocation(PackDetailsActivity.this.findViewById(R.id.ll_image), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
-
         //弹窗取消监听 取消之后恢复阴影
-        addSendPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                WindowManager.LayoutParams attributes = getWindow().getAttributes();
-                attributes.alpha = 1;
-                getWindow().setAttributes(attributes);
-            }
+        addSendPopupWindow.setOnDismissListener(() -> {
+            WindowManager.LayoutParams attributes1 = getWindow().getAttributes();
+            attributes1.alpha = 1;
+            getWindow().setAttributes(attributes1);
         });
 
     }
 
-
-    View.OnClickListener itemsOnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            selectPicPopupWindow.dismiss();
-            if (v.getId() == R.id.delete) {
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(PackDetailsActivity.this)
-                        .setTitle("Delete this pack？")
-                        .setMessage("If you detele this sticker pack，it will also be deleted  from WhatsApp.")
-                        .setCancelable(false)
-                        .setPositiveButton("DELETE", (dialog, which) -> {
-
-                            if (!InvokesData.getInvokesData(PackDetailsActivity.this).querySavePackGson(stickerPacks.getId())) {
-//                        Log.e("###", "delete" );
-                                InvokesData.getInvokesData(PackDetailsActivity.this).deleteSavePacks(gson.toJson(stickerPacks));
-                            }
-
-                        }).setNegativeButton("CANCEL", (dialog, which) -> {
-                            dialog.dismiss();
-                        });
-                alertDialog.show();
-            }
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        //拦截弹窗外部点击事件
+        if (addSendPopupWindow != null && addSendPopupWindow.isShowing()) {
+            return false;
         }
-    };
+
+        return super.dispatchTouchEvent(ev);
+    }
 
     public void backgroundAlpha(float bgAlpha) {
         WindowManager.LayoutParams lp = getWindow().getAttributes();
@@ -519,7 +520,9 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             }
             stickerPackWhitelistedInWhatsAppConsumer = WhitelistCheck.isStickerPackWhitelistedInWhatsAppConsumer(this, identifier);
             stickerPackWhitelistedInWhatsAppSmb = WhitelistCheck.isStickerPackWhitelistedInWhatsAppSmb(this, identifier);
-
+            if (getFileSize(file) == 0 && getFileSize(fileTray) == 0){
+                AddSendStatus();
+            }
 
             DownloadImages();
 
@@ -531,12 +534,12 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     }
 
     private void launchIntentToAddPackToSpecificPackage(String identifier, String stickerPackName, String whatsappPackageName) {
-//        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-//            popupWindowImg.setImageResource(R.drawable.finish_add);
-//            popupWindowHeadline.setText("Add to WhatsApp");
-//            popupWindowSubtitle.setText("Done！");
-//        }, 1000);
-
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            popupWindowImg.setImageResource(R.drawable.finish_add);
+            popupWindowHeadline.setText("Add to WhatsApp");
+            popupWindowSubtitle.setText("Done！");
+        }, 2000);
+        addSendPopupWindow.dismiss();
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
         intent.setPackage(whatsappPackageName);
         try {
@@ -548,11 +551,12 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
     //Handle cases either of WhatsApp are set as default app to handle this intent. We still want users to see both options.
     private void launchIntentToAddPackToChooser(String identifier, String stickerPackName) {
-//        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-//            popupWindowImg.setImageResource(R.drawable.finish_add);
-//            popupWindowHeadline.setText("Add to WhatsApp");
-//            popupWindowSubtitle.setText("Done！");
-//        }, 1000);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            popupWindowImg.setImageResource(R.drawable.finish_add);
+            popupWindowHeadline.setText("Add to WhatsApp");
+            popupWindowSubtitle.setText("Done！");
+        }, 2000);
+        addSendPopupWindow.dismiss();
 
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
         try {
@@ -564,7 +568,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
     @NonNull
     private Intent createIntentToAddStickerPack(String identifier, String stickerPackName) {
-//        addSendPopupWindow.dismiss();
+
         Intent intent = new Intent();
         intent.setAction("com.whatsapp.intent.action.ENABLE_STICKER_PACK"); //跳转whatsapp
         intent.putExtra(LSConstant.EXTRA_STICKER_PACK_ID, identifier);
@@ -618,21 +622,6 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     }
 
 
-    private long getFileSize(File file) {
-        long size = 0;
-        try {
-            if (file.exists()) {
-                FileInputStream fis = null;
-                fis = new FileInputStream(file);
-                size = fis.available();
-            } else {
-                file.createNewFile();
-                Log.d("###", "获取文件大小不存在!");
-            }
-        } catch (Exception e) {
-            e.getMessage();
-        }
-        return size;
-    }
+
 
 }

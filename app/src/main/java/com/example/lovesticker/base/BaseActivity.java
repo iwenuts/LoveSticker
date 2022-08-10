@@ -31,6 +31,8 @@ import com.example.lovesticker.util.score.RateDialog;
 import com.gyf.immersionbar.BarHide;
 import com.gyf.immersionbar.ImmersionBar;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -201,7 +203,22 @@ public abstract class BaseActivity<VM extends BaseViewModel, VB> extends AppComp
 ////        startActivity(Intent.createChooser(shareIntent, "Share image using"));
 //    }
 
-
+    protected long getFileSize(File file) {
+        long size = 0;
+        try {
+            if (file.exists()) {
+                FileInputStream fis = null;
+                fis = new FileInputStream(file);
+                size = fis.available();
+            } else {
+                file.createNewFile();
+                Log.d("###", "获取文件大小不存在!");
+            }
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return size;
+    }
 
     private void initViewModel() {
         Type genericSuperclass = this.getClass().getGenericSuperclass();

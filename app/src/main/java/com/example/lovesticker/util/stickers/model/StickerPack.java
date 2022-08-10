@@ -74,7 +74,7 @@ public class StickerPack implements Parcelable {
         this.isWhitelisted = isWhitelisted;
     }
 
-    boolean getIsWhitelisted() {
+    public boolean getIsWhitelisted() {
         return isWhitelisted;
     }
 

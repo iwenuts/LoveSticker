@@ -72,7 +72,6 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
             return true;
         });
 
-        permissionsRD();
 
         LoveStickerData.getInstance().getLoveStickerData().enqueue(new Callback<LoveStickerBean>() {
             @Override
