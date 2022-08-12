@@ -79,8 +79,8 @@ android {
         publish{
             dimension "default"
             applicationId "wasticker.love.stickers.whatsapp.apps"
-            versionCode 105
-            versionName "1.0.5"
+            versionCode 106
+            versionName "1.0.6"
 
             def contentProviderAuthority = applicationId + ".stickercontentprovider"
             // Creates a placeholder property to use in the manifest.
