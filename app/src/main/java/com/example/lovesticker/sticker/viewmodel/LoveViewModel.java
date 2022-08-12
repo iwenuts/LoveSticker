@@ -39,17 +39,15 @@ public class LoveViewModel extends BaseViewModel {
 
                 if (singleAnimatedCategoriesBean != null){
                     LSMKVUtil.put("singleAnimatedTotalPages", singleAnimatedCategoriesBean.getData().getTotalPages());
-
                     postcardsList.addAll(singleAnimatedCategoriesBean.getData().getPostcardsList());
-
                     singleAnimatedLiveData.setValue(postcardsList);
 
                 }
             }
 
             @Override
-            public void onFailure(Call<SingleAnimatedCategoriesBean> call, Throwable t) {
-
+            public void onFailure(Call<SingleAnimatedCategoriesBean> call, Throwable e) {
+                Log.e("###", "SingleAnimatedData onFailure: " + e.getMessage());
             }
         });
 

@@ -74,6 +74,7 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
         if (singleAnimatedDetailsImage != null) {
             Glide.with(this)
                     .load(LSConstant.image_gif_uri + singleAnimatedDetailsImage)
+                    .error(R.drawable.image_failed)
                     .into(viewBinding.singleDetailsImg);
         }
 

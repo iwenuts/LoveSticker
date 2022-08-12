@@ -24,16 +24,16 @@ import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import java.util.List;
 
 public class LoveAdapter extends RecyclerView.Adapter<LoveAdapter.ViewHolder> {
-    private List<SingleAnimatedCategoriesBean.Postcards> categorPostcards;
+    private List<SingleAnimatedCategoriesBean.Postcards> categoryPostcards;
     private SingleAnimatedCategoriesBean.Postcards postcards;
     private Context context;
     private String singleAnimatedDetailsImage;
     private final AnimationAdapter.OnPositionClickedListener onPositionClickedListener;
     private Activity activity;
 
-    public LoveAdapter(List<SingleAnimatedCategoriesBean.Postcards> categorPostcards, Context context,
+    public LoveAdapter(List<SingleAnimatedCategoriesBean.Postcards> categoryPostcards, Context context,
                        Activity activity, AnimationAdapter.OnPositionClickedListener onPositionClickedListener) {
-        this.categorPostcards = categorPostcards;
+        this.categoryPostcards = categoryPostcards;
         this.context = context;
         this.activity = activity;
         this.onPositionClickedListener = onPositionClickedListener;
@@ -59,11 +59,11 @@ public class LoveAdapter extends RecyclerView.Adapter<LoveAdapter.ViewHolder> {
         holder.img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                singleAnimatedDetailsImage = categorPostcards.get(holder.getAdapterPosition()).getImage();
+                singleAnimatedDetailsImage = categoryPostcards.get(holder.getAdapterPosition()).getImage();
 
                 Intent intent = new Intent(context, SingleAnimatedDetailsActivity.class);
                 intent.putExtra("singleAnimatedDetailsImage",singleAnimatedDetailsImage);
-                intent.putExtra("singlePostcards",categorPostcards.get(holder.getAdapterPosition()));
+                intent.putExtra("singlePostcards", categoryPostcards.get(holder.getAdapterPosition()));
                 context.startActivity(intent);
             }
         });
@@ -73,7 +73,7 @@ public class LoveAdapter extends RecyclerView.Adapter<LoveAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        postcards = categorPostcards.get(position);
+        postcards = categoryPostcards.get(position);
         onPositionClickedListener.onPositionClicked(position);
 
         if (postcards != null){
@@ -89,14 +89,16 @@ public class LoveAdapter extends RecyclerView.Adapter<LoveAdapter.ViewHolder> {
 
             }else {
                 holder.frameLayout.setVisibility(View.GONE);
-                holder.img.setVisibility(View.GONE);
+                holder.img.setVisibility(View.VISIBLE);
             }
 
             String imageJPG = postcards.getImage().replaceAll("gif","jpg");
 
             Glide.with(context)
                     .load(LSConstant.image_jpg_uri + imageJPG)
+                    .error(R.drawable.image_failed)
                     .into(holder.img);
+
 
 //            Log.e("###", "imageJPG: " + LSConstant.image_jpg_uri + imageJPG );
         }
@@ -106,7 +108,7 @@ public class LoveAdapter extends RecyclerView.Adapter<LoveAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return categorPostcards.size();
+        return categoryPostcards.size();
     }
 
     public interface OnPositionClickedListener {

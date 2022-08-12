@@ -158,6 +158,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 //        }
 
         if (stickerPackNumber != 0) {
+            sticker.clear();
             ArrayList<String> emoji = new ArrayList<>();
             emoji.add("");
             for (int i = 0; i < stickerPackNumber; i++) {
@@ -386,14 +387,17 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
             List<StickerPack> packs = new ArrayList<>();
             packs.add(stickerPack);
-//            stickerPack.setStickers(sticker);
-            LSMKVUtil.put("isAfferentValue",true);
+            Hawk.put("sticker_packs", packs);
 
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                popupWindowImg.setImageResource(R.drawable.finish_add);
-                popupWindowHeadline.setText("Add to WhatsApp");
-                popupWindowSubtitle.setText("Done！");
+                popupWindowImg.setImageResource(R.drawable.connection);
+                popupWindowHeadline.setText("Connection Succeeded");
+                popupWindowSubtitle.setText("Almost completed…");
             }, 2000);
+
+            if (stickerPackWhitelistedInWhatsAppConsumer){
+                addSendPopupWindow.dismiss();
+            }
 
             if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
                 launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
@@ -568,7 +572,6 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
     @NonNull
     private Intent createIntentToAddStickerPack(String identifier, String stickerPackName) {
-
         Intent intent = new Intent();
         intent.setAction("com.whatsapp.intent.action.ENABLE_STICKER_PACK"); //跳转whatsapp
         intent.putExtra(LSConstant.EXTRA_STICKER_PACK_ID, identifier);

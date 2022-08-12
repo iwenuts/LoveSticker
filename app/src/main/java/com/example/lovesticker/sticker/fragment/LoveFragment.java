@@ -92,20 +92,16 @@ public class LoveFragment extends Fragment {
 
 
     protected void dataObserver() {
-        viewModel.getSingleAnimatedLiveData().observe(getViewLifecycleOwner(), new Observer<List<SingleAnimatedCategoriesBean.Postcards>>() {
-            @Override
-            public void onChanged(List<SingleAnimatedCategoriesBean.Postcards> postcards) {
-
-                if (postcards != null) {
-                    viewBinding.loadingData.setVisibility(View.GONE);
-                    //Adapter
-                    manager = new GridLayoutManager(getContext(), 2);
-                    viewBinding.loveRecycler.setLayoutManager(manager);
-                    loveAdapter = new LoveAdapter(postcards, getContext(), getActivity(),onPositionClickedListener);
-                    viewBinding.loveRecycler.setAdapter(loveAdapter);
+        viewModel.getSingleAnimatedLiveData().observe(getViewLifecycleOwner(), postcards -> {
+            if (postcards != null) {
+                viewBinding.loadingData.setVisibility(View.GONE);
+                //Adapter
+                manager = new GridLayoutManager(getContext(), 2);
+                viewBinding.loveRecycler.setLayoutManager(manager);
+                loveAdapter = new LoveAdapter(postcards, getContext(), getActivity(),onPositionClickedListener);
+                viewBinding.loveRecycler.setAdapter(loveAdapter);
 //                    imageListener.onImageClick(postcards);
 
-                }
             }
         });
     }
@@ -137,7 +133,6 @@ public class LoveFragment extends Fragment {
             MaxADManager.tryShowInterstitialBackAd((AppCompatActivity) getActivity());
             LSMKVUtil.put(" SingleAnimatedBackAd",false);
         }
-
     }
 
     private void initRefresh() {

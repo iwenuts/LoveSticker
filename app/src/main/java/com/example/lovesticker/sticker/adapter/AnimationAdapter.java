@@ -104,6 +104,7 @@ public class AnimationAdapter extends RecyclerView.Adapter<AnimationAdapter.View
 
             Glide.with(context)
                     .load(LSConstant.image_jpg_uri + imageJPG)
+                    .error(R.drawable.image_failed)
                     .into(holder.img);
         }
 

@@ -107,6 +107,7 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
             Log.e("###", "detailsImage: " + detailsImage);
             Glide.with(this)
                     .load(LSConstant.image_gif_uri + detailsImage)
+                    .error(R.drawable.image_failed)
                     .into(viewBinding.detailsImg);
         }
 

@@ -484,10 +484,14 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             Hawk.put("sticker_packs", packs);
 
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                popupWindowImg.setImageResource(R.drawable.finish_add);
-                popupWindowHeadline.setText("Add to WhatsApp");
-                popupWindowSubtitle.setText("Done！");
+                popupWindowImg.setImageResource(R.drawable.connection);
+                popupWindowHeadline.setText("Connection Succeeded");
+                popupWindowSubtitle.setText("Almost completed…");
             }, 2000);
+
+            if (stickerPackWhitelistedInWhatsAppConsumer){
+                addSendPopupWindow.dismiss();
+            }
 
             if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
                 launchIntentToAddPackToChooser(packDetails.getIdentifier(), packDetails.getTitle());
