@@ -3,11 +3,11 @@
     <item
         android:id="@+id/packFragment"
         android:icon="@drawable/pack"
-        android:title="Pack" />
+        android:title="Packs" />
     <item
         android:id="@+id/stickerFragment"
         android:icon="@drawable/sticker"
-        android:title="Sticker" />
+        android:title="Stickers" />
     <item
         android:id="@+id/mineFragment"
         android:icon="@drawable/mine"

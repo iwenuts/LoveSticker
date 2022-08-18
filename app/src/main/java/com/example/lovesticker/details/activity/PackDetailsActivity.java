@@ -1,35 +1,13 @@
 package com.example.lovesticker.details.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.DialogFragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.room.util.FileUtil;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.ActivityNotFoundException;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -37,21 +15,21 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Adapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.blankj.utilcode.util.FileUtils;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.GridLayoutManager;
+
 import com.example.lovesticker.BuildConfig;
 import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.databinding.ActivityPackDetailsBinding;
 import com.example.lovesticker.details.adapter.PackDetailsAdapter;
-import com.example.lovesticker.main.adapter.PackAdapter;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
@@ -60,34 +38,21 @@ import com.example.lovesticker.util.room.InvokesData;
 import com.example.lovesticker.util.score.RateController;
 import com.example.lovesticker.util.score.RateDialog;
 import com.example.lovesticker.util.stickers.AddStickerPackActivity;
-import com.example.lovesticker.util.stickers.StickerContentProvider;
 import com.example.lovesticker.util.stickers.WhitelistCheck;
 import com.example.lovesticker.util.stickers.model.Sticker;
 import com.example.lovesticker.util.stickers.model.StickerPack;
 import com.google.gson.Gson;
 import com.gyf.immersionbar.ImmersionBar;
 import com.orhanobut.hawk.Hawk;
-import com.tencent.mmkv.MMKV;
 
 import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.RandomAccessFile;
-import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
 import java.util.List;
-
-import static com.unity3d.services.core.properties.ClientProperties.getActivity;
 
 public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPackDetailsBinding> {
     private StickerPack stickerPack;
@@ -178,7 +143,6 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             MaxADManager.tryShowInterstitialBackAd(this);
             LSMKVUtil.put("PackImageDetailsBackAd", false);
         }
-
     }
 
 
@@ -306,43 +270,40 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
     private void DownloadImages() {
         List<String> stickersImg = new ArrayList();
-        popupWindowImg.setImageResource(R.drawable.concenting);
-        popupWindowHeadline.setText("Concenting WhatsApp");
+        popupWindowImg.setImageResource(R.drawable.poppup_window_rotating_wheel);
+        popupWindowHeadline.setText("Connecting WhatsApp");
         popupWindowSubtitle.setText("The pack in preparation…");
         for (int i = 0; i < stickerPacks.getStickersList().size(); i++) {
             stickersImg.add(LSConstant.image_uri + stickerPacks.getStickersList().get(i).getImage());
         }
 
-        if (stickersImg != null) {
+        new Thread(() -> {
+            try {
+                String[] trayImageName = stickerPacks.getTrayImageFile().split("/");
+                String trayImage = LSConstant.image_uri + stickerPacks.getTrayImageFile();
 
-            new Thread(() -> {
-                try {
-                    String[] trayImageName = stickerPacks.getTrayImageFile().split("/");
-                    String trayImage = LSConstant.image_uri + stickerPacks.getTrayImageFile();
-
-                    File myTrayr = new File(getFilesDir() + "/" + "stickers_asset" + "/" + stickerPacks.getIdentifier());
-                    if (!myTrayr.exists()) {
-                        myTrayr.mkdirs();
-                    }
-
-                    fileTray = new File(myTrayr, trayImageName[2]);
-                    fileStorage(fileTray, trayImage);
-
-                    for (int i = 0; i < stickersImg.size(); i++) {
-                        String imageName = stickerPacks.getStickersList().get(i).getImage();
-                        String[] srs = imageName.split("/");
-
-                        file = new File(myTrayr, srs[2]);
-                        fileStorage(file, stickersImg.get(i));
-                    }
-                } catch (Exception e) {
-                    e.getMessage();
+                File myTrayr = new File(getFilesDir() + "/" + "stickers_asset" + "/" + stickerPacks.getIdentifier());
+                if (!myTrayr.exists()) {
+                    myTrayr.mkdirs();
                 }
-                Message msg = new Message();
-                msg.what = 0;
-                handler.sendMessage(msg);
-            }).start();
-        }
+
+                fileTray = new File(myTrayr, trayImageName[2]);
+                fileStorage(fileTray, trayImage);
+
+                for (int i = 0; i < stickersImg.size(); i++) {
+                    String imageName = stickerPacks.getStickersList().get(i).getImage();
+                    String[] srs = imageName.split("/");
+
+                    file = new File(myTrayr, srs[2]);
+                    fileStorage(file, stickersImg.get(i));
+                }
+            } catch (Exception e) {
+                e.getMessage();
+            }
+            Message msg = new Message();
+            msg.what = 0;
+            handler.sendMessage(msg);
+        }).start();
     }
 
     private void fileStorage(File file, String data) {
@@ -542,7 +503,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             popupWindowImg.setImageResource(R.drawable.finish_add);
             popupWindowHeadline.setText("Add to WhatsApp");
             popupWindowSubtitle.setText("Done！");
-        }, 2000);
+        }, 1000);
         addSendPopupWindow.dismiss();
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
         intent.setPackage(whatsappPackageName);
@@ -559,7 +520,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             popupWindowImg.setImageResource(R.drawable.finish_add);
             popupWindowHeadline.setText("Add to WhatsApp");
             popupWindowSubtitle.setText("Done！");
-        }, 2000);
+        }, 1000);
         addSendPopupWindow.dismiss();
 
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
@@ -584,6 +545,29 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == LSConstant.ADD_PACK) {
+            RateController.getInstance().tryRateFinish(PackDetailsActivity.this, new RateDialog.RatingClickListener() {
+
+                @Override
+                public void onClickFiveStart() {
+
+                }
+
+                @Override
+                public void onClick1To4Start() {
+
+                }
+
+                @Override
+                public void onClickReject() {
+
+                }
+
+                @Override
+                public void onClickCancel() {
+
+                }
+            }); //评分
+
             if (resultCode == Activity.RESULT_CANCELED) {
                 if (data != null) {
                     RateController.getInstance().tryRateFinish(PackDetailsActivity.this, new RateDialog.RatingClickListener() {

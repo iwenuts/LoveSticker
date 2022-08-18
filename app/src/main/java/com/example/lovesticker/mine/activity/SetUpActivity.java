@@ -43,7 +43,8 @@ public class SetUpActivity extends BaseActivity<BaseViewModel, ActivitySetUpBind
         viewBinding.shareUs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                share(SetUpActivity.this,"","","");
+                share(SetUpActivity.this,"Install this app to download coolest stickers:",
+                        "https://play.google.com/store/apps/details?id=wasticker.love.stickers.whatsapp.apps","");
             }
         });
 

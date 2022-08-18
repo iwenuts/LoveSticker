@@ -32,7 +32,7 @@ android {
 
     buildTypes {
         debug {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
@@ -79,8 +79,8 @@ android {
         publish{
             dimension "default"
             applicationId "wasticker.love.stickers.whatsapp.apps"
-            versionCode 106
-            versionName "1.0.6"
+            versionCode 108
+            versionName "1.0.8"
 
             def contentProviderAuthority = applicationId + ".stickercontentprovider"
             // Creates a placeholder property to use in the manifest.
@@ -230,5 +230,7 @@ dependencies {
 //    implementation  'com.scwang.smart:refresh-header-classics:2.0.1'    //经典刷新头
 
     implementation 'com.flurry.android:analytics:+'
+
+//    implementation "com.tonyodev.fetch2:fetch2:3.1.16"
 
 }

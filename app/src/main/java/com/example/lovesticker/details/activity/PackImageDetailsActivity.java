@@ -228,14 +228,13 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if (LSMKVUtil.getBoolean("loadad", true)) {
-//                    rewardInterval = rewardInterval + 1;
-//                    showRewardDialog(rewardInterval);
-//
-//                } else {
-//                    addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
-//                }
-                addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
+                if (LSMKVUtil.getBoolean("loadad", true)) {
+                    rewardInterval = rewardInterval + 1;
+                    showRewardDialog(rewardInterval);
+
+                } else {
+                    addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
+                }
             }
         });
 
@@ -393,8 +392,8 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
     private void DownloadImages() {
         List<String> stickersImg = new ArrayList();
 
-        popupWindowImg.setImageResource(R.drawable.concenting);
-        popupWindowHeadline.setText("Concenting WhatsApp");
+        popupWindowImg.setImageResource(R.drawable.poppup_window_rotating_wheel);
+        popupWindowHeadline.setText("Connecting WhatsApp");
         popupWindowSubtitle.setText("The pack in preparation…");
 
         for (int i = 0; i < packDetails.getStickersList().size(); i++) {
@@ -578,6 +577,29 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == LSConstant.ADD_PACK) {
+            RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener(){
+
+                @Override
+                public void onClickFiveStart() {
+
+                }
+
+                @Override
+                public void onClick1To4Start() {
+
+                }
+
+                @Override
+                public void onClickReject() {
+
+                }
+
+                @Override
+                public void onClickCancel() {
+
+                }
+            });
+
             if (resultCode == Activity.RESULT_CANCELED) {
                 if (data != null) {
                     RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener(){

@@ -85,7 +85,7 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
             @Override
             public void onRefresh() {
                 viewModel.requestSurplusPackData();
-                packAdapter.notifyDataSetChanged();
+//                packAdapter.notifyDataSetChanged();
                 viewBinding.swipeLayout.setRefreshing(false);
             }
 
@@ -107,6 +107,7 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
     @Override
     public void onDestroy() {
         super.onDestroy();
+
 
     }
 

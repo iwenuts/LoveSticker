@@ -196,7 +196,13 @@
 -keep class * implements com.google.gson.JsonDeserializer
 -keep class com.example.lovesticker.main.model.** { *; }
 -keep class com.example.lovesticker.sticker.model.** { *; }
--keep class com.example.lovesticker.util.** { *; }
+
+
+#Gson
+-keep class com.google.gson.** { *; }
+
+-keepattributes Exceptions,InnerClasses,Signature,Deprecated,
+                SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
 
 # Prevent R8 from leaving Data object members always null
 -keepclassmembers,allowobfuscation class * {

@@ -5,10 +5,9 @@ buildscript {
         maven { url 'https://maven.aliyun.com/repository/google' }
 
 
-
+        mavenCentral()
         google()
         jcenter()
-        mavenCentral()
         maven { url 'https://jitpack.io' }
 
         //         app lovin

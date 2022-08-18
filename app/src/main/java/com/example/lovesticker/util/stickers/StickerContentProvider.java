@@ -108,7 +108,6 @@ public class StickerContentProvider extends ContentProvider {
                 for (Sticker sticker : stickerPack.getStickers()) {
                     MATCHER.addURI(authority, STICKERS_ASSET + "/" + stickerPack.identifier + "/" + sticker.imageFileName, STICKERS_ASSET_CODE);
                 }
-
             }
         }
 
@@ -226,7 +225,7 @@ public class StickerContentProvider extends ContentProvider {
        /* if (stickerPackList == null) {
             readContentFile(Objects.requireNonNull(getContext()));
         }*/
-        return (List)Hawk.get("sticker_packs",new ArrayList<StickerPack>());
+        return Hawk.get("sticker_packs",new ArrayList<StickerPack>());
     }
 
     private Cursor getPackForAllStickerPacks(@NonNull Uri uri) {
