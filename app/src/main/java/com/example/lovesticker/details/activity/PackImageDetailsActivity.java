@@ -181,48 +181,44 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             }
         });
 
-        Log.e("###", "querySavePackGson: " + InvokesData.getInvokesData(PackImageDetailsActivity.this).querySavePackGson(packDetails.getId()));
+//        if (!InvokesData.getInvokesData(PackImageDetailsActivity.this).querySavePackGson(packDetails.getId())) {
+//            viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
+//            viewBinding.collectedImage.setImageResource(R.drawable.collected);
+//
+//        } else {
+//            viewBinding.isCollected.setBackgroundResource(R.drawable.not_collected_bg);
+//            viewBinding.collectedImage.setImageResource(R.drawable.not_collected);
+//        }
 
-        if (!InvokesData.getInvokesData(PackImageDetailsActivity.this).querySavePackGson(packDetails.getId())) {
-            viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
-            viewBinding.collectedImage.setImageResource(R.drawable.collected);
-
-        } else {
-            viewBinding.isCollected.setBackgroundResource(R.drawable.not_collected_bg);
-            viewBinding.collectedImage.setImageResource(R.drawable.not_collected);
-        }
-
-        viewBinding.isCollected.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("UseCompatLoadingForDrawables")
-            @Override
-            public void onClick(View v) {
-//                Log.e("###", "onClick: "+ viewBinding.collectedImage.getDrawable().equals(getResources().getDrawable(R.drawable.collected)) );
-
-                if (viewBinding.collectedImage.getDrawable().getConstantState().equals
-                        (getResources().getDrawable(R.drawable.collected).getConstantState())) {  //点击收藏变未收藏
-
-                    viewBinding.isCollected.setBackgroundResource(R.drawable.not_collected_bg);
-                    viewBinding.collectedImage.setImageResource(R.drawable.not_collected);
-                    Log.e("###", "点击收藏变未收藏");
-
-                    if (!InvokesData.getInvokesData(PackImageDetailsActivity.this).querySavePackGson(packDetails.getId())) {
-//                        Log.e("###", "delete" );
-                        InvokesData.getInvokesData(PackImageDetailsActivity.this).deleteSavePacks(gson.toJson(packDetails));
-                    }
-
-                } else {  //点击未收藏变收藏
-
-                    viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
-                    viewBinding.collectedImage.setImageResource(R.drawable.collected);
-                    Log.e("###", "点击未收藏变收藏");
-
-                    InvokesData.getInvokesData(PackImageDetailsActivity.this).insertPackData(
-                            new SaveData(packDetails.getId(), gson.toJson(packDetails)));
-
-                }
-
-            }
-        });
+//        viewBinding.isCollected.setOnClickListener(new View.OnClickListener() {
+//            @SuppressLint("UseCompatLoadingForDrawables")
+//            @Override
+//            public void onClick(View v) {
+////                Log.e("###", "onClick: "+ viewBinding.collectedImage.getDrawable().equals(getResources().getDrawable(R.drawable.collected)) );
+//
+//                if (viewBinding.collectedImage.getDrawable().getConstantState().equals
+//                        (getResources().getDrawable(R.drawable.collected).getConstantState())) {  //点击收藏变未收藏
+//
+//                    viewBinding.isCollected.setBackgroundResource(R.drawable.not_collected_bg);
+//                    viewBinding.collectedImage.setImageResource(R.drawable.not_collected);
+//                    Log.e("###", "点击收藏变未收藏");
+//
+//                    if (!InvokesData.getInvokesData(PackImageDetailsActivity.this).querySavePackGson(packDetails.getId())) {
+////                        Log.e("###", "delete" );
+//                        InvokesData.getInvokesData(PackImageDetailsActivity.this).deleteSavePacks(gson.toJson(packDetails));
+//                    }
+//                } else {  //点击未收藏变收藏
+//
+//                    viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
+//                    viewBinding.collectedImage.setImageResource(R.drawable.collected);
+//                    Log.e("###", "点击未收藏变收藏");
+//
+//                    InvokesData.getInvokesData(PackImageDetailsActivity.this).insertPackData(
+//                            new SaveData(packDetails.getId(), gson.toJson(packDetails)));
+//                }
+//
+//            }
+//        });
 
 
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
@@ -523,8 +519,8 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             DownloadImages();
 
         } catch (Exception e) {
-            Log.e("###", "error adding sticker pack to WhatsApp", e);
-            Toast.makeText(this, R.string.error_adding, Toast.LENGTH_LONG).show();
+            Log.e("###", "error adding sticker pack to WhatsApp" + e.getMessage());
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
     }
@@ -577,6 +573,9 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == LSConstant.ADD_PACK) {
+            InvokesData.getInvokesData(PackImageDetailsActivity.this).insertPackData(
+                    new SaveData(packDetails.getId(), gson.toJson(packDetails)));
+
             RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener(){
 
                 @Override

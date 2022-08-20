@@ -35,6 +35,7 @@ import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.InvokesData;
+import com.example.lovesticker.util.room.SaveData;
 import com.example.lovesticker.util.score.RateController;
 import com.example.lovesticker.util.score.RateDialog;
 import com.example.lovesticker.util.stickers.AddStickerPackActivity;
@@ -73,6 +74,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     private boolean stickerPackWhitelistedInWhatsAppSmb;
     private File file;
     private File fileTray;
+    private File myTray;
 
     @Override
     protected void initView() {
@@ -118,20 +120,82 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         }
 
 
-//        if (!LSMKVUtil.getBoolean("isStickerClear",false)){
-//            sticker.clear();
-//        }
 
-        if (stickerPackNumber != 0) {
+        if (stickerPackNumber != 0) {  //添加sticker数据
             sticker.clear();
             ArrayList<String> emoji = new ArrayList<>();
             emoji.add("");
             for (int i = 0; i < stickerPackNumber; i++) {
                 String name = stickerPacks.getStickersList().get(i).getImage();
                 sticker.add(new Sticker(name.substring(name.lastIndexOf("/")+1), emoji));
+                Log.e("###", "name: "+  name.substring(name.lastIndexOf("/")+1));
             }
-//            LSMKVUtil.put("isStickerClear",false);
         }
+
+        stickerPackWhitelistedInWhatsAppConsumer = WhitelistCheck.isStickerPackWhitelistedInWhatsAppConsumer(this, stickerPacks.getIdentifier());
+        stickerPackWhitelistedInWhatsAppSmb = WhitelistCheck.isStickerPackWhitelistedInWhatsAppSmb(this, stickerPacks.getIdentifier());
+
+//        if (stickerPackWhitelistedInWhatsAppConsumer){
+//            viewBinding.sendText.setText(R.string.add_to_whatsapp);
+//            viewBinding.sendButton.setEnabled(false);
+//
+//        }else {
+//
+//            viewBinding.sendText.setText(R.string.added_to_whatsApp);
+//        }
+//
+//        if (myTray != null){
+//            if (stickerPackWhitelistedInWhatsAppConsumer){  //已经添加到whatsApp
+//                viewBinding.sendText.setText(R.string.added_to_whatsApp);
+//                viewBinding.sendButton.setEnabled(false);
+//
+//            }else {
+//                viewBinding.sendText.setText(R.string.add_to_whatsapp);
+//                viewBinding.sendButton.setEnabled(true);
+//            }
+//
+//        }else {
+//            if (stickerPackWhitelistedInWhatsAppConsumer){  //已经添加到whatsApp
+//                viewBinding.sendText.setText(R.string.add_to_whatsapp);
+//                viewBinding.sendButton.setEnabled(true);
+//                InvokesData.getInvokesData(PackDetailsActivity.this).insertPackData(
+//                        new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
+//            }else {
+//                viewBinding.sendText.setText(R.string.add_to_whatsapp);
+//                viewBinding.sendButton.setEnabled(true);
+//            }
+//        }
+//
+//        if (stickerPackWhitelistedInWhatsAppConsumer){  //已经添加到whatsApp
+//            viewBinding.sendText.setText(R.string.added_to_whatsApp);
+//            viewBinding.sendButton.setEnabled(false);
+//
+//        }else {
+//            viewBinding.sendText.setText(R.string.add_to_whatsapp);
+//            viewBinding.sendButton.setEnabled(true);
+//
+//            InvokesData.getInvokesData(PackDetailsActivity.this).insertPackData(
+//                    new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
+//        }
+        if (!InvokesData.getInvokesData(PackDetailsActivity.this).querySavePackGson(stickerPacks.getId())) {  //有数据
+            viewBinding.sendText.setText(R.string.added_to_whatsApp);
+            viewBinding.sendButton.setEnabled(false);
+        }else {
+            if (stickerPackWhitelistedInWhatsAppConsumer){  //已经添加到whatsApp
+                viewBinding.sendText.setText(R.string.add_to_whatsapp);
+                viewBinding.sendButton.setEnabled(true);
+
+                //添加进收藏
+                InvokesData.getInvokesData(PackDetailsActivity.this).insertPackData(
+                        new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
+            }else {
+                viewBinding.sendText.setText(R.string.add_to_whatsapp);
+                viewBinding.sendButton.setEnabled(true);
+            }
+
+        }
+
+
 
     }
 
@@ -160,6 +224,9 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 } else {
                     addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
                 }
+
+                viewBinding.sendText.setText(R.string.added_to_whatsApp);
+                viewBinding.sendButton.setEnabled(false);
 
             }
         });
@@ -282,19 +349,19 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 String[] trayImageName = stickerPacks.getTrayImageFile().split("/");
                 String trayImage = LSConstant.image_uri + stickerPacks.getTrayImageFile();
 
-                File myTrayr = new File(getFilesDir() + "/" + "stickers_asset" + "/" + stickerPacks.getIdentifier());
-                if (!myTrayr.exists()) {
-                    myTrayr.mkdirs();
+                myTray = new File(getFilesDir() + "/" + "stickers_asset" + "/" + stickerPacks.getIdentifier());
+                if (!myTray.exists()) {
+                    myTray.mkdirs();
                 }
 
-                fileTray = new File(myTrayr, trayImageName[2]);
+                fileTray = new File(myTray, trayImageName[2]);
                 fileStorage(fileTray, trayImage);
 
                 for (int i = 0; i < stickersImg.size(); i++) {
                     String imageName = stickerPacks.getStickersList().get(i).getImage();
                     String[] srs = imageName.split("/");
 
-                    file = new File(myTrayr, srs[2]);
+                    file = new File(myTray, srs[2]);
                     fileStorage(file, stickersImg.get(i));
                 }
             } catch (Exception e) {
@@ -337,7 +404,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         //回到主线程（UI线程），处理UI
         if (msg.what == 0) {
             String[] trayImage = stickerPacks.getTrayImageFile().split("/");
-            Log.e("###", "trayImage :" + trayImage[2]);
+//            Log.e("###", "trayImage :" + trayImage[2]);
             String pngImage = trayImage[2].replace(".webp", ".png");
 
             stickerPack = new StickerPack(stickerPacks.getIdentifier(), stickerPacks.getTitle(),
@@ -354,7 +421,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 popupWindowImg.setImageResource(R.drawable.connection);
                 popupWindowHeadline.setText("Connection Succeeded");
                 popupWindowSubtitle.setText("Almost completed…");
-            }, 2000);
+            }, 1000);
 
             if (stickerPackWhitelistedInWhatsAppConsumer){
                 addSendPopupWindow.dismiss();
@@ -483,8 +550,6 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 Toast.makeText(this, R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
                 return;
             }
-            stickerPackWhitelistedInWhatsAppConsumer = WhitelistCheck.isStickerPackWhitelistedInWhatsAppConsumer(this, identifier);
-            stickerPackWhitelistedInWhatsAppSmb = WhitelistCheck.isStickerPackWhitelistedInWhatsAppSmb(this, identifier);
             if (getFileSize(file) == 0 && getFileSize(fileTray) == 0){
                 AddSendStatus();
             }
@@ -492,8 +557,8 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             DownloadImages();
 
         } catch (Exception e) {
-            Log.e("###", "error adding sticker pack to WhatsApp", e);
-            Toast.makeText(this, R.string.error_adding, Toast.LENGTH_LONG).show();
+            Log.e("###", "error adding sticker pack to WhatsApp" + e.getMessage());
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
     }
@@ -505,6 +570,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             popupWindowSubtitle.setText("Done！");
         }, 1000);
         addSendPopupWindow.dismiss();
+
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
         intent.setPackage(whatsappPackageName);
         try {
@@ -522,6 +588,8 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             popupWindowSubtitle.setText("Done！");
         }, 1000);
         addSendPopupWindow.dismiss();
+ InvokesData.getInvokesData(PackDetailsActivity.this).insertPackData(
+                    new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
 
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
         try {
@@ -545,6 +613,10 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == LSConstant.ADD_PACK) {
+            //添加进收藏
+            InvokesData.getInvokesData(PackDetailsActivity.this).insertPackData(
+                    new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
+
             RateController.getInstance().tryRateFinish(PackDetailsActivity.this, new RateDialog.RatingClickListener() {
 
                 @Override

@@ -98,6 +98,7 @@ public class PackViewModel extends BaseViewModel {
 
                         if (packBean.getData().getTotalPages() >= nowPage){
                             stickerPacksList.addAll(packBean.getData().getStickerPacksList());
+                            spLiveData.setValue(stickerPacksList);
                         }
 
                     }

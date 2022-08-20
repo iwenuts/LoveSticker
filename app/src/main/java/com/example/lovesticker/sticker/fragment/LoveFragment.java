@@ -10,8 +10,11 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +27,12 @@ import com.example.lovesticker.sticker.model.SingleAnimatedCategoriesBean;
 import com.example.lovesticker.sticker.viewmodel.LoveViewModel;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
+import com.example.lovesticker.util.view.swipeRefresh.PullLoadMoreRecyclerView;
 
 import java.util.List;
 
 
-public class LoveFragment extends Fragment {
+public class LoveFragment extends Fragment implements PullLoadMoreRecyclerView.PullLoadMoreListener{
     private FragmentLoveBinding viewBinding;
     private String mLink;
     private LoveAdapter loveAdapter;
@@ -36,6 +40,8 @@ public class LoveFragment extends Fragment {
 
     private List<SingleAnimatedCategoriesBean.Postcards> mPostcards;
     private GridLayoutManager manager;
+    private RecyclerView recyclerView;
+
 
     public LoveFragment() {
         // Required empty public constructor
@@ -81,7 +87,7 @@ public class LoveFragment extends Fragment {
 
             viewBinding.loadingData.setVisibility(View.VISIBLE);
             viewModel.requestInitialSingleAnimatedData(mLink.substring(1));
-            initRefresh();
+//            initRefresh();
         }
     }
 
@@ -96,12 +102,21 @@ public class LoveFragment extends Fragment {
             if (postcards != null) {
                 viewBinding.loadingData.setVisibility(View.GONE);
                 //Adapter
-                manager = new GridLayoutManager(getContext(), 2);
-                viewBinding.loveRecycler.setLayoutManager(manager);
+//                recyclerView = viewBinding.swipeLayout.getRecyclerView();
+//                recyclerView.setVerticalScrollBarEnabled(false);
+//                viewBinding.swipeLayout.setRefreshing(true);
+//                viewBinding.swipeLayout.setFooterViewText("loading");
+                manager = viewBinding.swipeLayout.setGridLayout(2);
                 loveAdapter = new LoveAdapter(postcards, getContext(), getActivity(),onPositionClickedListener);
-                viewBinding.loveRecycler.setAdapter(loveAdapter);
-//                    imageListener.onImageClick(postcards);
+                viewBinding.swipeLayout.setAdapter(loveAdapter);
 
+
+//                //Adapter
+//                manager = new GridLayoutManager(getContext(), 2);
+//                viewBinding.loveRecycler.setLayoutManager(manager);
+//                loveAdapter = new LoveAdapter(postcards, getContext(), getActivity(),onPositionClickedListener);
+//                viewBinding.loveRecycler.setAdapter(loveAdapter);
+//                    imageListener.onImageClick(postcards);
             }
         });
     }
@@ -135,18 +150,40 @@ public class LoveFragment extends Fragment {
         }
     }
 
-    private void initRefresh() {
-        viewBinding.swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                viewModel.requestSurplusSingleAnimatedData(mLink.substring(1));
-                loveAdapter.notifyDataSetChanged();
-                viewBinding.swipeLayout.setRefreshing(false);
+//    private void initRefresh() {
+//        viewBinding.swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                viewModel.requestSurplusSingleAnimatedData(mLink.substring(1));
+//                loveAdapter.notifyDataSetChanged();
+//                viewBinding.swipeLayout.setRefreshing(false);
+//
+//            }
+//        });
+//
+//    }
 
-            }
-        });
+
+    @Override
+    public void onRefresh() {  //下拉刷新监听
+        if (loveAdapter!= null){
+            loveAdapter.notifyDataSetChanged();
+            viewBinding.swipeLayout.setPullLoadMoreCompleted();
+        }
 
     }
 
+    @Override
+    public void onLoadMore() {  //上拉加载监听
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
 
+            viewModel.requestSurplusSingleAnimatedData(mLink.substring(1));
+            if (loveAdapter!= null){
+                loveAdapter.notifyDataSetChanged();
+                viewBinding.swipeLayout.setPullLoadMoreCompleted();
+            }
+
+        }, 1000);
+
+    }
 }

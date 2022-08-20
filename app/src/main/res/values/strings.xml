@@ -5,6 +5,7 @@
     <string name="send_whatsApp">Send</string>
     <string name="add_pack_fail_prompt_update_whatsapp">Sticker pack not added. If you\'d like to add it, make sure you update to the latest version of WhatsApp.</string>
     <string name="add_to_whatsapp">Add to WhatsApp</string>
+    <string name="added_to_whatsApp">WhatsApp has been added</string>
     <string name="title_validation_error">Error with the pack</string>
     <string name="add_pack_fail_prompt_update_play_link">Update</string>
     <string name="cannot_find_play_store">Google Play is not installed on the device.</string>

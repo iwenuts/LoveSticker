@@ -64,14 +64,14 @@ public class SetUpActivity extends BaseActivity<BaseViewModel, ActivitySetUpBind
             try {
                 Intent launchIntent = new Intent(Intent.ACTION_VIEW);
                 launchIntent.setAction("com.android.vending");
-                launchIntent.setData(Uri.parse("market://details?id=$packageName"));
+                launchIntent.setData(Uri.parse("market://details?id=" + packageName));
                 launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(launchIntent);
             } catch (ActivityNotFoundException e) {
                 try {
                     Intent launchIntent = new Intent(
                             Intent.ACTION_VIEW,
-                            Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                            Uri.parse("https://play.google.com/store/apps/details?id=" + packageName)
                     );
                     launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(launchIntent);

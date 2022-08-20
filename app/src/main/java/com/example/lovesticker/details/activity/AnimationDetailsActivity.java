@@ -181,7 +181,6 @@ public class AnimationDetailsActivity extends BaseActivity<BaseViewModel, Activi
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 finish();
             }
         });

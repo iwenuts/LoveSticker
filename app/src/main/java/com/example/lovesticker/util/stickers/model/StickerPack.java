@@ -70,7 +70,7 @@ public class StickerPack implements Parcelable {
 
     }
 
-    void setIsWhitelisted(boolean isWhitelisted) {
+    public void setIsWhitelisted(boolean isWhitelisted) {
         this.isWhitelisted = isWhitelisted;
     }
 

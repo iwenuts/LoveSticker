@@ -194,7 +194,8 @@
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
 -keep class * implements com.google.gson.JsonDeserializer
--keep class com.example.lovesticker.main.model.** { *; }
+-keep class com.example.lovesticker.main.model.LoveStickerBean
+-keep class com.example.lovesticker.main.model.PackBean
 -keep class com.example.lovesticker.sticker.model.** { *; }
 
 

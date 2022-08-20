@@ -14,6 +14,7 @@ import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.InvokesData;
 import com.example.lovesticker.util.room.SaveData;
 import com.example.lovesticker.util.room.SaveDatabase;
+import com.example.lovesticker.util.stickers.model.StickerPack;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -56,18 +57,17 @@ public class SavePacksViewModel extends BaseViewModel {
             return false;
         });
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
+
+        new Thread(() -> {
 //                List<SaveData> getSaveGson = SaveDatabase.getInstance(context).getUserDao().savePackGson();
-                List<String> getSaveGson = SaveDatabase.getInstance(context).getUserDao().getSavePackData();
+            List<String> getSaveGson = SaveDatabase.getInstance(context).getUserDao().getSavePackData();
 
-                Message msg = new Message();
-                msg.what = 0;
-                msg.obj = getSaveGson;
-                handler.sendMessage(msg);
 
-            }
+            Message msg = new Message();
+            msg.what = 0;
+            msg.obj = getSaveGson;
+            handler.sendMessage(msg);
+
         }).start();
 
 //        saveGsonData = InvokesData.getInvokesData(context).queryAllSaveGsonData();
@@ -80,6 +80,7 @@ public class SavePacksViewModel extends BaseViewModel {
 //            savePackLiveData.setValue(saveData);
 //
 //        }
+
     }
 
 

@@ -3,6 +3,7 @@ package com.example.lovesticker.mine.adapter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.example.lovesticker.details.activity.PackDetailsActivity;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.stickers.WhitelistCheck;
+import com.example.lovesticker.util.stickers.model.StickerPack;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -28,7 +30,6 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
     private List<StickerPacks> spList;
     private StickerPacks stickerPacks;
     private Context context;
-    private List<Integer> eachPackNumberList = new ArrayList<>();
 
     private final OnAddButtonClickedListener onAddButtonClickedListener;
 
@@ -65,11 +66,13 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
         holder.packNoAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.e("###", "onAddButtonClickedListener : " + onAddButtonClickedListener);
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(context)
-                        .setTitle("Would you like to add Lovely！to Whatsapp?")
+                        .setTitle("Would you like to add Lovely！to WhatsApp?")
                         .setCancelable(false)
                         .setPositiveButton("ADD",((dialog, which) -> {
-                            onAddButtonClickedListener.onAddButtonClicked(stickerPacks);
+                            onAddButtonClickedListener.onAddButtonClicked(spList.get(holder.getAdapterPosition()));
+                            dialog.dismiss();
 
                         })).setNegativeButton("CANCEL",((dialog, which) -> dialog.dismiss()));
                 alertDialog.show();
@@ -113,7 +116,19 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
 
 
             final boolean isWhitelisted = WhitelistCheck.isWhitelisted(context, stickerPacks.getIdentifier());
-
+//            for (StickerPack stickerPack : stickerPackList) {
+//                stickerPack.setIsWhitelisted(WhitelistCheck.isWhitelisted(context, stickerPacks.getIdentifier()));
+//
+//                if (stickerPack.getIsWhitelisted()) {
+//                    holder.packAdd.setVisibility(View.VISIBLE);
+//                    holder.packAdd.setImageResource(R.drawable.finished_adding);
+//                    holder.packNoAdd.setVisibility(View.GONE);
+//                } else {
+//                    holder.packAdd.setVisibility(View.GONE);
+//                    holder.packNoAdd.setVisibility(View.VISIBLE);
+//                    holder.packNoAdd.setImageResource(R.drawable.add_pack);
+//                }
+//            }
 
             if (isWhitelisted){
                 holder.packAdd.setVisibility(View.VISIBLE);

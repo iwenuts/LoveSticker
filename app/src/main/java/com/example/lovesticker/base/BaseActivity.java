@@ -211,7 +211,7 @@ public abstract class BaseActivity<VM extends BaseViewModel, VB> extends AppComp
                 fis = new FileInputStream(file);
                 size = fis.available();
             } else {
-                file.createNewFile();
+//                file.createNewFile();
                 Log.d("###", "获取文件大小不存在!");
             }
         } catch (Exception e) {

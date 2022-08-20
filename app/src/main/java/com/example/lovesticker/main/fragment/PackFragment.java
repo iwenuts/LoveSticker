@@ -1,5 +1,7 @@
 package com.example.lovesticker.main.fragment;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 
@@ -7,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.lovesticker.base.BaseFragment;
@@ -16,6 +19,8 @@ import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.main.viewmodel.PackViewModel;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
+import com.example.lovesticker.util.view.swipeRefresh.PullLoadMoreRecyclerView;
+
 
 import java.util.List;
 
@@ -24,9 +29,9 @@ import java.util.List;
  * Use the {@link PackFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBinding>{
+public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBinding> {
     private PackAdapter packAdapter;
-
+    private RecyclerView recyclerView;
 
     public PackFragment() {
         // Required empty public constructor
@@ -50,7 +55,7 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
 
         viewModel.requestInitialPackData();
 //        viewModel.requestSurplusPackData();
-        initRefresh();
+//        initRefresh();
 
     }
 
@@ -67,31 +72,79 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
             public void onChanged(List<StickerPacks> stickerPacks) {
                 Log.e("###", "setAllStickerPacks:" + stickerPacks.size());
                 viewBinding.loadingData.setVisibility(View.GONE);
+
                 //Adapter
-                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-                layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                viewBinding.packRecycler.setLayoutManager(layoutManager);
+                recyclerView = viewBinding.swipeLayout.getRecyclerView();
+                recyclerView.setVerticalScrollBarEnabled(true);
+                viewBinding.swipeLayout.setRefreshing(true);
+                viewBinding.swipeLayout.setFooterViewText("loading");
+                viewBinding.swipeLayout.setLinearLayout();
                 packAdapter = new PackAdapter(stickerPacks,viewModel,getContext(),getActivity());
-                viewBinding.packRecycler.setAdapter(packAdapter);
+                viewBinding.swipeLayout.setAdapter(packAdapter);
 
+                viewBinding.swipeLayout.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
+                    @Override
+                    public void onRefresh() {  //下拉刷新监听
+                        if (packAdapter!= null){
+                            packAdapter.notifyDataSetChanged();
+                            viewBinding.swipeLayout.setPullLoadMoreCompleted();
+                        }
+
+                    }
+
+                    @Override
+                    public void onLoadMore() {  //上拉加载监听
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+
+                            viewModel.requestSurplusPackData();
+                            if (packAdapter!= null){
+                                packAdapter.notifyDataSetChanged();
+                                viewBinding.swipeLayout.setPullLoadMoreCompleted();
+
+                            }
+
+                        }, 1000);
+
+                    }
+                });
+
+//                //Adapter
+//                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+//                layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+//                viewBinding.packRecycler.setLayoutManager(layoutManager);
+//                packAdapter = new PackAdapter(stickerPacks,viewModel,getContext(),getActivity());
+//                viewBinding.packRecycler.setAdapter(packAdapter);
             }
         });
 
     }
 
-    private void initRefresh() {
+//    private void initRefresh() {
+//
+//        viewBinding.swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                viewModel.requestSurplusPackData();
+////                packAdapter.notifyDataSetChanged();
+//                viewBinding.swipeLayout.setRefreshing(false);
+//            }
+//
+//        });
+//
+//    }
 
-        viewBinding.swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                viewModel.requestSurplusPackData();
-//                packAdapter.notifyDataSetChanged();
-                viewBinding.swipeLayout.setRefreshing(false);
-            }
-
-        });
-
-    }
+//    @Override
+//    public void onRefresh() {  //下拉刷新监听
+//        packAdapter.notifyDataSetChanged();
+//        viewBinding.swipeLayout.setPullLoadMoreCompleted();
+//    }
+//
+//    @Override
+//    public void onLoadMore() {  //上拉加载监听
+//        viewModel.requestSurplusPackData();
+//        packAdapter.notifyDataSetChanged();
+//        viewBinding.swipeLayout.setPullLoadMoreCompleted();
+//    }
 
     @Override
     public void onResume() {
@@ -108,9 +161,7 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
     public void onDestroy() {
         super.onDestroy();
 
-
     }
-
 
 
 }
