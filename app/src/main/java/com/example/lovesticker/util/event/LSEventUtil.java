@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.blankj.utilcode.BuildConfig;
 //import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.umeng.analytics.MobclickAgent;
 import com.umeng.commonsdk.UMConfigure;
 
@@ -19,13 +20,13 @@ public class LSEventUtil {
         applicationContext = appContext;
 //        mFirebaseAnalytics = FirebaseAnalytics.getInstance(applicationContext);
 
-        UMConfigure.setLogEnabled(BuildConfig.DEBUG);
+//        UMConfigure.setLogEnabled(BuildConfig.DEBUG);
 //        UMConfigure.preInit(applicationContext,BuildConfig.U_MENG_KEY,"GP" );
 //
 //        UMConfigure.init(applicationContext,BuildConfig.U_MENG_KEY,"GP",
 //                UMConfigure.DEVICE_TYPE_PHONE,null);
-        UMConfigure.setProcessEvent(true);
-        MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.AUTO);
+//        UMConfigure.setProcessEvent(true);
+//        MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.AUTO);
     }
 
     public static void logInstallFrom(String from) {

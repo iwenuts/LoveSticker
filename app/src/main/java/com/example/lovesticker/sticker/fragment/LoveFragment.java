@@ -32,7 +32,7 @@ import com.example.lovesticker.util.view.swipeRefresh.PullLoadMoreRecyclerView;
 import java.util.List;
 
 
-public class LoveFragment extends Fragment implements PullLoadMoreRecyclerView.PullLoadMoreListener{
+public class LoveFragment extends Fragment{
     private FragmentLoveBinding viewBinding;
     private String mLink;
     private LoveAdapter loveAdapter;
@@ -109,7 +109,26 @@ public class LoveFragment extends Fragment implements PullLoadMoreRecyclerView.P
                 manager = viewBinding.swipeLayout.setGridLayout(2);
                 loveAdapter = new LoveAdapter(postcards, getContext(), getActivity(),onPositionClickedListener);
                 viewBinding.swipeLayout.setAdapter(loveAdapter);
+                viewBinding.swipeLayout.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
+                    @Override
+                    public void onRefresh() {
+                        if (loveAdapter!= null){
+                            loveAdapter.notifyDataSetChanged();
+                            viewBinding.swipeLayout.setPullLoadMoreCompleted();
+                        }
+                    }
 
+                    @Override
+                    public void onLoadMore() {
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                            viewModel.requestSurplusSingleAnimatedData(mLink.substring(1));
+                            if (loveAdapter!= null){
+                                loveAdapter.notifyDataSetChanged();
+                                viewBinding.swipeLayout.setPullLoadMoreCompleted();
+                            }
+                        }, 1000);
+                    }
+                });
 
 //                //Adapter
 //                manager = new GridLayoutManager(getContext(), 2);
@@ -164,26 +183,4 @@ public class LoveFragment extends Fragment implements PullLoadMoreRecyclerView.P
 //    }
 
 
-    @Override
-    public void onRefresh() {  //下拉刷新监听
-        if (loveAdapter!= null){
-            loveAdapter.notifyDataSetChanged();
-            viewBinding.swipeLayout.setPullLoadMoreCompleted();
-        }
-
-    }
-
-    @Override
-    public void onLoadMore() {  //上拉加载监听
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-
-            viewModel.requestSurplusSingleAnimatedData(mLink.substring(1));
-            if (loveAdapter!= null){
-                loveAdapter.notifyDataSetChanged();
-                viewBinding.swipeLayout.setPullLoadMoreCompleted();
-            }
-
-        }, 1000);
-
-    }
 }

@@ -47,10 +47,6 @@
 
 <!--    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
         <com.example.lovesticker.util.view.swipeRefresh.PullLoadMoreRecyclerView
             android:id="@+id/swipe_layout"
             android:layout_width="match_parent"
@@ -59,9 +55,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
 
 
 

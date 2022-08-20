@@ -3,16 +3,11 @@ package com.example.lovesticker.main.fragment;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
 import android.view.View;
 
-import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseFragment;
 import com.example.lovesticker.databinding.FragmentStickerBinding;
 import com.example.lovesticker.main.viewmodel.StickerViewModel;
@@ -46,6 +41,8 @@ public class StickerFragment extends BaseFragment<StickerViewModel, FragmentStic
         stickerFragment = this;  //在MainActivity已经启动过，重新new的话会生成新的Fragment
         viewModel.requestAllAnimatedCategoriesData();
         viewBinding.loadingData.setVisibility(View.VISIBLE);
+        viewBinding.stickerViewPager.setUserInputEnabled(false);
+
 
     }
 
@@ -87,6 +84,7 @@ public class StickerFragment extends BaseFragment<StickerViewModel, FragmentStic
         }).attach();
 
     }
+
 
     @Override
     protected void dataObserver() {

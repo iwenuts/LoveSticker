@@ -187,6 +187,40 @@ public class PullLoadMoreRecyclerView extends LinearLayout {
         }
     }
 
+
+//    private int startX, startY;
+//    public class onTouchRecyclerView implements OnTouchListener {
+//        @Override
+//        public boolean onTouch(View v, MotionEvent event) {
+////            return isRefresh || isLoadMore;
+//            switch (event.getAction()){
+//                case MotionEvent.ACTION_DOWN:
+//                    startX = (int) event.getX();
+//                    startY = (int) event.getY();
+//                    getParent().requestDisallowInterceptTouchEvent(true);
+//                    break;
+//                case MotionEvent.ACTION_MOVE:
+//                    int endX = (int) event.getX();
+//                    int endY = (int) event.getY();
+//                    int disX = Math.abs(endX - startX);
+//                    int disY = Math.abs(endY - startY);
+//                    if (disX > disY) {
+//                        //如果是纵向滑动，告知父布局不进行时间拦截，交由子布局消费， requestDisallowInterceptTouchEvent(true)
+//                        getParent().requestDisallowInterceptTouchEvent(true);
+//                    } else {
+//                        getParent().requestDisallowInterceptTouchEvent(canScrollVertically(startX - endX));
+//                    }
+//                    break;
+//
+//                case MotionEvent.ACTION_CANCEL:
+//                    getParent().requestDisallowInterceptTouchEvent(false);
+//                    break;
+//
+//            }
+//            return isRefresh || isLoadMore;
+//        }
+//    }
+
         public boolean getPushRefreshEnable() {
         return pushRefreshEnable;
     }

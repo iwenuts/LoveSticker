@@ -48,6 +48,14 @@
   public static final android.os.Parcelable$Creator *;
 }
 
+
+-keepclassmembers class * implements android.os.Parcelable {
+ public <fields>;
+ private <fields>;
+}
+
+
+
 # Preserve all native method names and the names of their classes.
 -keepclasseswithmembernames class * {
     native <methods>;
@@ -194,10 +202,9 @@
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
 -keep class * implements com.google.gson.JsonDeserializer
--keep class com.example.lovesticker.main.model.LoveStickerBean
--keep class com.example.lovesticker.main.model.PackBean
+-keep class com.example.lovesticker.main.model.** { *; }
 -keep class com.example.lovesticker.sticker.model.** { *; }
-
+-keep class com.example.lovesticker.util.stickers.model.** { *; }
 
 #Gson
 -keep class com.google.gson.** { *; }

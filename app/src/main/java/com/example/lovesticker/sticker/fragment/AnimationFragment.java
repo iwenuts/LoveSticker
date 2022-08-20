@@ -62,6 +62,8 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
 
     }
 
+
+
     @Override
     protected void dataObserver() {
         viewModel.getAllAnimatedLiveData().observe(getViewLifecycleOwner(), new Observer<List<AllAnimatedBean.Postcards>>() {
@@ -157,27 +159,6 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
 //        });
 //    }
 
-//    @Override
-//    public void onRefresh() {   //下拉刷新监听
-//        if (animationAdapter!= null){
-//            animationAdapter.notifyDataSetChanged();
-//            viewBinding.swipeLayout.setPullLoadMoreCompleted();
-//        }
-//
-//    }
-//
-//    @Override
-//    public void onLoadMore() {  //上拉加载监听
-//        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-//
-//            viewModel.requestSurplusAllAnimatedData();
-//            if (animationAdapter!= null){
-//                animationAdapter.notifyDataSetChanged();
-//                viewBinding.swipeLayout.setPullLoadMoreCompleted();
-//            }
-//
-//        }, 1000);
-//
-//    }
+
 
 }

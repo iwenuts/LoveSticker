@@ -71,8 +71,6 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
     private boolean stickerPackWhitelistedInWhatsAppConsumer;
     private boolean stickerPackWhitelistedInWhatsAppSmb;
 
-    private Gson gson = new Gson();
-
     @Override
     protected void initView() {
 
