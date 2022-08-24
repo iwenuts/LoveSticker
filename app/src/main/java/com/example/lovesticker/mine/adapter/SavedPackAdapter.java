@@ -71,7 +71,7 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
                         .setTitle("Would you like to add Lovely！to WhatsApp?")
                         .setCancelable(false)
                         .setPositiveButton("ADD",((dialog, which) -> {
-                            onAddButtonClickedListener.onAddButtonClicked(spList.get(holder.getAdapterPosition()));
+                            onAddButtonClickedListener.onAddButtonClicked(spList.get(holder.getAdapterPosition()),holder.getAdapterPosition() );
                             dialog.dismiss();
 
                         })).setNegativeButton("CANCEL",((dialog, which) -> dialog.dismiss()));
@@ -115,7 +115,7 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
                     .into(holder.img3);
 
 
-            final boolean isWhitelisted = WhitelistCheck.isWhitelisted(context, stickerPacks.getIdentifier());
+            boolean isWhitelisted = WhitelistCheck.isWhitelisted(context, stickerPacks.getIdentifier());
 //            for (StickerPack stickerPack : stickerPackList) {
 //                stickerPack.setIsWhitelisted(WhitelistCheck.isWhitelisted(context, stickerPacks.getIdentifier()));
 //
@@ -150,6 +150,6 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
     }
 
     public interface OnAddButtonClickedListener {
-        void onAddButtonClicked(StickerPacks stickerPack);
+        void onAddButtonClicked(StickerPacks stickerPack, int index);
     }
 }

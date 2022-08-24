@@ -44,6 +44,8 @@ import com.example.lovesticker.util.room.SaveStickerData;
 import com.example.lovesticker.util.score.RateController;
 import com.example.lovesticker.util.score.RateDialog;
 import com.example.lovesticker.util.stickers.AddStickerPackActivity;
+import com.example.lovesticker.util.stickers.StickersCallBack;
+import com.example.lovesticker.util.stickers.StickersManager;
 import com.example.lovesticker.util.stickers.WhitelistCheck;
 import com.example.lovesticker.util.stickers.model.Sticker;
 import com.example.lovesticker.util.stickers.model.StickerPack;
@@ -181,45 +183,6 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             }
         });
 
-//        if (!InvokesData.getInvokesData(PackImageDetailsActivity.this).querySavePackGson(packDetails.getId())) {
-//            viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
-//            viewBinding.collectedImage.setImageResource(R.drawable.collected);
-//
-//        } else {
-//            viewBinding.isCollected.setBackgroundResource(R.drawable.not_collected_bg);
-//            viewBinding.collectedImage.setImageResource(R.drawable.not_collected);
-//        }
-
-//        viewBinding.isCollected.setOnClickListener(new View.OnClickListener() {
-//            @SuppressLint("UseCompatLoadingForDrawables")
-//            @Override
-//            public void onClick(View v) {
-////                Log.e("###", "onClick: "+ viewBinding.collectedImage.getDrawable().equals(getResources().getDrawable(R.drawable.collected)) );
-//
-//                if (viewBinding.collectedImage.getDrawable().getConstantState().equals
-//                        (getResources().getDrawable(R.drawable.collected).getConstantState())) {  //点击收藏变未收藏
-//
-//                    viewBinding.isCollected.setBackgroundResource(R.drawable.not_collected_bg);
-//                    viewBinding.collectedImage.setImageResource(R.drawable.not_collected);
-//                    Log.e("###", "点击收藏变未收藏");
-//
-//                    if (!InvokesData.getInvokesData(PackImageDetailsActivity.this).querySavePackGson(packDetails.getId())) {
-////                        Log.e("###", "delete" );
-//                        InvokesData.getInvokesData(PackImageDetailsActivity.this).deleteSavePacks(gson.toJson(packDetails));
-//                    }
-//                } else {  //点击未收藏变收藏
-//
-//                    viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
-//                    viewBinding.collectedImage.setImageResource(R.drawable.collected);
-//                    Log.e("###", "点击未收藏变收藏");
-//
-//                    InvokesData.getInvokesData(PackImageDetailsActivity.this).insertPackData(
-//                            new SaveData(packDetails.getId(), gson.toJson(packDetails)));
-//                }
-//
-//            }
-//        });
-
 
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -243,14 +206,6 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
                 finish();
             }
         });
-
-//        viewBinding.share.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Uri uri = Uri.parse(LSConstant.image_uri + packDetails.getStickersList().get(currentPosition).getImage());
-//                shareAny(uri);
-//            }
-//        });
     }
 
     private void showRewardDialog(int intent) {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
@@ -392,91 +347,27 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         popupWindowHeadline.setText("Connecting WhatsApp");
         popupWindowSubtitle.setText("The pack in preparation…");
 
-        for (int i = 0; i < packDetails.getStickersList().size(); i++) {
-            stickersImg.add(LSConstant.image_uri + packDetails.getStickersList().get(i).getImage());
-        }
+        StickersManager.downloadStickers(packDetails, new StickersCallBack() {
+            @Override
+            public void completed(int complete, int failed, int all) {
+                Log.e("StickersManager", "downloadStickers 完成:"+ complete + " 失败:"+failed +" 共:"+all);
 
-        try {
-            if (stickersImg != null) {
-                new Thread(() -> {
-                    try {
-                        String[] trayImageName = packDetails.getTrayImageFile().split("/");
-                        String trayImage = LSConstant.image_uri + packDetails.getTrayImageFile();
+                StickersManager.putStickers();
 
-                        File myTrayr = new File(getFilesDir() + "/" + "stickers_asset" + "/" + packDetails.getIdentifier());
-                        if (!myTrayr.exists()) {
-                            myTrayr.mkdirs();
-                        }
-
-                      fileTray = new File(myTrayr, trayImageName[2]);
-                        fileStorage(fileTray, trayImage);
-
-                        for (int i = 0; i < stickersImg.size(); i++) {
-                            String imageName = packDetails.getStickersList().get(i).getImage();
-                            String[] srs = imageName.split("/");
-
-                            file = new File(myTrayr, srs[2]);
-                            fileStorage(file, stickersImg.get(i));
-                        }
-                    } catch (Exception e) {
-                        e.getMessage();
-                    }
-                    Message msg = new Message();
-                    msg.what = 0;
-                    handler.sendMessage(msg);
-                }).start();
-
+                Message msg = new Message();
+                msg.what = 0;
+                msg.obj = packDetails;
+                handler.sendMessage(msg);
             }
-        } catch (Exception e) {
-            e.getMessage();
-        }
+        });
+
 
     }
 
-    private void fileStorage(File file, String data) {
-        if (file.exists() && getFileSize(file) > 0) {
-            return;
-        }
-        byte[] b = new byte[1024];
-        try {
-            URL url = new URL(data);
-            URLConnection urlConnection = url.openConnection();
-            urlConnection.connect();
-            DataInputStream di = new DataInputStream(urlConnection.getInputStream());
-            // output
-            FileOutputStream fo = new FileOutputStream(file);
-            // copy the actual file
-            // (it would better to use a buffer bigger than this)
-            while (-1 != di.read(b, 0, 1))
-                fo.write(b, 0, 1);
-            di.close();
-            fo.close();
-            Log.e("###", "Size: " + getFileSize(file) +" file: " + file);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("###", "e: " + e.getMessage());
-            System.exit(1);
-        }
-    }
 
     private final Handler handler = new Handler(msg -> {
         //回到主线程（UI线程），处理UI
         if (msg.what == 0) {
-            String[] trayImage = packDetails.getTrayImageFile().split("/");
-            Log.e("###", "trayImage :" + trayImage[2]);
-
-            stickerPack = new StickerPack(packDetails.getIdentifier(), packDetails.getTitle(),
-                    packDetails.getPublisher(), trayImage[2], "",
-                    packDetails.getPublisherWebsite(), packDetails.getPrivacyPolicyWebsite(),
-                    packDetails.getLicenseAgreementWebsite(), "1", false,
-                    false, sticker);
-//            Log.e("###", "stickerPack: " + stickerPack);
-
-            List<StickerPack> packs = new ArrayList<>();
-            packs.add(stickerPack);
-//            stickerPack.setStickers(sticker);
-
-            Hawk.put("sticker_packs", packs);
 
             new Handler(Looper.getMainLooper()).postDelayed(() -> {
                 popupWindowImg.setImageResource(R.drawable.connection);

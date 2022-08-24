@@ -61,7 +61,6 @@ import java.util.Objects;
 
 public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, FragmentSavedPacksBinding> {
     private SavedPackAdapter savedPackAdapter;
-    private StickerPack stickerPack;
     private List<Sticker> sticker = new ArrayList<>();
 
     private PopupWindow addSendPopupWindow;
@@ -71,11 +70,12 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
     private boolean stickerPackWhitelistedInWhatsAppConsumer;
     private boolean stickerPackWhitelistedInWhatsAppSmb;
 
+    private int selIndex = -1;
+    private List<StickerPacks> mStickerPacks;
+
     @Override
     protected void initView() {
-
         viewModel.getGsonData(getContext());
-
     }
 
     @Override
@@ -96,6 +96,8 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
             @Override
             public void onChanged(List<StickerPacks> stickerPacks) {
 //                Log.e("###", "stickerPacks Size "+  stickerPacks.size());
+                mStickerPacks = stickerPacks;
+
                 LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                 layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                 viewBinding.savedPackRecycler.setLayoutManager(layoutManager);
@@ -117,7 +119,9 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
 
     // 接口回调
     private final SavedPackAdapter.OnAddButtonClickedListener onAddButtonClickedListener =
-            stickerPack -> {
+            (stickerPack, index) -> {
+                selIndex = index;
+
                 if (stickerPack.getStickersList().size() != 0){
                     sticker.clear();
                     ArrayList<String> emoji = new ArrayList<>();
@@ -165,7 +169,6 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
         }
 
     }
-
 
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -264,6 +267,13 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
         if (requestCode == LSConstant.ADD_PACK) {
 
             StickersManager.cleanStickers();
+
+            if (null != mStickerPacks  && selIndex>-1 && selIndex<mStickerPacks.size()) {
+                boolean isWhitelisted = WhitelistCheck.isWhitelisted(requireContext(), mStickerPacks.get(selIndex).getIdentifier());
+                if (isWhitelisted && null != savedPackAdapter){
+                    savedPackAdapter.notifyItemChanged(selIndex);
+                }
+            }
 
             RateController.getInstance().tryRateFinish(getContext(), new RateDialog.RatingClickListener() {
 

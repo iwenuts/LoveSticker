@@ -100,6 +100,11 @@ public class StickersManager {
         }
     };
 
+    /**
+     * 下载数据
+     * @param stickerPacks
+     * @param callBack
+     */
     public static void downloadStickers(StickerPacks stickerPacks, StickersCallBack callBack) {
         getInstance().download(stickerPacks, callBack);
     }
@@ -147,12 +152,20 @@ public class StickersManager {
         queueSet.start();
     }
 
-    public static void putStickers(){
-        getInstance().put_stickers();
+    /**
+     * 设置sticker_packs数据
+     * @return
+     */
+    public static boolean putStickers(){
+        return getInstance().put_stickers();
     }
 
-    private void put_stickers(){
+    private boolean put_stickers(){
         StickerPacks stickerPacks = mStickerPacks;
+
+        if (null == stickerPacks || null == stickerPacks.getStickersList() || stickerPacks.getStickersList().size() == 0){
+            return false;
+        }
 
         String trayImage = stickerPacks.getTrayImageFile().substring(stickerPacks.getTrayImageFile().lastIndexOf("/")+1);
 
@@ -177,12 +190,27 @@ public class StickersManager {
         List<StickerPack> packs = new ArrayList<>();
         packs.add(stickerPack);
         Hawk.put("sticker_packs", packs);
+        return true;
     }
 
+    /**
+     * 清空sticker_packs数据
+     */
     public static void cleanStickers(){
         Hawk.delete("sticker_packs");
+        getInstance().clean();
     }
 
+    private void clean(){
+        if (mStickerPacks != null){
+            mStickerPacks = null;
+        }
+    }
+
+    /**
+     * 获取sticker_packs数据
+     * @return
+     */
     public static List<StickerPack> getStickers(){
         return  Hawk.get("sticker_packs",new ArrayList<StickerPack>());
     }
