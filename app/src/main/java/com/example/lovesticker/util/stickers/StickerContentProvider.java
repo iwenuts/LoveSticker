@@ -225,7 +225,8 @@ public class StickerContentProvider extends ContentProvider {
        /* if (stickerPackList == null) {
             readContentFile(Objects.requireNonNull(getContext()));
         }*/
-        return Hawk.get("sticker_packs",new ArrayList<StickerPack>());
+
+        return StickersManager.getStickers();
     }
 
     private Cursor getPackForAllStickerPacks(@NonNull Uri uri) {

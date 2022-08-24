@@ -13,6 +13,7 @@ import com.example.lovesticker.util.room.SaveData;
 
 import com.flurry.android.FlurryAgent;
 import com.flurry.android.FlurryPerformance;
+import com.liulishuo.filedownloader.FileDownloader;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.FormatStrategy;
@@ -64,6 +65,7 @@ public class LoveStickerApp extends Application {
                 .withPerformanceMetrics(FlurryPerformance.ALL)
                 .build(this, "5QZSQGBGTY9TPNPV7BV9");
 
+        FileDownloader.setup(application);
     }
 
 

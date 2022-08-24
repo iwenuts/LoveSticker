@@ -229,10 +229,11 @@ dependencies {
 
     //hawk
     implementation "com.orhanobut:hawk:2.0.1"
+    
+    implementation 'com.flurry.android:analytics:13.0.0'
 
+    //    implementation "com.tonyodev.fetch2:fetch2:3.1.16"
 
-    implementation 'com.flurry.android:analytics:+'
-
-//    implementation "com.tonyodev.fetch2:fetch2:3.1.16"
-
+    //file downloa
+    implementation 'com.liulishuo.filedownloader:library:1.7.7'
 }

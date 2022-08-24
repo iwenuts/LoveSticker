@@ -39,6 +39,8 @@ import com.example.lovesticker.util.room.InvokesData;
 import com.example.lovesticker.util.score.RateController;
 import com.example.lovesticker.util.score.RateDialog;
 import com.example.lovesticker.util.stickers.AddStickerPackActivity;
+import com.example.lovesticker.util.stickers.StickersCallBack;
+import com.example.lovesticker.util.stickers.StickersManager;
 import com.example.lovesticker.util.stickers.WhitelistCheck;
 import com.example.lovesticker.util.stickers.model.Sticker;
 import com.example.lovesticker.util.stickers.model.StickerPack;
@@ -150,8 +152,20 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
 //            if (getFileSize(file) == 0 && getFileSize(fileTray) == 0){
 //                AddSendStatus();
 //            }
+            StickersManager.downloadStickers(stickerPacks, new StickersCallBack() {
+                @Override
+                public void completed(int complete, int failed, int all) {
+                    Log.e("StickersManager", "downloadStickers 完成:"+ complete + " 失败:"+failed +" 共:"+all);
 
-            DownloadImages(stickerPacks);
+                    StickersManager.putStickers();
+
+                    Message msg = new Message();
+                    msg.what = 0;
+                    msg.obj = stickerPacks;
+                    handler.sendMessage(msg);
+                }
+            });
+            //DownloadImages(stickerPacks);
 
         } catch (Exception e) { //恢复原来状态，不再显示阴影
             WindowManager.LayoutParams attributes1 = requireActivity().getWindow().getAttributes();
@@ -164,22 +178,7 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
 
     }
 
-    protected long getFileSize(File file) {
-        long size = 0;
-        try {
-            if (file.exists()) {
-                FileInputStream fis = null;
-                fis = new FileInputStream(file);
-                size = fis.available();
-            } else {
-                file.createNewFile();
-                Log.d("###", "获取文件大小不存在!");
-            }
-        } catch (Exception e) {
-            e.getMessage();
-        }
-        return size;
-    }
+
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private void AddSendStatus() {
@@ -216,100 +215,13 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
 
     }
 
-    private void DownloadImages(StickerPacks stickerPacks) {
-        List<String> stickersImg = new ArrayList();
-//        popupWindowImg.setImageResource(R.drawable.poppup_window_rotating_wheel);
-//        popupWindowHeadline.setText("Connecting WhatsApp");
-//        popupWindowSubtitle.setText("The pack in preparation…");
-        for (int i = 0; i < stickerPacks.getStickersList().size(); i++) {
-            stickersImg.add(LSConstant.image_uri + stickerPacks.getStickersList().get(i).getImage());
-        }
 
-        new Thread(() -> {
-            try {
-                String[] trayImageName = stickerPacks.getTrayImageFile().split("/");
-                String trayImage = LSConstant.image_uri + stickerPacks.getTrayImageFile();
-                Log.e("###", "Save getFilesDir: " + requireActivity().getFilesDir());
-                File myTrayr = new File(requireActivity().getFilesDir() + "/" + "stickers_asset" + "/" + stickerPacks.getIdentifier());
-                if (!myTrayr.exists()) {
-                    myTrayr.mkdirs();
-                }
-
-                fileTray = new File(myTrayr, trayImageName[2]);
-                fileStorage(fileTray, trayImage);
-
-                for (int i = 0; i < stickersImg.size(); i++) {
-                    String imageName = stickerPacks.getStickersList().get(i).getImage();
-                    String[] srs = imageName.split("/");
-
-                    file = new File(myTrayr, srs[2]);
-                    fileStorage(file, stickersImg.get(i));
-                }
-            } catch (Exception e) {
-                e.getMessage();
-            }
-            Message msg = new Message();
-            msg.what = 0;
-            msg.obj = stickerPacks;
-            handler.sendMessage(msg);
-        }).start();
-    }
-
-    private void fileStorage(File file, String data) {
-        if (file.exists() && getFileSize(file) > 0) {
-            return;
-        }
-        byte[] b = new byte[1024];
-        try {
-            URL url = new URL(data);
-            URLConnection urlConnection = url.openConnection();
-            urlConnection.connect();
-            DataInputStream di = new DataInputStream(urlConnection.getInputStream());
-            // output
-            FileOutputStream fo = new FileOutputStream(file);
-            // copy the actual file
-            // (it would better to use a buffer bigger than this)
-            while (-1 != di.read(b, 0, 1))
-                fo.write(b, 0, 1);
-            di.close();
-            fo.close();
-            Log.e("###", "Size: " + getFileSize(file) + " file: " + file);
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("###", "e: " + e.getMessage());
-            System.exit(1);
-        }
-    }
 
 
     private final Handler handler = new Handler(msg -> {
         //回到主线程（UI线程），处理UI
         if (msg.what == 0) {
             StickerPacks stickerPacks = (StickerPacks) msg.obj;
-
-            String[] trayImage = stickerPacks.getTrayImageFile().split("/");
-            Log.e("###", "trayImage :" + trayImage[2]);
-            String pngImage = trayImage[2].replace(".webp", ".png");
-
-            stickerPack = new StickerPack(stickerPacks.getIdentifier(), stickerPacks.getTitle(),
-                    stickerPacks.getPublisher(), trayImage[2], "",
-                    stickerPacks.getPublisherWebsite(), stickerPacks.getPrivacyPolicyWebsite(),
-                    stickerPacks.getLicenseAgreementWebsite(), "1", false,
-                    false, sticker);
-
-            List<StickerPack> packs = new ArrayList<>();
-            packs.add(stickerPack);
-            Hawk.put("sticker_packs", packs);
-
-//            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-//                popupWindowImg.setImageResource(R.drawable.connection);
-//                popupWindowHeadline.setText("Connection Succeeded");
-//                popupWindowSubtitle.setText("Almost completed…");
-//            }, 2000);
-//
-//            if (stickerPackWhitelistedInWhatsAppConsumer){
-//                addSendPopupWindow.dismiss();
-//            }
 
             if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
                 launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
