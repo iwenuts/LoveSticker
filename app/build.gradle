@@ -15,6 +15,15 @@ android {
 
     android.buildFeatures.viewBinding = true
 
+    signingConfigs {
+        release {
+            storeFile file('lovesticker.jks')
+            storePassword 'moko425@'
+            keyAlias 'moko425@'
+            keyPassword 'moko425@'
+        }
+    }
+
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
@@ -37,6 +46,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
 
         if (isBundleRelease()) {
