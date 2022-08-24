@@ -68,8 +68,6 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
     private ImageView popupWindowImg;
     private TextView popupWindowHeadline;
     private TextView popupWindowSubtitle;
-    private File file;
-    private File fileTray;
     private boolean stickerPackWhitelistedInWhatsAppConsumer;
     private boolean stickerPackWhitelistedInWhatsAppSmb;
 
@@ -88,13 +86,6 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
                 viewModel.getGsonData(getContext());
 //                savedPackAdapter.notifyDataSetChanged();
                 viewBinding.savePacksSwipeLayout.setRefreshing(false);
-//                int temp = savedPackAdapter.getItemCount();
-//                Log.e("###", "temp: " + temp);
-//                Log.e("###", "mStickerPacks.size(): " + mStickerPacks.size());
-//                if (temp!=mStickerPacks.size()){
-//                    savedPackAdapter.notifyDataSetChanged();
-//                }
-//                viewBinding.savePacksSwipeLayout.setRefreshing(false);
             }
         });
     }
@@ -149,9 +140,6 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
             stickerPackWhitelistedInWhatsAppConsumer = WhitelistCheck.isStickerPackWhitelistedInWhatsAppConsumer(requireContext(), identifier);
             stickerPackWhitelistedInWhatsAppSmb = WhitelistCheck.isStickerPackWhitelistedInWhatsAppSmb(requireContext(), identifier);
 
-//            if (getFileSize(file) == 0 && getFileSize(fileTray) == 0){
-//                AddSendStatus();
-//            }
             StickersManager.downloadStickers(stickerPacks, new StickersCallBack() {
                 @Override
                 public void completed(int complete, int failed, int all) {
@@ -215,9 +203,6 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
 
     }
 
-
-
-
     private final Handler handler = new Handler(msg -> {
         //回到主线程（UI线程），处理UI
         if (msg.what == 0) {
@@ -225,7 +210,6 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
 
             if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
                 launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
-
             } else if (!stickerPackWhitelistedInWhatsAppConsumer) {
                 launchIntentToAddPackToSpecificPackage(stickerPacks.getIdentifier(), stickerPacks.getTitle(), WhitelistCheck.CONSUMER_WHATSAPP_PACKAGE_NAME);
             } else if (!stickerPackWhitelistedInWhatsAppSmb) {
@@ -237,15 +221,7 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
         return false;
     });
 
-
     private void launchIntentToAddPackToSpecificPackage(String identifier, String stickerPackName, String whatsappPackageName) {
-//        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-//            popupWindowImg.setImageResource(R.drawable.finish_add);
-//            popupWindowHeadline.setText("Add to WhatsApp");
-//            popupWindowSubtitle.setText("Done！");
-//        }, 1000);
-//        addSendPopupWindow.dismiss();
-
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
         intent.setPackage(whatsappPackageName);
         try {
@@ -286,6 +262,9 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == LSConstant.ADD_PACK) {
+
+            StickersManager.cleanStickers();
+
             RateController.getInstance().tryRateFinish(getContext(), new RateDialog.RatingClickListener() {
 
                 @Override

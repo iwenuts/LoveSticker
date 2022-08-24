@@ -179,7 +179,7 @@ public class StickersManager {
         Hawk.put("sticker_packs", packs);
     }
 
-    public void cleanStickers(){
+    public static void cleanStickers(){
         Hawk.delete("sticker_packs");
     }
 
