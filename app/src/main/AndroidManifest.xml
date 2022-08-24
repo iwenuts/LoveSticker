@@ -30,8 +30,10 @@
         android:roundIcon="@mipmap/logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".main.view.AdDialog"></activity>
-        <activity android:name=".main.view.CustomDialog" />
+        <activity android:name=".main.view.AdDialog"
+            tools:ignore="Instantiatable"></activity>
+        <activity android:name=".main.view.CustomDialog"
+            tools:ignore="Instantiatable" />
         <activity
             android:name=".util.score.RateDialog"
             android:theme="@style/dialog_style" />
