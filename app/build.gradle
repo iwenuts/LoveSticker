@@ -18,9 +18,9 @@ android {
     signingConfigs {
         release {
             storeFile file('lovesticker.jks')
-            storePassword 'moko425@'
-            keyAlias 'moko425@'
-            keyPassword 'moko425@'
+            storePassword 'Moko425@'
+            keyAlias 'Moko425@'
+            keyPassword 'Moko425@'
         }
     }
 
@@ -67,8 +67,8 @@ android {
         dev{
             dimension "default"
             applicationId "com.example.lovesticker"
-            versionCode 111
-            versionName "1.1.1"
+            versionCode 100
+            versionName "1.0.0"
 
             def contentProviderAuthority = applicationId + ".stickercontentprovider"
             // Creates a placeholder property to use in the manifest.
@@ -90,8 +90,8 @@ android {
         publish{
             dimension "default"
             applicationId "wasticker.love.stickers.whatsapp.apps"
-            versionCode 110
-            versionName "1.1.0"
+            versionCode 111
+            versionName "1.1.1"
 
             def contentProviderAuthority = applicationId + ".stickercontentprovider"
             // Creates a placeholder property to use in the manifest.

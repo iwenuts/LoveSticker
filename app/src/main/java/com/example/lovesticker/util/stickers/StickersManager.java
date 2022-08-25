@@ -141,7 +141,9 @@ public class StickersManager {
             tasks.add(FileDownloader.getImpl().create(stickersImg.get(i)).setPath(filepath).setTag(i + 1));
         }
 
-        queueSet.disableCallbackProgressTimes(); // 由于是队列任务, 这里是我们假设了现在不需要每个任务都回调`FileDownloadListener#progress`, 我们只关系每个任务是否完成, 所以这里这样设置可以很有效的减少ipc.
+        // 由于是队列任务, 这里是我们假设了现在不需要每个任务都回调`FileDownloadListener#progress`, 我们只关系每个任务是否完成, 所以这里这样设置可以很有效的减少ipc.
+        queueSet.disableCallbackProgressTimes();
+
 
         // 所有任务在下载失败的时候都自动重试一次
         queueSet.setAutoRetryTimes(1);
