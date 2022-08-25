@@ -24,24 +24,13 @@ import retrofit2.http.Query;
 public class BaseRepository {
     public final static String BASE_URL = "https://postcard.wastickersapp.com/";
     private ApiService apiService;
-    private int currentPage = 1;
     private int currentAllAllAnimated = 1;
     private int currentSingleAnimated = 1;
     private int totalPages;
     private int allAnimatedTotalPages;
     private int singleAnimatedTotalPages;
 
-
-
-
-
     private BaseRepository() {
-//        Retrofit builder = new Retrofit.Builder()
-//                .baseUrl(BASE_URL)
-//                .addConverterFactory(GsonConverterFactory.create(new GsonBuilder().create()))
-//                .build();
-//
-//        apiService = builder.create(ApiService.class);
 
         Retrofit.Builder builder = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
@@ -82,16 +71,9 @@ public class BaseRepository {
         return packBean;
     }
 
-    public Call<PackBean> getPackBean(){
-        Log.e("###", "getPackBean: ");
-        return apiService.getAllPack(1,8);
-    }
 
-    public Call<PackBean> getNextPageData() {
-        totalPages = LSMKVUtil.getInt("totalPages",1);
-//        if(currentPage >= totalPages) return null;
-        currentPage = currentPage + 1;
-        return apiService.getAllPack(currentPage,8);
+    public Call<PackBean> getPageData(int page) {
+        return apiService.getAllPack(page,8);
     }
 
     Date date = new Date();
@@ -109,7 +91,6 @@ public class BaseRepository {
 
     public Call<AllAnimatedBean> getNextAllAllAnimatedStickersData(){
         allAnimatedTotalPages = LSMKVUtil.getInt("allAnimatedTotalPages",1);
-//        if(currentPage >= allAnimatedTotalPages) return null;
         currentAllAllAnimated = currentAllAllAnimated + 1;
         return apiService.getAllAnimatedStickers(currentAllAllAnimated,36,data,time);
     }
@@ -125,7 +106,6 @@ public class BaseRepository {
 
     public Call<SingleAnimatedCategoriesBean> getNextSingleAnimatedCategoriesData(String link){
         singleAnimatedTotalPages = LSMKVUtil.getInt("singleAnimatedTotalPages",1);
-//        if (currentPage >= singleAnimatedTotalPages) return null;
         currentSingleAnimated = currentSingleAnimated + 1;
         return apiService.getSingleAnimatedStickersCategories(link,36,currentSingleAnimated);
     }

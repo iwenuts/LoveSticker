@@ -21,7 +21,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class PackViewModel extends BaseViewModel {
-    private MutableLiveData<List<StickerPacks>> spLiveData;
+    private MutableLiveData<Integer> spLiveData;
     private BaseRepository baseRepository;
 
     private List<String> packTitleList;
@@ -30,49 +30,39 @@ public class PackViewModel extends BaseViewModel {
     private List<Integer> isFreeList;
     private List<String> packImageList;
     private int nowPage = 1;
+    private int totalPage = 0;
 
-
-//    public PackViewModel() {
-//        baseRepository = BaseRepository.getInstance();
-//    }
-
-    private List<StickerPacks>  stickerPacksList = new ArrayList<>();
+    public List<StickerPacks>  stickerPacksList = new ArrayList<>();
     private List<StickerPacks.Stickers> stickersList = new ArrayList<>();
 
-//    public final MutableLiveData<List<StickerPacks>> getStickerPacksBean = new MutableLiveData<>();
-//    public final MutableLiveData<List<StickerPacks.Stickers>> getStickersBean = new MutableLiveData<>();
 
-
-    public MutableLiveData<List<StickerPacks>> getStickerPacksBean(){
+    public MutableLiveData<Integer> getStickerPacksBean(){
         if (spLiveData == null){
             spLiveData = new MutableLiveData<>();
-//            spLiveData.setValue(stickerPacksList);
         }
         return spLiveData;
     }
 
 
-
-
-    public void requestInitialPackData(){
+    private void request(int page){
         baseRepository = BaseRepository.getInstance();
-
-        baseRepository.getPackBean().enqueue(new Callback<PackBean>() {
+        baseRepository.getPageData(page).enqueue(new Callback<PackBean>() {
             @Override
             public void onResponse(Call<PackBean> call, Response<PackBean> response) {
                 PackBean packBean = response.body(); //requestInitialPackData()
 
                 if (packBean != null){
                     Log.e("###", "getTotalPages: " + packBean.getData().getTotalPages());
-                    LSMKVUtil.put("totalPages", packBean.getData().getTotalPages());
+                    totalPage =  packBean.getData().getTotalPages();
+
+                    if (1 == page)
+                        stickerPacksList.clear();
 
                     if (packBean.getData().getStickerPacksList() != null){
                         stickerPacksList.addAll(packBean.getData().getStickerPacksList());
 
-                        spLiveData.setValue(stickerPacksList);
-//                        sLiveData.setValue(stickersList);
+                        spLiveData.setValue(packBean.getData().getStickerPacksList().size());
                     }
-
                 }
             }
 
@@ -84,32 +74,21 @@ public class PackViewModel extends BaseViewModel {
 
     }
 
-    public void requestSurplusPackData(){
-        Log.e("###", "requestSurplusPackData: ");
 
-        baseRepository.getNextPageData().enqueue(new Callback<PackBean>() {
-            @Override
-            public void onResponse(Call<PackBean> call, Response<PackBean> response) {
-                PackBean packBean = response.body();  //requestInitialPackData()
+    public void requestInitialPackData(){
+        nowPage = 1;
+        request(nowPage);
+    }
 
-                if (packBean != null){
-                    if (packBean.getData().getStickerPacksList() != null){
-                        nowPage = nowPage + 1;
+    public boolean requestSurplusPackData(){
+        nowPage ++;
 
-                        if (packBean.getData().getTotalPages() >= nowPage){
-                            stickerPacksList.addAll(packBean.getData().getStickerPacksList());
-                            spLiveData.setValue(stickerPacksList);
-                        }
+        if (nowPage > totalPage)
+            return false;
 
-                    }
-                }
-            }
+        request(nowPage);
 
-            @Override
-            public void onFailure(Call<PackBean> call, Throwable t) {
-
-            }
-        });
+        return true;
     }
 
 

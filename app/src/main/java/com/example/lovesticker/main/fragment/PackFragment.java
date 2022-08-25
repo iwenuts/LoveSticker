@@ -8,9 +8,7 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.lovesticker.base.BaseFragment;
 import com.example.lovesticker.databinding.FragmentPackBinding;
@@ -22,6 +20,7 @@ import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.view.swipeRefresh.PullLoadMoreRecyclerView;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,10 +52,29 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
 
         viewBinding.loadingData.setVisibility(View.VISIBLE);
 
-        viewModel.requestInitialPackData();
-//        viewModel.requestSurplusPackData();
-//        initRefresh();
+        recyclerView = viewBinding.swipeLayout.getRecyclerView();
+        recyclerView.setVerticalScrollBarEnabled(true);
+        viewBinding.swipeLayout.setRefreshing(false);
+        viewBinding.swipeLayout.setFooterViewText("loading");
+        viewBinding.swipeLayout.setLinearLayout();
+        packAdapter = new PackAdapter(((PackViewModel)viewModel).stickerPacksList,viewModel,getContext(),getActivity());
+        viewBinding.swipeLayout.setAdapter(packAdapter);
 
+        viewBinding.swipeLayout.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
+            @Override
+            public void onRefresh() {  //下拉刷新监听
+                viewModel.requestInitialPackData();
+            }
+
+            @Override
+            public void onLoadMore() {  //上拉加载监听
+                if (!viewModel.requestSurplusPackData()) {
+                    viewBinding.swipeLayout.setPullLoadMoreCompleted();
+                }
+            }
+        });
+
+        viewModel.requestInitialPackData();
     }
 
     @Override
@@ -67,84 +85,25 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
     @Override
     protected void dataObserver() {
 
-        viewModel.getStickerPacksBean().observe(getViewLifecycleOwner(), new Observer<List<StickerPacks>>() {
+        viewModel.getStickerPacksBean().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
-            public void onChanged(List<StickerPacks> stickerPacks) {
-                Log.e("###", "setAllStickerPacks:" + stickerPacks.size());
+            public void onChanged(Integer size) {
                 viewBinding.loadingData.setVisibility(View.GONE);
 
-                //Adapter
-                recyclerView = viewBinding.swipeLayout.getRecyclerView();
-                recyclerView.setVerticalScrollBarEnabled(true);
-                viewBinding.swipeLayout.setRefreshing(true);
-                viewBinding.swipeLayout.setFooterViewText("loading");
-                viewBinding.swipeLayout.setLinearLayout();
-                packAdapter = new PackAdapter(stickerPacks,viewModel,getContext(),getActivity());
-                viewBinding.swipeLayout.setAdapter(packAdapter);
+                int index  = ((PackViewModel)viewModel).stickerPacksList.size() - size;
 
-                viewBinding.swipeLayout.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
-                    @Override
-                    public void onRefresh() {  //下拉刷新监听
-                        if (packAdapter!= null){
-                            packAdapter.notifyDataSetChanged();
-                            viewBinding.swipeLayout.setPullLoadMoreCompleted();
-                        }
+                if (index == 0){
+                    packAdapter.notifyDataSetChanged();
+                }else {
+                    packAdapter.notifyItemRangeChanged(index-1, size);
+                }
 
-                    }
-
-                    @Override
-                    public void onLoadMore() {  //上拉加载监听
-                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-
-                            viewModel.requestSurplusPackData();
-                            if (packAdapter!= null){
-                                packAdapter.notifyDataSetChanged();
-                                viewBinding.swipeLayout.setPullLoadMoreCompleted();
-
-                            }
-
-                        }, 1000);
-
-                    }
-                });
-
-//                //Adapter
-//                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-//                layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//                viewBinding.packRecycler.setLayoutManager(layoutManager);
-//                packAdapter = new PackAdapter(stickerPacks,viewModel,getContext(),getActivity());
-//                viewBinding.packRecycler.setAdapter(packAdapter);
+                viewBinding.swipeLayout.setPullLoadMoreCompleted();
             }
         });
 
     }
 
-//    private void initRefresh() {
-//
-//        viewBinding.swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                viewModel.requestSurplusPackData();
-////                packAdapter.notifyDataSetChanged();
-//                viewBinding.swipeLayout.setRefreshing(false);
-//            }
-//
-//        });
-//
-//    }
-
-//    @Override
-//    public void onRefresh() {  //下拉刷新监听
-//        packAdapter.notifyDataSetChanged();
-//        viewBinding.swipeLayout.setPullLoadMoreCompleted();
-//    }
-//
-//    @Override
-//    public void onLoadMore() {  //上拉加载监听
-//        viewModel.requestSurplusPackData();
-//        packAdapter.notifyDataSetChanged();
-//        viewBinding.swipeLayout.setPullLoadMoreCompleted();
-//    }
 
     @Override
     public void onResume() {
@@ -162,6 +121,4 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
         super.onDestroy();
 
     }
-
-
 }
