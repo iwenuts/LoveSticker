@@ -18,6 +18,8 @@ public class Sticker implements Parcelable {
     public  List<String> emojis;
     long size;
 
+    public Sticker(){}
+
     public Sticker(String imageFileName, List<String> emojis) {
         this.imageFileName = imageFileName;
         this.emojis = emojis;

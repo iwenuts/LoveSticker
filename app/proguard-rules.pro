@@ -209,8 +209,7 @@
 #Gson
 -keep class com.google.gson.** { *; }
 
--keepattributes Exceptions,InnerClasses,Signature,Deprecated,
-                SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
+-keepattributes Exceptions,InnerClasses,Signature,Deprecated,SourceFile,LineNumberTable,*Annotation*,EnclosingMethod
 
 # Prevent R8 from leaving Data object members always null
 -keepclassmembers,allowobfuscation class * {

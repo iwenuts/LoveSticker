@@ -16,23 +16,25 @@ import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import java.util.List;
 
 public class StickerPack implements Parcelable {
-    public final String identifier;
-    public final String name;
-    public final String publisher;
-    public final String trayImageFile;
-    public final String publisherEmail;
-    public final String publisherWebsite;
-    public final String privacyPolicyWebsite;
-    public final String licenseAgreementWebsite;
-    public final String imageDataVersion;
-    public final boolean avoidCache;
-    public final boolean animatedStickerPack;
+    public  String identifier;
+    public  String name;
+    public  String publisher;
+    public  String trayImageFile;
+    public  String publisherEmail;
+    public  String publisherWebsite;
+    public  String privacyPolicyWebsite;
+    public  String licenseAgreementWebsite;
+    public  String imageDataVersion;
+    public  boolean avoidCache;
+    public  boolean animatedStickerPack;
 
     public String iosAppStoreLink;
     private List<Sticker> stickers;
     private long totalSize;
     public String androidPlayStoreLink;
     private boolean isWhitelisted;
+
+    public StickerPack(){}
 
 //    public StickerPack(String identifier, String name, String publisher, String trayImageFile, String publisherEmail,
 //                       String publisherWebsite, String privacyPolicyWebsite, String licenseAgreementWebsite,

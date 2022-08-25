@@ -39,12 +39,12 @@ android {
 
     buildTypes {
         debug {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
@@ -246,4 +246,5 @@ dependencies {
 
     //file downloa
     implementation 'com.liulishuo.filedownloader:library:1.7.7'
+    implementation 'com.alibaba:fastjson:1.2.76'
 }

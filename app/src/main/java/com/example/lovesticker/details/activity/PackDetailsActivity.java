@@ -137,7 +137,8 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         stickerPackWhitelistedInWhatsAppConsumer = WhitelistCheck.isStickerPackWhitelistedInWhatsAppConsumer(this, stickerPacks.getIdentifier());
         stickerPackWhitelistedInWhatsAppSmb = WhitelistCheck.isStickerPackWhitelistedInWhatsAppSmb(this, stickerPacks.getIdentifier());
 
-        if (!InvokesData.getInvokesData(PackDetailsActivity.this).querySavePackGson(stickerPacks.getId())) {  //有数据
+        if (!InvokesData.getInvokesData(PackDetailsActivity.this).querySavePackGson(stickerPacks.getId())
+                && stickerPackWhitelistedInWhatsAppConsumer) {  //有数据
             viewBinding.sendText.setText(R.string.added_to_whatsApp);
             viewBinding.sendButton.setEnabled(false);
         }else {
@@ -511,8 +512,10 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == LSConstant.ADD_PACK) {
             //添加进收藏
-            InvokesData.getInvokesData(PackDetailsActivity.this).insertPackData(
-                    new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
+            if (InvokesData.getInvokesData(PackDetailsActivity.this).querySavePackGson(stickerPacks.getId())) {
+                InvokesData.getInvokesData(PackDetailsActivity.this).insertPackData(
+                        new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
+            }
 
             RateController.getInstance().tryRateFinish(PackDetailsActivity.this, new RateDialog.RatingClickListener() {
 

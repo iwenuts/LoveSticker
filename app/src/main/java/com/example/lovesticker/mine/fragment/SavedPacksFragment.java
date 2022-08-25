@@ -101,6 +101,7 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
                 LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                 layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                 viewBinding.savedPackRecycler.setLayoutManager(layoutManager);
+                viewBinding.savedPackRecycler.setHasFixedSize(true);
                 savedPackAdapter = new SavedPackAdapter(stickerPacks,getContext(), onAddButtonClickedListener);
                 viewBinding.savedPackRecycler.setAdapter(savedPackAdapter);
 
@@ -112,9 +113,9 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
     @Override
     public void onResume() {
         super.onResume();
-        if (savedPackAdapter != null){
-            savedPackAdapter.notifyDataSetChanged();
-        }
+//        if (savedPackAdapter != null){
+//            savedPackAdapter.notifyDataSetChanged();
+//        }
     }
 
     // 接口回调
@@ -271,7 +272,8 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
             if (null != mStickerPacks  && selIndex>-1 && selIndex<mStickerPacks.size()) {
                 boolean isWhitelisted = WhitelistCheck.isWhitelisted(requireContext(), mStickerPacks.get(selIndex).getIdentifier());
                 if (isWhitelisted && null != savedPackAdapter){
-                    savedPackAdapter.notifyItemChanged(selIndex);
+                    savedPackAdapter.notifyItemRangeChanged(selIndex, 1);
+
                 }
             }
 

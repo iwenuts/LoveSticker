@@ -1,8 +1,10 @@
 package com.example.lovesticker.util.stickers;
 
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.alibaba.fastjson.JSON;
 import com.example.lovesticker.base.LoveStickerApp;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.util.constant.LSConstant;
@@ -13,6 +15,7 @@ import com.liulishuo.filedownloader.FileDownloadListener;
 import com.liulishuo.filedownloader.FileDownloadQueueSet;
 import com.liulishuo.filedownloader.FileDownloader;
 import com.orhanobut.hawk.Hawk;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -191,7 +194,9 @@ public class StickersManager {
 
         List<StickerPack> packs = new ArrayList<>();
         packs.add(stickerPack);
-        Hawk.put("sticker_packs", packs);
+
+        String resJson = JSONObject.toJSONString(packs);
+        Hawk.put("sticker_packs", resJson);
         return true;
     }
 
@@ -214,7 +219,14 @@ public class StickersManager {
      * @return
      */
     public static List<StickerPack> getStickers(){
-        return  Hawk.get("sticker_packs",new ArrayList<StickerPack>());
+        String json = Hawk.get("sticker_packs","");
+        if (TextUtils.isEmpty(json)){
+            return new ArrayList<StickerPack>();
+        }
+
+        List<StickerPack> list = JSON.parseArray(json,StickerPack.class);
+
+        return  list;
     }
 
 
