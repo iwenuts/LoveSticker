@@ -96,6 +96,7 @@ public class LoveAdapter extends RecyclerView.Adapter<LoveAdapter.ViewHolder> {
 
             Glide.with(context)
                     .load(LSConstant.image_jpg_uri + imageJPG)
+                    .placeholder(R.mipmap.ic_launcher_foreground)
                     .error(R.drawable.image_failed)
                     .into(holder.img);
 

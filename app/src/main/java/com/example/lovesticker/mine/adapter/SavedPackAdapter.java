@@ -104,14 +104,17 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
 
             Glide.with(context)
                     .load(LSConstant.image_uri + stickerPacks.getStickersList().get(0).getImage())
+                    .placeholder(R.mipmap.ic_launcher_foreground)
                     .into(holder.img1);
 
             Glide.with(context)
                     .load(LSConstant.image_uri + stickerPacks.getStickersList().get(1).getImage())
+                    .placeholder(R.mipmap.ic_launcher_foreground)
                     .into(holder.img2);
 
             Glide.with(context)
                     .load(LSConstant.image_uri + stickerPacks.getStickersList().get(2).getImage())
+                    .placeholder(R.mipmap.ic_launcher_foreground)
                     .into(holder.img3);
 
 

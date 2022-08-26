@@ -69,6 +69,10 @@ public class PackViewModel extends BaseViewModel {
             @Override
             public void onFailure(Call<PackBean> call, Throwable t) {
                 Log.e("###", "onFailure: " + t.getMessage());
+                if (page > 1){
+                    nowPage --;
+                }
+                spLiveData.setValue(-1);
             }
         });
 
@@ -91,8 +95,6 @@ public class PackViewModel extends BaseViewModel {
         return true;
     }
 
-
-
     public List<Integer> getEachPackNumber(){
         eachPackNumberList = new ArrayList<>();
         for (int i= 0;i < stickerPacksList.size();i++){
@@ -100,7 +102,6 @@ public class PackViewModel extends BaseViewModel {
         }
         return eachPackNumberList;
     }
-
 
     //todo 以下代码与viewModel的observe所表达的东西重合
     public List<String> getPackTitle(){
@@ -140,18 +141,4 @@ public class PackViewModel extends BaseViewModel {
     public Integer getTotalPackNumber(){
         return stickersList.size();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

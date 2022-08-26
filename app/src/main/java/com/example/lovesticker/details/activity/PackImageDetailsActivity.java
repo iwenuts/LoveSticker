@@ -350,14 +350,21 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         StickersManager.downloadStickers(packDetails, new StickersCallBack() {
             @Override
             public void completed(int complete, int failed, int all) {
-                Log.e("StickersManager", "downloadStickers 完成:"+ complete + " 失败:"+failed +" 共:"+all);
+                if (complete+failed == all) {
+                    Log.e("StickersManager", "downloadStickers 完成:" + complete + " 失败:" + failed + " 共:" + all);
 
-                StickersManager.putStickers();
+                    if (failed > 0)
+                        return;
 
-                Message msg = new Message();
-                msg.what = 0;
-                msg.obj = packDetails;
-                handler.sendMessage(msg);
+                    StickersManager.putStickers();
+
+                    Message msg = new Message();
+                    msg.what = 0;
+                    msg.arg1 = complete;
+                    msg.arg2 = all;
+                    msg.obj = packDetails;
+                    handler.sendMessage(msg);
+                }
             }
         });
 

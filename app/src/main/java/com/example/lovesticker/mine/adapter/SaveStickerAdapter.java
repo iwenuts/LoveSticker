@@ -87,6 +87,7 @@ public class SaveStickerAdapter extends RecyclerView.Adapter<SaveStickerAdapter.
 
             Glide.with(context)
                     .load(LSConstant.image_jpg_uri + imageJPG)
+                    .placeholder(R.mipmap.ic_launcher_foreground)
                     .into(holder.img);
 
         }

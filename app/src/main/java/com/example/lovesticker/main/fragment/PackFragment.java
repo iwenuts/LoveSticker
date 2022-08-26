@@ -84,18 +84,19 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
 
     @Override
     protected void dataObserver() {
-
         viewModel.getStickerPacksBean().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
             public void onChanged(Integer size) {
                 viewBinding.loadingData.setVisibility(View.GONE);
 
-                int index  = ((PackViewModel)viewModel).stickerPacksList.size() - size;
+                if (size > -1) { // -1时，网络加载数据失败
+                    int index = ((PackViewModel) viewModel).stickerPacksList.size() - size;
 
-                if (index == 0){
-                    packAdapter.notifyDataSetChanged();
-                }else {
-                    packAdapter.notifyItemRangeChanged(index-1, size);
+                    if (index == 0) {
+                        packAdapter.notifyDataSetChanged();
+                    } else {
+                        packAdapter.notifyItemRangeChanged(index - 1, size);
+                    }
                 }
 
                 viewBinding.swipeLayout.setPullLoadMoreCompleted();

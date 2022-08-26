@@ -148,14 +148,21 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
             StickersManager.downloadStickers(stickerPacks, new StickersCallBack() {
                 @Override
                 public void completed(int complete, int failed, int all) {
-                    Log.e("StickersManager", "downloadStickers 完成:"+ complete + " 失败:"+failed +" 共:"+all);
+                    if (complete+failed == all) {
+                        Log.e("StickersManager", "downloadStickers 完成:" + complete + " 失败:" + failed + " 共:" + all);
 
-                    StickersManager.putStickers();
+                        if (failed > 0)
+                            return;
 
-                    Message msg = new Message();
-                    msg.what = 0;
-                    msg.obj = stickerPacks;
-                    handler.sendMessage(msg);
+                        StickersManager.putStickers();
+
+                        Message msg = new Message();
+                        msg.what = 0;
+                        msg.arg1 = complete;
+                        msg.arg2 = all;
+                        msg.obj = stickerPacks;
+                        handler.sendMessage(msg);
+                    }
                 }
             });
             //DownloadImages(stickerPacks);

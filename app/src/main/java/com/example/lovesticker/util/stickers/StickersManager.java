@@ -82,7 +82,7 @@ public class StickersManager {
         protected void completed(BaseDownloadTask task) {
             Log.e(TAG, "completed...."+  task.getPath());
             completedNum ++;
-            if (null != mCallBack && errorNum+completedNum == allNum){
+            if (null != mCallBack){
                 mCallBack.completed(completedNum, errorNum, allNum);
             }
         }
@@ -95,6 +95,9 @@ public class StickersManager {
         @Override
         protected void error(BaseDownloadTask task, Throwable e) {
             errorNum ++;
+            if (null != mCallBack ){
+                mCallBack.completed(completedNum, errorNum, allNum);
+            }
         }
 
         @Override
@@ -147,9 +150,8 @@ public class StickersManager {
         // 由于是队列任务, 这里是我们假设了现在不需要每个任务都回调`FileDownloadListener#progress`, 我们只关系每个任务是否完成, 所以这里这样设置可以很有效的减少ipc.
         queueSet.disableCallbackProgressTimes();
 
-
         // 所有任务在下载失败的时候都自动重试一次
-        queueSet.setAutoRetryTimes(1);
+        queueSet.setAutoRetryTimes(3);
 
         queueSet.downloadTogether(tasks);
 
