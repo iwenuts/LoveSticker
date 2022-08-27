@@ -168,6 +168,12 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        StickersManager.stopDownload();
+    }
+
+    @Override
     protected void initClickListener() {
 
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
