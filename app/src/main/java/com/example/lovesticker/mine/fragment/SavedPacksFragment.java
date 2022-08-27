@@ -148,13 +148,16 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
             StickersManager.downloadStickers(stickerPacks, new StickersCallBack() {
                 @Override
                 public void completed(int complete, int failed, int all) {
-                    if (complete+failed == all) {
-                        Log.e("StickersManager", "downloadStickers 完成:" + complete + " 失败:" + failed + " 共:" + all);
+                    Log.e("StickersManager", "downloadStickers 完成:" + complete + " 失败:" + failed + " 共:" + all);
+                    if (failed > 0){ //如果有下载失败弹出提示
 
-                        if (failed > 0)
-                            return;
+                        return;
+                    }
 
+                    if (complete == all) {
+                        //下载成功数据缓存
                         StickersManager.putStickers();
+                    }
 
                         Message msg = new Message();
                         msg.what = 0;
@@ -162,7 +165,6 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
                         msg.arg2 = all;
                         msg.obj = stickerPacks;
                         handler.sendMessage(msg);
-                    }
                 }
             });
             //DownloadImages(stickerPacks);
@@ -177,6 +179,27 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
         }
 
     }
+
+    private final Handler handler = new Handler(msg -> {
+        //回到主线程（UI线程），处理UI
+        if (msg.what == 0) {
+
+            if (msg.arg1 == msg.arg2) {//如果下载完成
+                StickerPacks stickerPacks = (StickerPacks) msg.obj;
+
+                if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
+                    launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
+                } else if (!stickerPackWhitelistedInWhatsAppConsumer) {
+                    launchIntentToAddPackToSpecificPackage(stickerPacks.getIdentifier(), stickerPacks.getTitle(), WhitelistCheck.CONSUMER_WHATSAPP_PACKAGE_NAME);
+                } else if (!stickerPackWhitelistedInWhatsAppSmb) {
+                    launchIntentToAddPackToSpecificPackage(stickerPacks.getIdentifier(), stickerPacks.getTitle(), WhitelistCheck.SMB_WHATSAPP_PACKAGE_NAME);
+                } else {
+                    Toast.makeText(requireActivity(), R.string.not_whitelisted, Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+        return false;
+    });
 
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -213,24 +236,6 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
         });
 
     }
-
-    private final Handler handler = new Handler(msg -> {
-        //回到主线程（UI线程），处理UI
-        if (msg.what == 0) {
-            StickerPacks stickerPacks = (StickerPacks) msg.obj;
-
-            if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
-                launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
-            } else if (!stickerPackWhitelistedInWhatsAppConsumer) {
-                launchIntentToAddPackToSpecificPackage(stickerPacks.getIdentifier(), stickerPacks.getTitle(), WhitelistCheck.CONSUMER_WHATSAPP_PACKAGE_NAME);
-            } else if (!stickerPackWhitelistedInWhatsAppSmb) {
-                launchIntentToAddPackToSpecificPackage(stickerPacks.getIdentifier(), stickerPacks.getTitle(), WhitelistCheck.SMB_WHATSAPP_PACKAGE_NAME);
-            } else {
-                Toast.makeText(requireActivity(), R.string.not_whitelisted, Toast.LENGTH_LONG).show();
-            }
-        }
-        return false;
-    });
 
     private void launchIntentToAddPackToSpecificPackage(String identifier, String stickerPackName, String whatsappPackageName) {
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);

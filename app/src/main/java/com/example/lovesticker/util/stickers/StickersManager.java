@@ -80,7 +80,7 @@ public class StickersManager {
 
         @Override
         protected void completed(BaseDownloadTask task) {
-            Log.e(TAG, "completed...."+  task.getPath());
+            Log.e(TAG, "completed...."+  task.getUrl());
             completedNum ++;
             if (null != mCallBack){
                 mCallBack.completed(completedNum, errorNum, allNum);

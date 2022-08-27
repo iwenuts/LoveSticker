@@ -299,21 +299,23 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         StickersManager.downloadStickers(stickerPacks, new StickersCallBack() {
             @Override
             public void completed(int complete, int failed, int all) {
-                if (complete+failed == all) {
-                    Log.e("StickersManager", "downloadStickers 完成:" + complete + " 失败:" + failed + " 共:" + all);
+                Log.e("StickersManager", "downloadStickers 完成:" + complete + " 失败:" + failed + " 共:" + all);
+                if (failed > 0){ //如果有下载失败弹出提示
 
-                    if (failed >0 )
-                        return;
-
-                    StickersManager.putStickers();
-
-                    Message msg = new Message();
-                    msg.what = 0;
-                    msg.obj = stickerPacks;
-                    msg.arg1 = complete;
-                    msg.arg2 = all;
-                    handler.sendMessage(msg);
+                    return;
                 }
+
+                if (complete == all) {
+                    //下载成功数据缓存
+                    StickersManager.putStickers();
+                }
+
+                Message msg = new Message();
+                msg.what = 0;
+                msg.obj = stickerPacks;
+                msg.arg1 = complete;
+                msg.arg2 = all;
+                handler.sendMessage(msg);
             }
         });
     }
@@ -322,25 +324,29 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     private final Handler handler = new Handler(msg -> {
         //回到主线程（UI线程），处理UI
         if (msg.what == 0) {
-            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                popupWindowImg.setImageResource(R.drawable.connection);
-                popupWindowHeadline.setText("Connection Succeeded");
-                popupWindowSubtitle.setText("Almost completed…");
-            }, 1000);
+            popupWindowSubtitle.setText("The pack in preparation… "+msg.arg1+"/"+msg.arg2);
 
-            if (stickerPackWhitelistedInWhatsAppConsumer){
-                addSendPopupWindow.dismiss();
-            }
+            if (msg.arg1 == msg.arg2){//如果下载完成
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    popupWindowImg.setImageResource(R.drawable.connection);
+                    popupWindowHeadline.setText("Connection Succeeded");
+                    popupWindowSubtitle.setText("Almost completed…");
+                }, 1000);
 
-            if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
-                launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
+                if (stickerPackWhitelistedInWhatsAppConsumer){
+                    addSendPopupWindow.dismiss();
+                }
 
-            } else if (!stickerPackWhitelistedInWhatsAppConsumer) {
-                launchIntentToAddPackToSpecificPackage(stickerPacks.getIdentifier(), stickerPacks.getTitle(), WhitelistCheck.CONSUMER_WHATSAPP_PACKAGE_NAME);
-            } else if (!stickerPackWhitelistedInWhatsAppSmb) {
-                launchIntentToAddPackToSpecificPackage(stickerPacks.getIdentifier(), stickerPacks.getTitle(), WhitelistCheck.SMB_WHATSAPP_PACKAGE_NAME);
-            } else {
-                Toast.makeText(this, R.string.not_whitelisted, Toast.LENGTH_LONG).show();
+                if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
+                    launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
+
+                } else if (!stickerPackWhitelistedInWhatsAppConsumer) {
+                    launchIntentToAddPackToSpecificPackage(stickerPacks.getIdentifier(), stickerPacks.getTitle(), WhitelistCheck.CONSUMER_WHATSAPP_PACKAGE_NAME);
+                } else if (!stickerPackWhitelistedInWhatsAppSmb) {
+                    launchIntentToAddPackToSpecificPackage(stickerPacks.getIdentifier(), stickerPacks.getTitle(), WhitelistCheck.SMB_WHATSAPP_PACKAGE_NAME);
+                } else {
+                    Toast.makeText(this, R.string.not_whitelisted, Toast.LENGTH_LONG).show();
+                }
             }
         }
         return false;
