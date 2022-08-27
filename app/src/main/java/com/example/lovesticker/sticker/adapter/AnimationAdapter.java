@@ -81,8 +81,6 @@ public class AnimationAdapter extends RecyclerView.Adapter<AnimationAdapter.View
         postcards = allPostcards.get(position);
         onPositionClickedListener.onPositionClicked(position);
 
-        Log.e("###", "AnimationAdapter position: " + position);
-
         if (position == 6){
             if (LSMKVUtil.getBoolean("loadad",true)){
                 holder.frameLayout.setVisibility(View.VISIBLE);
@@ -101,7 +99,6 @@ public class AnimationAdapter extends RecyclerView.Adapter<AnimationAdapter.View
 
         if (postcards != null){
             imageJPG = postcards.getImage().replaceAll("gif","jpg");
-
             Glide.with(context)
                     .load(LSConstant.image_jpg_uri + imageJPG)
                     .placeholder(R.mipmap.ic_launcher_foreground)

@@ -5,9 +5,11 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lovesticker.base.BaseFragment;
@@ -18,26 +20,21 @@ import com.example.lovesticker.main.viewmodel.PackViewModel;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.view.swipeRefresh.PullLoadMoreRecyclerView;
+import com.scwang.smart.refresh.layout.api.RefreshLayout;
+import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
+import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link PackFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBinding> {
     private PackAdapter packAdapter;
-    private RecyclerView recyclerView;
 
-    public PackFragment() {
-        // Required empty public constructor
-    }
+    public PackFragment() { }
 
 
-    // TODO: Rename and change types and number of parameters
     public static PackFragment newInstance() {
         PackFragment fragment = new PackFragment();
         return fragment;
@@ -52,34 +49,33 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
 
         viewBinding.loadingData.setVisibility(View.VISIBLE);
 
-        recyclerView = viewBinding.swipeLayout.getRecyclerView();
-        recyclerView.setVerticalScrollBarEnabled(true);
-        viewBinding.swipeLayout.setRefreshing(false);
-        viewBinding.swipeLayout.setFooterViewText("loading");
-        viewBinding.swipeLayout.setLinearLayout();
-        packAdapter = new PackAdapter(((PackViewModel)viewModel).stickerPacksList,viewModel,getContext(),getActivity());
-        viewBinding.swipeLayout.setAdapter(packAdapter);
-
-        viewBinding.swipeLayout.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
-            @Override
-            public void onRefresh() {  //下拉刷新监听
-                viewModel.requestInitialPackData();
-            }
-
-            @Override
-            public void onLoadMore() {  //上拉加载监听
-                if (!viewModel.requestSurplusPackData()) {
-                    viewBinding.swipeLayout.setPullLoadMoreCompleted();
-                }
-            }
-        });
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        viewBinding.packRecycler.setLayoutManager(layoutManager);
+        packAdapter = new PackAdapter(viewModel.stickerPacksList,viewModel,getContext(),getActivity());
+        viewBinding.packRecycler.setAdapter(packAdapter);
 
         viewModel.requestInitialPackData();
     }
 
     @Override
     protected void initClickListener() {
+        viewBinding.swipeLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {  //下拉刷新监听
+                viewModel.requestInitialPackData();
+                viewBinding.swipeLayout.finishRefresh();
+            }
+        });
 
+        viewBinding.swipeLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {  //上拉加载监听
+                if (!viewModel.requestSurplusPackData()) {
+                    viewBinding.swipeLayout.finishLoadMoreWithNoMoreData();
+                }
+            }
+        });
     }
 
     @Override
@@ -90,7 +86,7 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
                 viewBinding.loadingData.setVisibility(View.GONE);
 
                 if (size > -1) { // -1时，网络加载数据失败
-                    int index = ((PackViewModel) viewModel).stickerPacksList.size() - size;
+                    int index = viewModel.stickerPacksList.size() - size;
 
                     if (index == 0) {
                         packAdapter.notifyDataSetChanged();
@@ -99,7 +95,7 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
                     }
                 }
 
-                viewBinding.swipeLayout.setPullLoadMoreCompleted();
+                viewBinding.swipeLayout.finishLoadMore();
             }
         });
 

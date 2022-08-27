@@ -46,6 +46,7 @@ public class PackViewModel extends BaseViewModel {
 
     private void request(int page){
         baseRepository = BaseRepository.getInstance();
+
         baseRepository.getPageData(page).enqueue(new Callback<PackBean>() {
             @Override
             public void onResponse(Call<PackBean> call, Response<PackBean> response) {
@@ -61,7 +62,7 @@ public class PackViewModel extends BaseViewModel {
                     if (packBean.getData().getStickerPacksList() != null){
                         stickerPacksList.addAll(packBean.getData().getStickerPacksList());
 
-                        spLiveData.setValue(packBean.getData().getStickerPacksList().size());
+                        spLiveData.setValue(packBean.getData().getStickerPacksList().size()); //新添加的数量
                     }
                 }
             }

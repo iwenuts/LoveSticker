@@ -101,6 +101,7 @@ public class LoveAdapter extends RecyclerView.Adapter<LoveAdapter.ViewHolder> {
                     .into(holder.img);
 
 
+
 //            Log.e("###", "imageJPG: " + LSConstant.image_jpg_uri + imageJPG );
         }
 

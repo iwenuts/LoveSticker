@@ -1,5 +1,7 @@
 package com.example.lovesticker.main.viewmodel;
 
+import android.util.Log;
+
 import androidx.lifecycle.MutableLiveData;
 
 import com.example.lovesticker.base.BaseRepository;

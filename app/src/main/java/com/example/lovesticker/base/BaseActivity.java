@@ -101,7 +101,7 @@ public abstract class BaseActivity<VM extends BaseViewModel, VB> extends AppComp
                 .statusBarDarkFont(true)
                 .navigationBarDarkIcon(true)
                 .statusBarView(getStatusView())
-                .hideBar(BarHide.FLAG_HIDE_NAVIGATION_BAR)
+                .hideBar(BarHide.FLAG_SHOW_BAR)
                 .init();
     }
 

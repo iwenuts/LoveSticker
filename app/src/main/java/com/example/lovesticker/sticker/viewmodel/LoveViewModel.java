@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.lovesticker.base.BaseRepository;
 import com.example.lovesticker.base.BaseViewModel;
-import com.example.lovesticker.sticker.model.AllAnimatedBean;
 import com.example.lovesticker.sticker.model.SingleAnimatedCategoriesBean;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 
@@ -19,28 +18,37 @@ import retrofit2.Response;
 
 public class LoveViewModel extends BaseViewModel {
     private BaseRepository baseRepository;
-    private MutableLiveData<List<SingleAnimatedCategoriesBean.Postcards>> singleAnimatedLiveData;
-    private List<SingleAnimatedCategoriesBean.Postcards> postcardsList = new ArrayList<>();
+    private MutableLiveData<Integer> singleAnimatedLiveData;
+    public List<SingleAnimatedCategoriesBean.Postcards> postcardsList = new ArrayList<>();
     private int nowPage = 1;
+    private int totalPage = 0;
 
-    public MutableLiveData<List<SingleAnimatedCategoriesBean.Postcards>> getSingleAnimatedLiveData(){
+    public MutableLiveData<Integer> getSingleAnimatedLiveData(){
         if (singleAnimatedLiveData == null){
             singleAnimatedLiveData = new MutableLiveData<>();
         }
         return singleAnimatedLiveData;
     }
 
-    public void requestInitialSingleAnimatedData(String link){
+    public void requestInitialSingleAnimatedData(String link,int page){
         baseRepository = BaseRepository.getInstance();
-        baseRepository.getSingleAnimatedCategoriesData(link).enqueue(new Callback<SingleAnimatedCategoriesBean>() {
+        baseRepository.getSingleAnimatedCategoriesData(link,page).enqueue(new Callback<SingleAnimatedCategoriesBean>() {
             @Override
             public void onResponse(Call<SingleAnimatedCategoriesBean> call, Response<SingleAnimatedCategoriesBean> response) {
                 SingleAnimatedCategoriesBean singleAnimatedCategoriesBean = response.body();
 
                 if (singleAnimatedCategoriesBean != null){
                     LSMKVUtil.put("singleAnimatedTotalPages", singleAnimatedCategoriesBean.getData().getTotalPages());
-                    postcardsList.addAll(singleAnimatedCategoriesBean.getData().getPostcardsList());
-                    singleAnimatedLiveData.setValue(postcardsList);
+
+                    totalPage = singleAnimatedCategoriesBean.getData().getTotalPages();
+
+                    if (1 == page)
+                        postcardsList.clear();
+
+                    if (singleAnimatedCategoriesBean.getData().getPostcardsList() != null){
+                        postcardsList.addAll(singleAnimatedCategoriesBean.getData().getPostcardsList());
+                        singleAnimatedLiveData.setValue(singleAnimatedCategoriesBean.getData().getPostcardsList().size());
+                    }
 
                 }
             }
@@ -48,36 +56,31 @@ public class LoveViewModel extends BaseViewModel {
             @Override
             public void onFailure(Call<SingleAnimatedCategoriesBean> call, Throwable e) {
                 Log.e("###", "SingleAnimatedData onFailure: " + e.getMessage());
+
+                if (page > 1){
+                    nowPage --;
+                }
+
+                singleAnimatedLiveData.setValue(-1);
             }
         });
 
     }
 
-    public void requestSurplusSingleAnimatedData(String link){
+    public void requestInitialSingleAnimatedData(String link){
+        nowPage = 1;
+        requestInitialSingleAnimatedData(link,nowPage);
+    }
 
-        baseRepository.getNextSingleAnimatedCategoriesData(link).enqueue(new Callback<SingleAnimatedCategoriesBean>() {
-            @Override
-            public void onResponse(Call<SingleAnimatedCategoriesBean> call, Response<SingleAnimatedCategoriesBean> response) {
-                SingleAnimatedCategoriesBean singleAnimatedCategoriesBean = response.body();
+    public Boolean requestSurplusSingleAnimatedData(String link){
+        nowPage ++;
 
-                if (singleAnimatedCategoriesBean != null){
-                    nowPage = nowPage + 1 ;
+        if (nowPage > totalPage)
+            return false;
 
-//                    Log.e("###", "singleAnimatedTotalPages: " + singleAnimatedCategoriesBean.getData().getTotalPages());
-//                    Log.e("###", "increasePage: " + increasePage);
+        requestInitialSingleAnimatedData(link,nowPage);
 
-                    if (singleAnimatedCategoriesBean.getData().getTotalPages() >= nowPage){
-                        postcardsList.addAll(singleAnimatedCategoriesBean.getData().getPostcardsList());
-                    }
-
-                }
-            }
-
-            @Override
-            public void onFailure(Call<SingleAnimatedCategoriesBean> call, Throwable t) {
-
-            }
-        });
+        return true;
 
     }
 

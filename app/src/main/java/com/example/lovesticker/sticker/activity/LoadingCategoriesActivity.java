@@ -28,7 +28,7 @@ public class LoadingCategoriesActivity extends BaseActivity<BaseViewModel, Activ
         List<AnimatedCategoriesBean.CategoriesData> categoriesData = (List<AnimatedCategoriesBean.CategoriesData>)
                 getIntent().getSerializableExtra("categoriesData");
 
-        Log.e("###", "categoriesData: "+ categoriesData.size() );
+//        Log.e("###", "categoriesData: "+ categoriesData.size() );
 
         if (categoriesData != null){
             LinearLayoutManager layoutManager = new LinearLayoutManager(this);

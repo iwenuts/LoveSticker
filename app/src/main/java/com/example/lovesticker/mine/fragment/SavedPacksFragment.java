@@ -62,11 +62,6 @@ import java.util.Objects;
 public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, FragmentSavedPacksBinding> {
     private SavedPackAdapter savedPackAdapter;
     private List<Sticker> sticker = new ArrayList<>();
-
-    private PopupWindow addSendPopupWindow;
-    private ImageView popupWindowImg;
-    private TextView popupWindowHeadline;
-    private TextView popupWindowSubtitle;
     private boolean stickerPackWhitelistedInWhatsAppConsumer;
     private boolean stickerPackWhitelistedInWhatsAppSmb;
 
@@ -201,42 +196,6 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
         return false;
     });
 
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private void AddSendStatus() {
-        //弹窗出现外部为阴影
-        WindowManager.LayoutParams attributes = requireActivity().getWindow().getAttributes();
-        attributes.alpha = 0.5f;
-        requireActivity().getWindow().setAttributes(attributes);
-
-        //PopupWindow
-        addSendPopupWindow = new PopupWindow();
-        LayoutInflater inflater = (LayoutInflater) requireContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View menuview = inflater.inflate(R.layout.item_send_status, null);
-        popupWindowImg = menuview.findViewById(R.id.send_logo);
-        popupWindowHeadline = menuview.findViewById(R.id.status_text);
-        popupWindowSubtitle = menuview.findViewById(R.id.subtitle);
-
-        popupWindowImg.setImageResource(R.drawable.preparing);
-        popupWindowHeadline.setText("Preparing Pack");
-        popupWindowSubtitle.setText("Pack is ready soon…");
-
-        addSendPopupWindow.setContentView(menuview);
-        addSendPopupWindow.setWidth(ViewGroup.LayoutParams.MATCH_PARENT);
-        addSendPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        addSendPopupWindow.setBackgroundDrawable(getResources().getDrawable(R.drawable.popupwindows_bg));
-
-        //设置弹窗位置
-        addSendPopupWindow.showAtLocation(requireActivity().findViewById(R.id.ll_image), Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0);
-        //弹窗取消监听 取消之后恢复阴影
-        addSendPopupWindow.setOnDismissListener(() -> {
-            WindowManager.LayoutParams attributes1 = requireActivity().getWindow().getAttributes();
-            attributes1.alpha = 1;
-            requireActivity().getWindow().setAttributes(attributes1);
-        });
-
-    }
-
     private void launchIntentToAddPackToSpecificPackage(String identifier, String stickerPackName, String whatsappPackageName) {
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
         intent.setPackage(whatsappPackageName);
@@ -249,12 +208,6 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
 
     //Handle cases either of WhatsApp are set as default app to handle this intent. We still want users to see both options.
     private void launchIntentToAddPackToChooser(String identifier, String stickerPackName) {
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            popupWindowImg.setImageResource(R.drawable.finish_add);
-            popupWindowHeadline.setText("Add to WhatsApp");
-            popupWindowSubtitle.setText("Done！");
-        }, 1000);
-        addSendPopupWindow.dismiss();
 
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
         try {

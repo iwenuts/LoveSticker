@@ -2,8 +2,10 @@ package com.example.lovesticker.details.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
@@ -130,7 +132,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             for (int i = 0; i < stickerPackNumber; i++) {
                 String name = stickerPacks.getStickersList().get(i).getImage();
                 sticker.add(new Sticker(name.substring(name.lastIndexOf("/")+1), emoji));
-                Log.e("###", "name: "+  name.substring(name.lastIndexOf("/")+1));
+//                Log.e("###", "name: "+  name.substring(name.lastIndexOf("/")+1));
             }
         }
 
@@ -446,6 +448,26 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.alpha = bgAlpha; //0.0-1.0
         getWindow().setAttributes(lp);
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to return?");
+        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        builder.setPositiveButton("true", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+                dialog.dismiss();
+            }
+        });
+        builder.show();
     }
 
 

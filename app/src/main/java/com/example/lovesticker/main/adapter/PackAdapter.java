@@ -34,7 +34,6 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
     private Context context;
     private Activity activity;
     private StickerPacks stickerPacks;
-    private OnItemClickListener listener;
 
     public PackAdapter(List<StickerPacks> allStickerPacks, PackViewModel packViewModel, Context context, Activity activity) {
         this.allStickerPacks = allStickerPacks;
@@ -65,16 +64,6 @@ public class PackAdapter extends RecyclerView.Adapter<PackAdapter.ViewHolder> {
             newImage = view.findViewById(R.id.new_image);
             frameLayout = view.findViewById(R.id.ad_container);
         }
-    }
-
-
-    public interface OnItemClickListener {
-        void onItemClick(int itemPosition);
-
-    }
-
-    private void setItemListener(OnItemClickListener itemListener) {
-        this.listener = listener;
     }
 
 

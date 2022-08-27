@@ -16,32 +16,38 @@ import retrofit2.Response;
 
 public class AnimationViewModel extends BaseViewModel {
     private BaseRepository baseRepository;
-    private List<AllAnimatedBean.Postcards> postcardsList = new ArrayList<>();
-    private MutableLiveData<List<AllAnimatedBean.Postcards>> allAnimated;
+    public List<AllAnimatedBean.Postcards> postcardsList = new ArrayList<>();
+    private MutableLiveData<Integer> allAnimated;
+    private int nowPage = 1;
+    private int totalPage = 0;
 
 
-    public MutableLiveData<List<AllAnimatedBean.Postcards>> getAllAnimatedLiveData() {
+
+    public MutableLiveData<Integer> getAllAnimatedLiveData() {
         if (allAnimated == null) {
             allAnimated = new MutableLiveData<>();
         }
         return allAnimated;
     }
 
-
-    public void requestInitialAllAnimatedData() {
+    public void requestAllAnimatedData(int page){
         baseRepository = BaseRepository.getInstance();
-        baseRepository.getAllAnimatedStickersData().enqueue(new Callback<AllAnimatedBean>() {
+
+        baseRepository.getAnimatedStickersData(page).enqueue(new Callback<AllAnimatedBean>() {
             @Override
             public void onResponse(Call<AllAnimatedBean> call, Response<AllAnimatedBean> response) {
                 AllAnimatedBean allAnimatedBean = response.body();
-
                 if (allAnimatedBean != null) {
                     LSMKVUtil.put("allAnimatedTotalPages", allAnimatedBean.getData().getTotalPages());
+                    totalPage = allAnimatedBean.getData().getTotalPages();
+
+                    if (1 == page)
+                        postcardsList.clear();
 
                     if (allAnimatedBean.getData().getPostcardsList() != null) {
                         postcardsList.addAll(allAnimatedBean.getData().getPostcardsList());
 
-                        allAnimated.setValue(postcardsList);
+                        allAnimated.setValue(allAnimatedBean.getData().getPostcardsList().size()); //新添加的数量
 
                     }
                 }
@@ -49,35 +55,28 @@ public class AnimationViewModel extends BaseViewModel {
 
             @Override
             public void onFailure(Call<AllAnimatedBean> call, Throwable t) {
-
+                if (page > 1){
+                    nowPage --;
+                }
+                allAnimated.setValue(-1);
             }
         });
     }
 
-    public void requestSurplusAllAnimatedData() {
-        baseRepository.getNextAllAllAnimatedStickersData().enqueue(new Callback<AllAnimatedBean>() {
-            @Override
-            public void onResponse(Call<AllAnimatedBean> call, Response<AllAnimatedBean> response) {
-                AllAnimatedBean allAnimatedBean = response.body();
+    public void requestInitialAllAnimatedData() {
+        nowPage = 1;
+        requestAllAnimatedData(nowPage);
+    }
 
-                if (allAnimatedBean != null) {
-                    if (allAnimatedBean.getData().getPostcardsList() != null) {
-                        for (AllAnimatedBean.Postcards postcards : allAnimatedBean.getData().getPostcardsList()) {
-                            postcardsList.add(postcards);
-                        }
+    public Boolean requestSurplusAllAnimatedData() {
+        nowPage ++;
 
-                    }
-                }
+        if (nowPage > totalPage)
+            return false;
 
-            }
+        requestAllAnimatedData(nowPage);
 
-            @Override
-            public void onFailure(Call<AllAnimatedBean> call, Throwable t) {
-
-            }
-        });
-
-
+        return true;
     }
 
 

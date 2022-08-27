@@ -1,5 +1,6 @@
 package com.example.lovesticker.sticker.fragment;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -20,25 +21,20 @@ import com.example.lovesticker.sticker.viewmodel.AnimationViewModel;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.view.swipeRefresh.PullLoadMoreRecyclerView;
+import com.scwang.smart.refresh.layout.api.RefreshLayout;
+import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
+import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AnimationFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class AnimationFragment extends BaseFragment<AnimationViewModel, FragmentAnimationBinding> {
     private AnimationAdapter animationAdapter;
     private GridLayoutManager manager;
-    private RecyclerView recyclerView;
 
 
     public AnimationFragment() {
-        // Required empty public constructor
     }
 
-    // TODO: Rename and change types and number of parameters
     public static AnimationFragment newInstance() {
         AnimationFragment fragment = new AnimationFragment();
         return fragment;
@@ -51,8 +47,16 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
 
         MaxADManager.loadInterstitialDetailAd((AppCompatActivity) getActivity());
         LSMKVUtil.put("AnimationInterstitialAd",true);
+
+
+       //Adapter
+        manager = new GridLayoutManager(getContext(),2);
+        viewBinding.animationRecycler.setLayoutManager(manager);
+        animationAdapter = new AnimationAdapter(viewModel.postcardsList,getContext(),getActivity(),onPositionClickedListener);
+        viewBinding.animationRecycler.setAdapter(animationAdapter);
+
+
         viewModel.requestInitialAllAnimatedData();
-//        initRefresh();
 
     }
 
@@ -60,62 +64,47 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
     @Override
     protected void initClickListener() {
 
+        viewBinding.swipeLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {  //下拉刷新监听
+                viewModel.requestInitialAllAnimatedData();
+                viewBinding.swipeLayout.finishRefresh();
+            }
+        });
+
+        viewBinding.swipeLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {  //上拉加载监听
+                if (!viewModel.requestSurplusAllAnimatedData()) {
+                    viewBinding.swipeLayout.finishLoadMoreWithNoMoreData();
+                }
+            }
+        });
+
     }
 
 
 
     @Override
     protected void dataObserver() {
-        viewModel.getAllAnimatedLiveData().observe(getViewLifecycleOwner(), new Observer<List<AllAnimatedBean.Postcards>>() {
+        viewModel.getAllAnimatedLiveData().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
-            public void onChanged(List<AllAnimatedBean.Postcards> postcards) {
-                if (postcards != null){
-                    viewBinding.loadingData.setVisibility(View.GONE);
+            public void onChanged(Integer size) {
+                viewBinding.loadingData.setVisibility(View.GONE);
 
-                    //Adapter
-//                    recyclerView = viewBinding.swipeLayout.getRecyclerView();
-//                    recyclerView.setVerticalScrollBarEnabled(false);
-//                    viewBinding.swipeLayout.setRefreshing(true);
-//                    viewBinding.swipeLayout.setFooterViewText("loading");
-                    manager = viewBinding.swipeLayout.setGridLayout(2);
-                    animationAdapter = new AnimationAdapter(postcards,getContext(),getActivity(),onPositionClickedListener);
-                    viewBinding.swipeLayout.setAdapter(animationAdapter);
+                if (size > -1) { // -1时，网络加载数据失败
+                    int index = viewModel.postcardsList.size() - size;
 
-                    viewBinding.swipeLayout.setOnPullLoadMoreListener(new PullLoadMoreRecyclerView.PullLoadMoreListener() {
-                        @Override
-                        public void onRefresh() {
-                            if (animationAdapter!= null){
-                                animationAdapter.notifyDataSetChanged();
-                                viewBinding.swipeLayout.setPullLoadMoreCompleted();
-                            }
-                        }
-
-                        @Override
-                        public void onLoadMore() {
-                            new Handler(Looper.getMainLooper()).postDelayed(() -> {
-
-                                viewModel.requestSurplusAllAnimatedData();
-                                if (animationAdapter!= null){
-                                    animationAdapter.notifyDataSetChanged();
-                                    viewBinding.swipeLayout.setPullLoadMoreCompleted();
-                                }
-
-                            }, 1000);
-                        }
-                    });
-
-//                    //Adapter
-//                    manager = new GridLayoutManager(getContext(),2);
-//                    viewBinding.animationRecycler.setLayoutManager(manager);
-//                    animationAdapter = new AnimationAdapter(postcards,getContext(),getActivity(),onPositionClickedListener);
-//
-//                    viewBinding.animationRecycler.setAdapter(animationAdapter);
-
-
+                    if (index == 0) {
+                        animationAdapter.notifyDataSetChanged();
+                    } else {
+                        animationAdapter.notifyItemRangeChanged(index - 1, size);
+                    }
                 }
+
+                viewBinding.swipeLayout.finishLoadMore();
             }
         });
-
     }
 
     private final AnimationAdapter.OnPositionClickedListener onPositionClickedListener = position -> {
@@ -145,20 +134,5 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
         }
 
     }
-
-//    private void initRefresh() {
-//
-//        viewBinding.swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                viewModel.requestSurplusAllAnimatedData();
-//                animationAdapter.notifyDataSetChanged();
-//                viewBinding.swipeLayout.setRefreshing(false);
-//
-//            }
-//        });
-//    }
-
-
 
 }

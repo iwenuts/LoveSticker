@@ -4,8 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 
 import com.example.lovesticker.base.BaseFragment;
@@ -41,8 +43,6 @@ public class StickerFragment extends BaseFragment<StickerViewModel, FragmentStic
         stickerFragment = this;  //在MainActivity已经启动过，重新new的话会生成新的Fragment
         viewModel.requestAllAnimatedCategoriesData();
         viewBinding.loadingData.setVisibility(View.VISIBLE);
-        viewBinding.stickerViewPager.setUserInputEnabled(false);
-
 
     }
 
@@ -69,6 +69,9 @@ public class StickerFragment extends BaseFragment<StickerViewModel, FragmentStic
             }
         });
 
+                viewBinding.stickerViewPager.setOffscreenPageLimit(8);
+
+
 
         new TabLayoutMediator(viewBinding.tabLayout, viewBinding.stickerViewPager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
@@ -92,7 +95,7 @@ public class StickerFragment extends BaseFragment<StickerViewModel, FragmentStic
             @Override
             public void onChanged(List<AnimatedCategoriesBean.CategoriesData> categoriesData) {
                 if (categoriesData != null){
-//                    Log.e("###", "categoriesData size: " + categoriesData.size());
+                    Log.e("###", "categoriesData size: " + categoriesData.size());
 //                    String s = categoriesData.get(0).getLink();
 //                    Log.e("###", "getLink: " + s.substring(1));
 

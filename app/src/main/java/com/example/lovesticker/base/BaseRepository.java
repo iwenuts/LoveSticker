@@ -84,24 +84,16 @@ public class BaseRepository {
     SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
     String time = timeFormat.format(date.getTime());
 
-
-    public Call<AllAnimatedBean> getAllAnimatedStickersData(){
-        return apiService.getAllAnimatedStickers(1,36,data,time);
+    public Call<AllAnimatedBean> getAnimatedStickersData(int page){
+        return apiService.getAllAnimatedStickers(page,36,data,time);
     }
-
-    public Call<AllAnimatedBean> getNextAllAllAnimatedStickersData(){
-        allAnimatedTotalPages = LSMKVUtil.getInt("allAnimatedTotalPages",1);
-        currentAllAllAnimated = currentAllAllAnimated + 1;
-        return apiService.getAllAnimatedStickers(currentAllAllAnimated,36,data,time);
-    }
-
 
     public Call<AnimatedCategoriesBean> getAllAnimatedCategoriesData(){
         return apiService.getAnimatedStickersCategories();
     }
 
-    public Call<SingleAnimatedCategoriesBean> getSingleAnimatedCategoriesData(String link){
-        return apiService.getSingleAnimatedStickersCategories(link,36,1);
+    public Call<SingleAnimatedCategoriesBean> getSingleAnimatedCategoriesData(String link,int page){
+        return apiService.getSingleAnimatedStickersCategories(link,36,page);
     }
 
     public Call<SingleAnimatedCategoriesBean> getNextSingleAnimatedCategoriesData(String link){
@@ -111,14 +103,6 @@ public class BaseRepository {
     }
 
     public interface ApiService {
-
-//        @Headers({
-//                "token: ookgroup",
-//                "lang: en",
-//                "apptype: android",
-//                "appversion: 1.5.5",
-//                "appname: com.wastickerapps.whatsapp.stickers"
-//        })
 
         @GET("v0/postcards/get-stickers")
         Call<PackBean> getAllPack(@Query("page") int page,@Query("limit") int limit);
