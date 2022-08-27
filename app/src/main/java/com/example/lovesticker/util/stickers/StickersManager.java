@@ -153,7 +153,8 @@ public class StickersManager {
         // 所有任务在下载失败的时候都自动重试一次
         queueSet.setAutoRetryTimes(3);
 
-        queueSet.downloadTogether(tasks);
+        //queueSet.downloadTogether(tasks);
+        queueSet.downloadSequentially(tasks);
 
         // 最后你需要主动调用start方法来启动该Queue
         queueSet.start();
