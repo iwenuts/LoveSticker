@@ -14,8 +14,8 @@ public interface SaveStickerDao {
     @Insert
     void insert(SaveStickerData... saveStickerData);
 
-    @Query("DELETE FROM SaveStickerData where savePostcardsImg=:savePostcardsImg")
-    void deleteSavePostcardsGson(String savePostcardsImg);
+    @Query("DELETE FROM SaveStickerData where savePostcardId=:savePostcardId")
+    void deleteSavePostcardsGson(int savePostcardId);
 
     @Update
     void update(SaveStickerData... saveStickerData);
@@ -23,7 +23,6 @@ public interface SaveStickerDao {
     @Query("SELECT * FROM SaveStickerData WHERE savePostcardId=:savePostcardId")
     List<SaveStickerData> getSavePostcardsGson(int savePostcardId);
 
-    @Query("SELECT savePostcardsImg FROM SaveStickerData ORDER BY ID DESC")
-    List<String> getSavePostcardsData();
-
+    @Query("SELECT * FROM SaveStickerData ORDER BY ID DESC")
+    List<SaveStickerData> getSavePostcardsData();
 }

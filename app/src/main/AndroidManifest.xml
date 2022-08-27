@@ -40,8 +40,7 @@
             android:theme="@style/dialog_style" />
         <activity android:name=".mine.activity.SetUpActivity" />
         <activity android:name=".sticker.activity.LoadingCategoriesActivity" />
-        <activity android:name=".details.activity.SingleAnimatedDetailsActivity" />
-        <activity android:name=".details.activity.AnimationDetailsActivity" />
+        <activity android:name=".details.activity.StickersDetailsActivity" />
         <activity android:name=".details.activity.PackImageDetailsActivity" />
         <activity android:name=".details.activity.PackDetailsActivity" />
         <activity android:name=".main.activity.MainActivity">

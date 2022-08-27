@@ -481,7 +481,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == LSConstant.ADD_PACK) {
-            InvokesData.getInvokesData(PackImageDetailsActivity.this).insertPackData(
+            InvokesData.getInvokesData().insertPackData(
                     new SaveData(packDetails.getId(), gson.toJson(packDetails)));
 
             RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener(){

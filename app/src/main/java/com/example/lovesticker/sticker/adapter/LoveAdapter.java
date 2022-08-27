@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.lovesticker.R;
-import com.example.lovesticker.details.activity.SingleAnimatedDetailsActivity;
+import com.example.lovesticker.details.activity.StickersDetailsActivity;
 import com.example.lovesticker.sticker.model.SingleAnimatedCategoriesBean;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
@@ -61,9 +61,9 @@ public class LoveAdapter extends RecyclerView.Adapter<LoveAdapter.ViewHolder> {
             public void onClick(View v) {
                 singleAnimatedDetailsImage = categoryPostcards.get(holder.getAdapterPosition()).getImage();
 
-                Intent intent = new Intent(context, SingleAnimatedDetailsActivity.class);
-                intent.putExtra("singleAnimatedDetailsImage",singleAnimatedDetailsImage);
-                intent.putExtra("singlePostcards", categoryPostcards.get(holder.getAdapterPosition()));
+                Intent intent = new Intent(context, StickersDetailsActivity.class);
+                intent.putExtra("image",singleAnimatedDetailsImage);
+                intent.putExtra("id", categoryPostcards.get(holder.getAdapterPosition()));
                 context.startActivity(intent);
             }
         });
@@ -99,13 +99,7 @@ public class LoveAdapter extends RecyclerView.Adapter<LoveAdapter.ViewHolder> {
                     .placeholder(R.mipmap.ic_launcher_foreground)
                     .error(R.drawable.image_failed)
                     .into(holder.img);
-
-
-
-//            Log.e("###", "imageJPG: " + LSConstant.image_jpg_uri + imageJPG );
         }
-
-
     }
 
     @Override
@@ -116,6 +110,4 @@ public class LoveAdapter extends RecyclerView.Adapter<LoveAdapter.ViewHolder> {
     public interface OnPositionClickedListener {
         void onPositionClicked(int position);
     }
-
-
 }

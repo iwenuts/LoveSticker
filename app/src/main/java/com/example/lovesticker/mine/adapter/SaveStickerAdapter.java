@@ -12,20 +12,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.lovesticker.R;
-import com.example.lovesticker.details.activity.PackDetailsActivity;
-import com.example.lovesticker.details.activity.SingleAnimatedDetailsActivity;
+import com.example.lovesticker.mine.fragment.OnClickCallBack;
 import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.room.InvokesData;
+import com.example.lovesticker.util.room.SaveStickerData;
 
 import java.util.List;
 
 public class SaveStickerAdapter extends RecyclerView.Adapter<SaveStickerAdapter.ViewHolder> {
-    private List<String> stringList;
+    private List<SaveStickerData> stringList;
     private Context context;
     private String stickerImg;
+    private OnClickCallBack callBack;
 
 
-    public SaveStickerAdapter(List<String> stringList, Context context) {
+    public SaveStickerAdapter(List<SaveStickerData> stringList, Context context) {
         this.stringList = stringList;
         this.context = context;
     }
@@ -41,6 +42,10 @@ public class SaveStickerAdapter extends RecyclerView.Adapter<SaveStickerAdapter.
         }
     }
 
+    public void setOnClickItem(OnClickCallBack callBack){
+        this.callBack = callBack;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -49,11 +54,23 @@ public class SaveStickerAdapter extends RecyclerView.Adapter<SaveStickerAdapter.
         holder.img.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                holder.deleteSticker.setVisibility(View.VISIBLE);
+                if (holder.deleteSticker.getVisibility() == View.GONE)
+                    holder.deleteSticker.setVisibility(View.VISIBLE);
+                else
+                    holder.deleteSticker.setVisibility(View.GONE);
+
                 return true;
             }
         });
 
+        holder.img.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (null != callBack){
+                    callBack.onClickItem(holder.getAdapterPosition());
+                }
+            }
+        });
 
 
         holder.deleteSticker.setOnClickListener(new View.OnClickListener() {
@@ -63,8 +80,10 @@ public class SaveStickerAdapter extends RecyclerView.Adapter<SaveStickerAdapter.
                         .setMessage("Delete this sticker？")
                         .setCancelable(false)
                         .setPositiveButton("DELETE", (dialog, which) -> {
-
-                            InvokesData.getInvokesData(context).deleteSavePostcards(stringList.get(holder.getAdapterPosition()));
+                            InvokesData.getInvokesData().deleteSavePostcards(stringList.get(holder.getAdapterPosition()).getSavePostcardId());
+                            if (null != callBack){
+                                callBack.onDelItem(holder.getAdapterPosition());
+                            }
 
                         }).setNegativeButton("CANCEL", (dialog, which) -> {
                             holder.deleteSticker.setVisibility(View.GONE);
@@ -78,7 +97,7 @@ public class SaveStickerAdapter extends RecyclerView.Adapter<SaveStickerAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        stickerImg = stringList.get(position);
+        stickerImg = stringList.get(position).getSavePostcardsImg();
 
         holder.deleteSticker.setVisibility(View.GONE);
 
@@ -91,8 +110,6 @@ public class SaveStickerAdapter extends RecyclerView.Adapter<SaveStickerAdapter.
                     .into(holder.img);
 
         }
-
-
     }
 
     @Override

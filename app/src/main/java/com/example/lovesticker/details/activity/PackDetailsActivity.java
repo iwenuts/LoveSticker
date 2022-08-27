@@ -139,7 +139,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         stickerPackWhitelistedInWhatsAppConsumer = WhitelistCheck.isStickerPackWhitelistedInWhatsAppConsumer(this, stickerPacks.getIdentifier());
         stickerPackWhitelistedInWhatsAppSmb = WhitelistCheck.isStickerPackWhitelistedInWhatsAppSmb(this, stickerPacks.getIdentifier());
 
-        if (!InvokesData.getInvokesData(PackDetailsActivity.this).querySavePackGson(stickerPacks.getId())
+        if (!InvokesData.getInvokesData().querySavePackGson(stickerPacks.getId())
                 && stickerPackWhitelistedInWhatsAppConsumer) {  //有数据
             viewBinding.sendText.setText(R.string.added_to_whatsApp);
             viewBinding.sendButton.setEnabled(false);
@@ -149,7 +149,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 viewBinding.sendButton.setEnabled(true);
 
                 //添加进收藏
-                InvokesData.getInvokesData(PackDetailsActivity.this).insertPackData(
+                InvokesData.getInvokesData().insertPackData(
                         new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
             }else {
                 viewBinding.sendText.setText(R.string.add_to_whatsapp);
@@ -392,9 +392,9 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                         .setCancelable(false)
                         .setPositiveButton("DELETE", (dialog, which) -> {
 
-                            if (!InvokesData.getInvokesData(PackDetailsActivity.this).querySavePackGson(stickerPacks.getId())) {
+                            if (!InvokesData.getInvokesData().querySavePackGson(stickerPacks.getId())) {
 //                        Log.e("###", "delete" );
-                                InvokesData.getInvokesData(PackDetailsActivity.this).deleteSavePacks(gson.toJson(stickerPacks));
+                                InvokesData.getInvokesData().deleteSavePacks(gson.toJson(stickerPacks));
                             }
 
                         }).setNegativeButton("CANCEL", (dialog, which) -> {
@@ -527,7 +527,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             popupWindowSubtitle.setText("Done！");
         }, 1000);
         addSendPopupWindow.dismiss();
- InvokesData.getInvokesData(PackDetailsActivity.this).insertPackData(
+ InvokesData.getInvokesData().insertPackData(
                     new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
 
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
@@ -553,8 +553,8 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == LSConstant.ADD_PACK) {
             //添加进收藏
-            if (InvokesData.getInvokesData(PackDetailsActivity.this).querySavePackGson(stickerPacks.getId())) {
-                InvokesData.getInvokesData(PackDetailsActivity.this).insertPackData(
+            if (InvokesData.getInvokesData().querySavePackGson(stickerPacks.getId())) {
+                InvokesData.getInvokesData().insertPackData(
                         new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
             }
 
@@ -620,8 +620,4 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             }
         }
     }
-
-
-
-
 }

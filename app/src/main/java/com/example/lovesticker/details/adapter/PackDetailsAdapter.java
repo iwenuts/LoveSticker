@@ -31,7 +31,6 @@ public class PackDetailsAdapter extends RecyclerView.Adapter<PackDetailsAdapter.
         this.imageDetails = imageDetails;
         this.context = context;
         this.stickerPackNumber = stickerPackNumber;
-
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

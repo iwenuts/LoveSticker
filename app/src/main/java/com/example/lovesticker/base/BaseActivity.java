@@ -3,16 +3,13 @@ package com.example.lovesticker.base;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,14 +17,10 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.viewbinding.ViewBinding;
 
 import com.blankj.utilcode.util.ConvertUtils;
 import com.example.lovesticker.R;
-import com.example.lovesticker.details.activity.AnimationDetailsActivity;
 import com.example.lovesticker.util.logger.MLog;
-import com.example.lovesticker.util.score.RateController;
-import com.example.lovesticker.util.score.RateDialog;
 import com.gyf.immersionbar.BarHide;
 import com.gyf.immersionbar.ImmersionBar;
 

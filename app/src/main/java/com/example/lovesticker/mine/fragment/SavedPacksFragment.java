@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -35,6 +37,8 @@ import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.mine.adapter.SavedPackAdapter;
 import com.example.lovesticker.mine.viewmodel.SavePacksViewModel;
 import com.example.lovesticker.util.constant.LSConstant;
+import com.example.lovesticker.util.event.UpdatePacksEvent;
+import com.example.lovesticker.util.event.UpdateStickerEvent;
 import com.example.lovesticker.util.room.InvokesData;
 import com.example.lovesticker.util.score.RateController;
 import com.example.lovesticker.util.score.RateDialog;
@@ -46,6 +50,10 @@ import com.example.lovesticker.util.stickers.model.Sticker;
 import com.example.lovesticker.util.stickers.model.StickerPack;
 import com.google.gson.Gson;
 import com.orhanobut.hawk.Hawk;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -65,12 +73,18 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
     private boolean stickerPackWhitelistedInWhatsAppConsumer;
     private boolean stickerPackWhitelistedInWhatsAppSmb;
 
-    private int selIndex = -1;
-    private List<StickerPacks> mStickerPacks;
+    private static int selIndex = -1;
 
     @Override
     protected void initView() {
-        viewModel.getGsonData(getContext());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        viewBinding.savedPackRecycler.setLayoutManager(layoutManager);
+        viewBinding.savedPackRecycler.setHasFixedSize(true);
+        savedPackAdapter = new SavedPackAdapter(((SavePacksViewModel)viewModel).saveData,getContext(), onAddButtonClickedListener);
+        viewBinding.savedPackRecycler.setAdapter(savedPackAdapter);
+
+        viewModel.getGsonData();
     }
 
     @Override
@@ -78,28 +92,41 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
         viewBinding.savePacksSwipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                viewModel.getGsonData(getContext());
+                viewModel.getGsonData();
 //                savedPackAdapter.notifyDataSetChanged();
                 viewBinding.savePacksSwipeLayout.setRefreshing(false);
             }
         });
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(UpdatePacksEvent event) {
+        // Do something
+        viewModel.getGsonData();
+    }
+
+
     @Override
     protected void dataObserver() {
-        viewModel.getSavePackLiveData().observe(getViewLifecycleOwner(), new Observer<List<StickerPacks>>() {
+        viewModel.savePackLiveData.observe(getViewLifecycleOwner(), new Observer<List<StickerPacks>>() {
             @Override
             public void onChanged(List<StickerPacks> stickerPacks) {
 //                Log.e("###", "stickerPacks Size "+  stickerPacks.size());
-                mStickerPacks = stickerPacks;
-
-                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-                layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                viewBinding.savedPackRecycler.setLayoutManager(layoutManager);
-                viewBinding.savedPackRecycler.setHasFixedSize(true);
-                savedPackAdapter = new SavedPackAdapter(stickerPacks,getContext(), onAddButtonClickedListener);
-                viewBinding.savedPackRecycler.setAdapter(savedPackAdapter);
-
+                savedPackAdapter.notifyDataSetChanged();
             }
         });
 
@@ -108,9 +135,6 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
     @Override
     public void onResume() {
         super.onResume();
-//        if (savedPackAdapter != null){
-//            savedPackAdapter.notifyDataSetChanged();
-//        }
     }
 
     // 接口回调
@@ -234,11 +258,10 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
 
             StickersManager.cleanStickers();
 
-            if (null != mStickerPacks  && selIndex>-1 && selIndex<mStickerPacks.size()) {
-                boolean isWhitelisted = WhitelistCheck.isWhitelisted(requireContext(), mStickerPacks.get(selIndex).getIdentifier());
+            if (null != ((SavePacksViewModel)viewModel).saveData  && selIndex>-1 && selIndex<((SavePacksViewModel)viewModel).saveData.size()) {
+                boolean isWhitelisted = WhitelistCheck.isWhitelisted(requireContext(), ((SavePacksViewModel)viewModel).saveData.get(selIndex).getIdentifier());
                 if (isWhitelisted && null != savedPackAdapter){
                     savedPackAdapter.notifyItemRangeChanged(selIndex, 1);
-
                 }
             }
 

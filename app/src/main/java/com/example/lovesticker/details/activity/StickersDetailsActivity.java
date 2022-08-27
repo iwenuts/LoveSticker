@@ -1,13 +1,10 @@
 package com.example.lovesticker.details.activity;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -18,18 +15,14 @@ import com.bumptech.glide.Glide;
 import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseViewModel;
-import com.example.lovesticker.base.LoveStickerApp;
 import com.example.lovesticker.databinding.ActivitySingleAnimatedDetailsBinding;
-import com.example.lovesticker.sticker.model.SingleAnimatedCategoriesBean;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.InvokesData;
-import com.example.lovesticker.util.room.SaveData;
 import com.example.lovesticker.util.room.SaveStickerData;
 import com.example.lovesticker.util.score.RateController;
 import com.example.lovesticker.util.score.RateDialog;
-import com.google.gson.Gson;
 import com.gyf.immersionbar.ImmersionBar;
 
 import java.io.DataInputStream;
@@ -39,16 +32,17 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, ActivitySingleAnimatedDetailsBinding> {
+public class StickersDetailsActivity extends BaseActivity<BaseViewModel, ActivitySingleAnimatedDetailsBinding> {
     private static final int REQUEST_Single_CODE = 2;
-    private String singleAnimatedDetailsImage;
-    private SingleAnimatedCategoriesBean.Postcards postcards;
+    private String mImage;
+    private int mId;
     private int rewardInterval = 0;
 
     private Uri saveUri;
     private Boolean isLoadAD = false;
     private Boolean isDownload = false;
     private Boolean isNoAd = false;
+    private int type = 0;
 
     @Override
     protected void initView() {
@@ -68,12 +62,12 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
         }
 
 
-        singleAnimatedDetailsImage = getIntent().getStringExtra("singleAnimatedDetailsImage");
-        postcards = (SingleAnimatedCategoriesBean.Postcards) getIntent().getSerializableExtra("singlePostcards");
+        mImage = getIntent().getStringExtra("image");
+        mId =  getIntent().getIntExtra("id", -1);
 
-        if (singleAnimatedDetailsImage != null) {
+        if (mImage != null) {
             Glide.with(this)
-                    .load(LSConstant.image_gif_uri + singleAnimatedDetailsImage)
+                    .load(LSConstant.image_gif_uri + mImage)
                     .error(R.drawable.image_failed)
                     .into(viewBinding.singleDetailsImg);
         }
@@ -83,7 +77,7 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
     @Override
     protected void initClickListener() {
 
-        if (!InvokesData.getInvokesData(SingleAnimatedDetailsActivity.this).querySaveStickerGson(postcards.getId())) {
+        if (!InvokesData.getInvokesData().querySaveStickerGson(mId)) {
             viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
             viewBinding.collectedImage.setImageResource(R.drawable.collected);
         } else {
@@ -100,16 +94,16 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
                     viewBinding.isCollected.setBackgroundResource(R.drawable.not_collected_bg);
                     viewBinding.collectedImage.setImageResource(R.drawable.not_collected);
 
-                    if (!InvokesData.getInvokesData(SingleAnimatedDetailsActivity.this).querySaveStickerGson(postcards.getId())) {
-                        InvokesData.getInvokesData(SingleAnimatedDetailsActivity.this).deleteSavePostcards(singleAnimatedDetailsImage);
+                    if (!InvokesData.getInvokesData().querySaveStickerGson(mId)) {
+                        InvokesData.getInvokesData().deleteSavePostcards(mId);
                     }
                 } else { //点击未收藏变收藏
 
                     viewBinding.isCollected.setBackgroundResource(R.drawable.collected_bg);
                     viewBinding.collectedImage.setImageResource(R.drawable.collected);
 
-                    InvokesData.getInvokesData(SingleAnimatedDetailsActivity.this).insertStickerData(
-                            new SaveStickerData(postcards.getId(), singleAnimatedDetailsImage));
+                    InvokesData.getInvokesData().insertStickerData(
+                            new SaveStickerData(mId, mImage));
 
                 }
 
@@ -123,13 +117,13 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
                 if (LSMKVUtil.getBoolean("loadad", true)) {
                     rewardInterval = rewardInterval + 1;
                     showRewardDialog(rewardInterval);
-                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                    saveLocal(LSConstant.image_gif_uri + mImage);
                 } else {
                     isNoAd = true;
                     isLoadAD = false;
-                    if (singleAnimatedDetailsImage != null) {
+                    if (mImage != null) {
                         showProgressDialog();
-                        saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                        saveLocal(LSConstant.image_gif_uri + mImage);
                     }
                 }
 
@@ -202,9 +196,9 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
             } else if (intent % (rewarDinter + 1) != 1) { //不弹激励广告
                 isNoAd = true;
                 isLoadAD = false;
-                if (singleAnimatedDetailsImage != null) {
+                if (mImage != null) {
                     showProgressDialog();
-                    saveLocal(LSConstant.image_gif_uri + singleAnimatedDetailsImage);
+                    saveLocal(LSConstant.image_gif_uri + mImage);
                 }
 
             } else { //  弹激励广告
@@ -271,7 +265,7 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
             if (!imgFile.exists()) {
                 imgFile.mkdirs();
             }
-            File file = new File(imgFile.getAbsolutePath() + File.separator + singleAnimatedDetailsImage);
+            File file = new File(imgFile.getAbsolutePath() + File.separator + mImage);
 
             fileStorage(file, imgAddress);
 
@@ -337,7 +331,7 @@ public class SingleAnimatedDetailsActivity extends BaseActivity<BaseViewModel, A
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_Single_CODE){
-            RateController.getInstance().tryRateFinish(SingleAnimatedDetailsActivity.this, new RateDialog.RatingClickListener() {
+            RateController.getInstance().tryRateFinish(StickersDetailsActivity.this, new RateDialog.RatingClickListener() {
 
                 @Override
                 public void onClickFiveStart() {

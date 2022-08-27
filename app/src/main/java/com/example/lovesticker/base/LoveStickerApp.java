@@ -1,13 +1,20 @@
 package com.example.lovesticker.base;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.applovin.mediation.MaxAd;
+import com.example.lovesticker.main.activity.MainActivity;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.event.LSEventUtil;
+import com.example.lovesticker.util.event.UpdatePacksEvent;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.SaveData;
 
@@ -20,10 +27,12 @@ import com.orhanobut.logger.FormatStrategy;
 import com.orhanobut.logger.Logger;
 import com.orhanobut.logger.PrettyFormatStrategy;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class LoveStickerApp extends Application {
+public class LoveStickerApp extends Application implements Application.ActivityLifecycleCallbacks{
 
     private static Context applicationContext;
     public static Context getAppContext() {
@@ -43,7 +52,7 @@ public class LoveStickerApp extends Application {
         super.onCreate();
         application = this;
         applicationContext = getApplicationContext();
-
+        registerActivityLifecycleCallbacks(this);
         // mkv init
         LSMKVUtil.initMKV(applicationContext);
 
@@ -80,5 +89,39 @@ public class LoveStickerApp extends Application {
     }
 
 
+    @Override
+    public void onActivityCreated(@NonNull Activity activity, @Nullable Bundle savedInstanceState) {
 
+    }
+
+    @Override
+    public void onActivityStarted(@NonNull Activity activity) { //后台切回到前台界面"
+        Class<?> clazz = activity.getClass();
+        EventBus.getDefault().post(new UpdatePacksEvent());
+    }
+
+    @Override
+    public void onActivityResumed(@NonNull Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityPaused(@NonNull Activity activity) {
+
+    }
+
+    @Override
+    public void onActivityStopped(@NonNull Activity activity) {
+
+    }
+
+    @Override
+    public void onActivitySaveInstanceState(@NonNull Activity activity, @NonNull Bundle outState) {
+
+    }
+
+    @Override
+    public void onActivityDestroyed(@NonNull Activity activity) {
+
+    }
 }
