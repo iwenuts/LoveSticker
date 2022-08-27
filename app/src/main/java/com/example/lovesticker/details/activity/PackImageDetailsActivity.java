@@ -136,6 +136,11 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        StickersManager.stopDownload();
+    }
 
     @Override
     protected void initClickListener() {

@@ -51,6 +51,7 @@ public class StickersManager {
     private int errorNum = 0;
     private int allNum = 0;
     private StickerPacks mStickerPacks;
+    final List<BaseDownloadTask> tasks = new ArrayList<>();
 
     private FileDownloadListener downloadListener = new FileDownloadListener() {
         @Override
@@ -140,7 +141,7 @@ public class StickersManager {
 
         final FileDownloadQueueSet queueSet = new FileDownloadQueueSet(getInstance().downloadListener);
 
-        final List<BaseDownloadTask> tasks = new ArrayList<>();
+
         for (int i = 0; i < stickersImg.size(); i++) {
             String filename = stickersImg.get(i).substring(stickersImg.get(i).lastIndexOf('/')+1);
             String filepath = path+stickerPacks.getIdentifier()+"/"+filename;
@@ -160,6 +161,19 @@ public class StickersManager {
         queueSet.start();
     }
 
+    //
+    public static void stopDownload(){
+        getInstance().stopAll();
+    }
+
+    private void stopAll()
+    {
+        for (int i=0; i<tasks.size(); ++i){
+            tasks.get(i).pause();
+        }
+
+        tasks.clear();
+    }
     /**
      * 设置sticker_packs数据
      * @return
