@@ -67,7 +67,7 @@ public class AnimationAdapter extends RecyclerView.Adapter<AnimationAdapter.View
 
                 Intent intent = new Intent(context, StickersDetailsActivity.class);
                 intent.putExtra("image",detailsImage);
-                intent.putExtra("id",allPostcards.get(holder.getAdapterPosition()));
+                intent.putExtra("id",allPostcards.get(holder.getAdapterPosition()).getId());
                 context.startActivity(intent);
 
             }

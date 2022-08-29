@@ -64,7 +64,7 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
 
         mImage = getIntent().getStringExtra("image");
         mId =  getIntent().getIntExtra("id", -1);
-
+        Log.e("###", "mId: "+ mId );
         if (mImage != null) {
             Glide.with(this)
                     .load(LSConstant.image_gif_uri + mImage)
