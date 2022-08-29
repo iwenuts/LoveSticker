@@ -3,8 +3,11 @@ package com.example.lovesticker.base;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,6 +55,14 @@ public class LoveStickerApp extends Application implements Application.ActivityL
         super.onCreate();
         application = this;
         applicationContext = getApplicationContext();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            String processName = getProcessName();
+            if (!TextUtils.equals(processName, getPackageName())) {
+                WebView.setDataDirectorySuffix(processName);
+            }
+        }
+
         registerActivityLifecycleCallbacks(this);
         // mkv init
         LSMKVUtil.initMKV(applicationContext);
