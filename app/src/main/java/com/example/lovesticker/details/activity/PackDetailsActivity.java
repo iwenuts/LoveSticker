@@ -79,6 +79,8 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     private File file;
     private File fileTray;
     private File myTray;
+    private boolean isPopup = false;
+
 
     @Override
     protected void initView() {
@@ -304,6 +306,8 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         popupWindowHeadline.setText("Connecting WhatsApp");
         popupWindowSubtitle.setText("The pack in preparation…");
 
+        isPopup = true;
+
         StickersManager.downloadStickers(stickerPacks, new StickersCallBack() {
             @Override
             public void completed(int complete, int failed, int all) {
@@ -344,6 +348,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 if (stickerPackWhitelistedInWhatsAppConsumer){
                     addSendPopupWindow.dismiss();
                 }
+                isPopup = false;
 
                 if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
                     launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
@@ -458,22 +463,26 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
     @Override
     public void onBackPressed() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure you want to return?");
-        builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        if (isPopup){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Are you sure you want to exit the progress?");
+            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
-            }
-        });
-        builder.setPositiveButton("true", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finish();
-                dialog.dismiss();
-            }
-        });
-        builder.show();
+                }
+            });
+            builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                    dialog.dismiss();
+                }
+            });
+            builder.show();
+        }else {
+            finish();
+        }
     }
 
 
@@ -583,6 +592,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
             if (resultCode == Activity.RESULT_CANCELED) {
                 if (data != null) {
+
                     RateController.getInstance().tryRateFinish(PackDetailsActivity.this, new RateDialog.RatingClickListener() {
 
                         @Override
