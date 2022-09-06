@@ -24,7 +24,10 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSONObject;
+import com.blankj.utilcode.util.SPStaticUtils;
 import com.example.lovesticker.BuildConfig;
+import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.stickers.model.Sticker;
 import com.example.lovesticker.util.stickers.model.StickerPack;
 import com.orhanobut.hawk.Hawk;
@@ -35,6 +38,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -86,7 +90,8 @@ public class StickerContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        Hawk.init(getContext()).build();
+//        Hawk.init(getContext()).build();
+
         final String authority = BuildConfig.CONTENT_PROVIDER_AUTHORITY;
         if (!authority.startsWith(Objects.requireNonNull(getContext()).getPackageName())) {
             throw new IllegalStateException("your authority (" + authority + ") for the content provider should start with your package name: " + getContext().getPackageName());
@@ -216,8 +221,9 @@ public class StickerContentProvider extends ContentProvider {
     }
 
     private synchronized void readContentFile(@NonNull Context context) {
-        if (Hawk.get("sticker_pack", new ArrayList<StickerPack>()) != null) {
-            stickerPackList.addAll(Hawk.get("sticker_pack", new ArrayList<StickerPack>()));
+        if (SPStaticUtils.getString("sticker_pack", "") != null) {
+            JSONObject jsonObject = JSONObject.parseObject(SPStaticUtils.getString("sticker_pack", ""));
+            stickerPackList.addAll((Collection<? extends StickerPack>) jsonObject);
         }
     }
 

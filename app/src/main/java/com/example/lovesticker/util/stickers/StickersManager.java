@@ -5,9 +5,11 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
+import com.blankj.utilcode.util.SPStaticUtils;
 import com.example.lovesticker.base.LoveStickerApp;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.util.constant.LSConstant;
+import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.stickers.model.Sticker;
 import com.example.lovesticker.util.stickers.model.StickerPack;
 import com.liulishuo.filedownloader.BaseDownloadTask;
@@ -213,7 +215,7 @@ public class StickersManager {
         packs.add(stickerPack);
 
         String resJson = JSONObject.toJSONString(packs);
-        Hawk.put("sticker_packs", resJson);
+        SPStaticUtils.put("sticker_packs", resJson);
         return true;
     }
 
@@ -221,7 +223,7 @@ public class StickersManager {
      * 清空sticker_packs数据
      */
     public static void cleanStickers(){
-        Hawk.delete("sticker_packs");
+//        Hawk.delete("sticker_packs");
         getInstance().clean();
     }
 
@@ -236,7 +238,7 @@ public class StickersManager {
      * @return
      */
     public static List<StickerPack> getStickers(){
-        String json = Hawk.get("sticker_packs","");
+        String json = SPStaticUtils.getString("sticker_packs","");
         if (TextUtils.isEmpty(json)){
             return new ArrayList<StickerPack>();
         }
