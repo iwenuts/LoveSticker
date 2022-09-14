@@ -395,10 +395,11 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
                     addSendPopupWindow.dismiss();
                 }
 
-                if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
-                    launchIntentToAddPackToChooser(packDetails.getIdentifier(), packDetails.getTitle());
-
-                } else if (!stickerPackWhitelistedInWhatsAppConsumer) {
+//                if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
+//                    launchIntentToAddPackToChooser(packDetails.getIdentifier(), packDetails.getTitle());
+//
+//                } else
+                if (!stickerPackWhitelistedInWhatsAppConsumer) {
                     launchIntentToAddPackToSpecificPackage(packDetails.getIdentifier(), packDetails.getTitle(), WhitelistCheck.CONSUMER_WHATSAPP_PACKAGE_NAME);
                 } else if (!stickerPackWhitelistedInWhatsAppSmb) {
                     launchIntentToAddPackToSpecificPackage(packDetails.getIdentifier(), packDetails.getTitle(), WhitelistCheck.SMB_WHATSAPP_PACKAGE_NAME);

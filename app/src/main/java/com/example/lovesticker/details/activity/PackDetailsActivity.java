@@ -126,14 +126,13 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         }
 
 
-
         if (stickerPackNumber != 0) {  //添加sticker数据
             sticker.clear();
             ArrayList<String> emoji = new ArrayList<>();
             emoji.add("");
             for (int i = 0; i < stickerPackNumber; i++) {
                 String name = stickerPacks.getStickersList().get(i).getImage();
-                sticker.add(new Sticker(name.substring(name.lastIndexOf("/")+1), emoji));
+                sticker.add(new Sticker(name.substring(name.lastIndexOf("/") + 1), emoji));
 //                Log.e("###", "name: "+  name.substring(name.lastIndexOf("/")+1));
             }
         }
@@ -145,15 +144,15 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 && stickerPackWhitelistedInWhatsAppConsumer) {  //有数据
             viewBinding.sendText.setText(R.string.added_to_whatsApp);
             viewBinding.sendButton.setEnabled(false);
-        }else {
-            if (stickerPackWhitelistedInWhatsAppConsumer){  //已经添加到whatsApp
+        } else {
+            if (stickerPackWhitelistedInWhatsAppConsumer) {  //已经添加到whatsApp
                 viewBinding.sendText.setText(R.string.add_to_whatsapp);
                 viewBinding.sendButton.setEnabled(true);
 
                 //添加进收藏
                 InvokesData.getInvokesData().insertPackData(
                         new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
-            }else {
+            } else {
                 viewBinding.sendText.setText(R.string.add_to_whatsapp);
                 viewBinding.sendButton.setEnabled(true);
             }
@@ -312,7 +311,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             @Override
             public void completed(int complete, int failed, int all) {
                 Log.e("StickersManager", "downloadStickers 完成:" + complete + " 失败:" + failed + " 共:" + all);
-                if (failed > 0){ //如果有下载失败弹出提示
+                if (failed > 0) { //如果有下载失败弹出提示
 
                     return;
                 }
@@ -336,24 +335,25 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     private final Handler handler = new Handler(msg -> {
         //回到主线程（UI线程），处理UI
         if (msg.what == 0) {
-            popupWindowSubtitle.setText("The pack in preparation… "+msg.arg1+"/"+msg.arg2);
+            popupWindowSubtitle.setText("The pack in preparation… " + msg.arg1 + "/" + msg.arg2);
 
-            if (msg.arg1 == msg.arg2){//如果下载完成
+            if (msg.arg1 == msg.arg2) {//如果下载完成
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
                     popupWindowImg.setImageResource(R.drawable.connection);
                     popupWindowHeadline.setText("Connection Succeeded");
                     popupWindowSubtitle.setText("Almost completed…");
                 }, 1000);
 
-                if (stickerPackWhitelistedInWhatsAppConsumer){
+                if (stickerPackWhitelistedInWhatsAppConsumer) {
                     addSendPopupWindow.dismiss();
                 }
                 isPopup = false;
 
-                if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
-                    launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
-
-                } else if (!stickerPackWhitelistedInWhatsAppConsumer) {
+//                if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
+//                    launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
+//
+//                } else
+                if (!stickerPackWhitelistedInWhatsAppConsumer) {
                     launchIntentToAddPackToSpecificPackage(stickerPacks.getIdentifier(), stickerPacks.getTitle(), WhitelistCheck.CONSUMER_WHATSAPP_PACKAGE_NAME);
                 } else if (!stickerPackWhitelistedInWhatsAppSmb) {
                     launchIntentToAddPackToSpecificPackage(stickerPacks.getIdentifier(), stickerPacks.getTitle(), WhitelistCheck.SMB_WHATSAPP_PACKAGE_NAME);
@@ -463,7 +463,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
     @Override
     public void onBackPressed() {
-        if (isPopup){
+        if (isPopup) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setMessage("Are you sure you want to exit the progress?");
             builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -480,7 +480,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 }
             });
             builder.show();
-        }else {
+        } else {
             finish();
         }
     }
@@ -498,7 +498,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 Toast.makeText(this, R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
                 return;
             }
-            if (getFileSize(file) == 0 && getFileSize(fileTray) == 0){
+            if (getFileSize(file) == 0 && getFileSize(fileTray) == 0) {
                 AddSendStatus();
             }
 
@@ -536,8 +536,9 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             popupWindowSubtitle.setText("Done！");
         }, 1000);
         addSendPopupWindow.dismiss();
- InvokesData.getInvokesData().insertPackData(
-                    new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
+
+//        InvokesData.getInvokesData().insertPackData(
+//                new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
 
         Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
         try {

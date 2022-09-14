@@ -96,7 +96,7 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         stickerPacks = spList.get(position);
-        if (stickerPacks != null){
+        if (stickerPacks != null && spList.size() != 0){
 
             holder.packNumber.setText(stickerPacks.getStickersList().size() + " Stickers");
 

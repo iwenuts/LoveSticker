@@ -81,7 +81,7 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         viewBinding.savedPackRecycler.setLayoutManager(layoutManager);
         viewBinding.savedPackRecycler.setHasFixedSize(true);
-        savedPackAdapter = new SavedPackAdapter(((SavePacksViewModel)viewModel).saveData,getContext(), onAddButtonClickedListener);
+        savedPackAdapter = new SavedPackAdapter(viewModel.saveData,getContext(), onAddButtonClickedListener);
         viewBinding.savedPackRecycler.setAdapter(savedPackAdapter);
 
         viewModel.getGsonData();
@@ -206,9 +206,10 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
             if (msg.arg1 == msg.arg2) {//如果下载完成
                 StickerPacks stickerPacks = (StickerPacks) msg.obj;
 
-                if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
-                    launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
-                } else if (!stickerPackWhitelistedInWhatsAppConsumer) {
+//                if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
+//                    launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
+//                } else
+                if (!stickerPackWhitelistedInWhatsAppConsumer) {
                     launchIntentToAddPackToSpecificPackage(stickerPacks.getIdentifier(), stickerPacks.getTitle(), WhitelistCheck.CONSUMER_WHATSAPP_PACKAGE_NAME);
                 } else if (!stickerPackWhitelistedInWhatsAppSmb) {
                     launchIntentToAddPackToSpecificPackage(stickerPacks.getIdentifier(), stickerPacks.getTitle(), WhitelistCheck.SMB_WHATSAPP_PACKAGE_NAME);
