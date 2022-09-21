@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import com.blankj.utilcode.util.UriUtils;
@@ -15,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseViewModel;
+import com.example.lovesticker.databinding.ActivityPackDetailsBinding;
 import com.example.lovesticker.databinding.ActivitySingleAnimatedDetailsBinding;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
@@ -43,6 +45,13 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
     private Boolean isDownload = false;
     private Boolean isNoAd = false;
     private int type = 0;
+    private ActivitySingleAnimatedDetailsBinding viewBinding;
+
+    @Override
+    protected void initViewBinding() {
+        viewBinding = ActivitySingleAnimatedDetailsBinding.inflate(LayoutInflater.from(this));
+        setContentView(viewBinding.getRoot());
+    }
 
     @Override
     protected void initView() {

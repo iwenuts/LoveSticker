@@ -1,11 +1,15 @@
 package com.example.lovesticker.main.fragment;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -13,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.lovesticker.base.BaseFragment;
+import com.example.lovesticker.databinding.FragmentMineBinding;
 import com.example.lovesticker.databinding.FragmentPackBinding;
 import com.example.lovesticker.main.adapter.PackAdapter;
 import com.example.lovesticker.main.model.StickerPacks;
@@ -31,6 +36,7 @@ import java.util.List;
 
 public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBinding> {
     private PackAdapter packAdapter;
+    private FragmentPackBinding viewBinding;
 
     public PackFragment() { }
 
@@ -40,6 +46,12 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
         return fragment;
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        viewBinding = FragmentPackBinding.inflate(inflater);
+        return viewBinding.getRoot();
+    }
 
     @Override
     protected void initView() {

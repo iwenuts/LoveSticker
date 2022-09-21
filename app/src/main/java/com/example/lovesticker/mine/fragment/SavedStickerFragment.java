@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.lovesticker.base.BaseFragment;
+import com.example.lovesticker.databinding.FragmentSavedPacksBinding;
 import com.example.lovesticker.databinding.FragmentSavedStickerBinding;
 import com.example.lovesticker.details.activity.StickersDetailsActivity;
 import com.example.lovesticker.mine.adapter.SaveStickerAdapter;
@@ -30,6 +31,7 @@ import java.util.List;
 
 public class SavedStickerFragment extends BaseFragment<SavedStickerViewModel, FragmentSavedStickerBinding> implements OnClickCallBack {
     private SaveStickerAdapter adapter;
+    private FragmentSavedStickerBinding viewBinding;
 
     public SavedStickerFragment() {
         // Required empty public constructor
@@ -39,7 +41,8 @@ public class SavedStickerFragment extends BaseFragment<SavedStickerViewModel, Fr
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         EventBus.getDefault().register(this);
-        return super.onCreateView(inflater, container, savedInstanceState);
+        viewBinding = FragmentSavedStickerBinding.inflate(inflater);
+        return viewBinding.getRoot();
     }
 
 

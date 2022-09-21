@@ -1,23 +1,16 @@
 package com.example.lovesticker.mine.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,15 +24,13 @@ import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseFragment;
 import com.example.lovesticker.databinding.FragmentSavedPacksBinding;
-import com.example.lovesticker.details.activity.PackDetailsActivity;
-import com.example.lovesticker.details.activity.PackImageDetailsActivity;
+import com.example.lovesticker.databinding.FragmentStickerBinding;
 import com.example.lovesticker.main.model.StickerPacks;
+import com.example.lovesticker.mine.activity.WrapContentLinearLayoutManager;
 import com.example.lovesticker.mine.adapter.SavedPackAdapter;
 import com.example.lovesticker.mine.viewmodel.SavePacksViewModel;
 import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.event.UpdatePacksEvent;
-import com.example.lovesticker.util.event.UpdateStickerEvent;
-import com.example.lovesticker.util.room.InvokesData;
 import com.example.lovesticker.util.score.RateController;
 import com.example.lovesticker.util.score.RateDialog;
 import com.example.lovesticker.util.stickers.AddStickerPackActivity;
@@ -47,24 +38,13 @@ import com.example.lovesticker.util.stickers.StickersCallBack;
 import com.example.lovesticker.util.stickers.StickersManager;
 import com.example.lovesticker.util.stickers.WhitelistCheck;
 import com.example.lovesticker.util.stickers.model.Sticker;
-import com.example.lovesticker.util.stickers.model.StickerPack;
-import com.google.gson.Gson;
-import com.orhanobut.hawk.Hawk;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, FragmentSavedPacksBinding> {
@@ -72,14 +52,21 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
     private List<Sticker> sticker = new ArrayList<>();
     private boolean stickerPackWhitelistedInWhatsAppConsumer;
     private boolean stickerPackWhitelistedInWhatsAppSmb;
-
+    private FragmentSavedPacksBinding viewBinding;
     private static int selIndex = -1;
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
+        viewBinding = FragmentSavedPacksBinding.inflate(inflater);
+        return viewBinding.getRoot();
+    }
 
     @Override
     protected void initView() {
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        viewBinding.savedPackRecycler.setLayoutManager(layoutManager);
+        viewBinding.savedPackRecycler.setLayoutManager(new WrapContentLinearLayoutManager(requireContext(),
+                LinearLayoutManager.VERTICAL, false));
         viewBinding.savedPackRecycler.setHasFixedSize(true);
         savedPackAdapter = new SavedPackAdapter(viewModel.saveData,getContext(), onAddButtonClickedListener);
         viewBinding.savedPackRecycler.setAdapter(savedPackAdapter);
@@ -97,13 +84,6 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
                 viewBinding.savePacksSwipeLayout.setRefreshing(false);
             }
         });
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        EventBus.getDefault().register(this);
-        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
 

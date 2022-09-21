@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
 import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
@@ -22,6 +23,7 @@ import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.databinding.ActivityMainBinding;
+import com.example.lovesticker.databinding.ActivitySingleAnimatedDetailsBinding;
 import com.example.lovesticker.main.view.CustomDialog;
 import com.example.lovesticker.main.view.FixFragmentNavigator;
 import com.example.lovesticker.main.fragment.MineFragment;
@@ -40,7 +42,13 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBinding> {
+    private ActivityMainBinding viewBinding;
 
+    @Override
+    protected void initViewBinding() {
+        viewBinding = ActivityMainBinding.inflate(LayoutInflater.from(this));
+        setContentView(viewBinding.getRoot());
+    }
 
     @Override
     protected void initView() {

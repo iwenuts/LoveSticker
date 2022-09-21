@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.RequiresApi;
@@ -15,10 +16,17 @@ import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.databinding.ActivitySetUpBinding;
+import com.example.lovesticker.databinding.ActivitySingleAnimatedDetailsBinding;
 import com.gyf.immersionbar.ImmersionBar;
 
 public class SetUpActivity extends BaseActivity<BaseViewModel, ActivitySetUpBinding> {
+    private ActivitySetUpBinding viewBinding;
 
+    @Override
+    protected void initViewBinding() {
+        viewBinding = ActivitySetUpBinding.inflate(LayoutInflater.from(this));
+        setContentView(viewBinding.getRoot());
+    }
 
     @Override
     protected void initView() {

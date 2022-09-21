@@ -3,10 +3,14 @@ package com.example.lovesticker.main.fragment;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.example.lovesticker.base.BaseFragment;
 import com.example.lovesticker.databinding.FragmentMineBinding;
@@ -23,6 +27,8 @@ import com.google.android.material.tabs.TabLayoutMediator;
  * create an instance of this fragment.
  */
 public class MineFragment extends BaseFragment<MineViewModel, FragmentMineBinding> {
+    private FragmentMineBinding viewBinding;
+
 
     public MineFragment() {
         // Required empty public constructor
@@ -33,6 +39,12 @@ public class MineFragment extends BaseFragment<MineViewModel, FragmentMineBindin
         return fragment;
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        viewBinding = FragmentMineBinding.inflate(inflater);
+        return viewBinding.getRoot();
+    }
 
     @Override
     protected void initView() {

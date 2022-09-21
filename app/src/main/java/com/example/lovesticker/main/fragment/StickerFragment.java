@@ -1,16 +1,21 @@
 package com.example.lovesticker.main.fragment;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.example.lovesticker.base.BaseFragment;
+import com.example.lovesticker.databinding.FragmentPackBinding;
 import com.example.lovesticker.databinding.FragmentStickerBinding;
 import com.example.lovesticker.main.viewmodel.StickerViewModel;
 import com.example.lovesticker.sticker.activity.LoadingCategoriesActivity;
@@ -27,6 +32,8 @@ import java.util.List;
 public class StickerFragment extends BaseFragment<StickerViewModel, FragmentStickerBinding> {
     private static StickerFragment stickerFragment;
     private List<AnimatedCategoriesBean.CategoriesData> mCategoriesData;
+    private FragmentStickerBinding viewBinding;
+
 
     public StickerFragment() {
         // Required empty public constructor
@@ -37,6 +44,12 @@ public class StickerFragment extends BaseFragment<StickerViewModel, FragmentStic
         return stickerFragment;
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        viewBinding = FragmentStickerBinding.inflate(inflater);
+        return viewBinding.getRoot();
+    }
 
     @Override
     protected void initView() {

@@ -10,23 +10,14 @@ stringfog {
 }
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion '30.0.3'
+    compileSdkVersion 31
+    buildToolsVersion '31.0.0'
 
     android.buildFeatures.viewBinding = true
 
-//    signingConfigs {
-//        release {
-//            storeFile file('lovesticker.jks')
-//            storePassword 'Moko425@'
-//            keyAlias 'Moko425@'
-//            keyPassword 'Moko425@'
-//        }
-//    }
-
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
 
         flavorDimensions "default"
 
@@ -90,8 +81,8 @@ android {
         publish{
             dimension "default"
             applicationId "wasticker.love.stickers.whatsapp.apps"
-            versionCode 117
-            versionName "1.1.7"
+            versionCode 119
+            versionName "1.1.9"
 
             def contentProviderAuthority = applicationId + ".stickercontentprovider"
             // Creates a placeholder property to use in the manifest.
@@ -134,6 +125,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    implementation 'androidx.work:work-runtime:2.7.1'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -179,8 +171,6 @@ dependencies {
     //util code
     implementation 'com.blankj:utilcodex:1.30.6'
 
-    //M M K V
-    implementation 'com.tencent:mmkv:1.2.11'
 
     //billing library
     implementation "com.android.billingclient:billing:4.0.0"

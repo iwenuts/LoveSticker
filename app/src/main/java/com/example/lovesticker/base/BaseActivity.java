@@ -33,7 +33,7 @@ import java.lang.reflect.Type;
 public abstract class BaseActivity<VM extends BaseViewModel, VB> extends AppCompatActivity {
 
     protected VM viewModel;
-    protected VB viewBinding;
+
     protected Handler mainHandler;
 
     private AlertDialog baseDlg;
@@ -43,7 +43,7 @@ public abstract class BaseActivity<VM extends BaseViewModel, VB> extends AppComp
         super.onCreate(savedInstanceState);
         MLog.logLifeStateA("onCreate");
 
-        setContentView(initViewBinding());
+        initViewBinding();
         mainHandler = new Handler(Looper.getMainLooper());
 
         initViewModel();
@@ -54,26 +54,7 @@ public abstract class BaseActivity<VM extends BaseViewModel, VB> extends AppComp
         dataObserver();
     }
 
-    protected View initViewBinding() {
-        try {
-            Type genericSuperclass = this.getClass().getGenericSuperclass();
-            ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
-            if(parameterizedType != null) {
-                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-                Class<VB> tClass = (Class<VB>) actualTypeArguments[1];
-                Method inflate = tClass.getMethod("inflate", LayoutInflater.class);
-                viewBinding = (VB) inflate.invoke(viewBinding,getLayoutInflater());
-                Method getRoot = tClass.getMethod("getRoot");
-                return (View) getRoot.invoke(viewBinding);
-            }else{
-                throw new ClassCastException("");
-            }
-        } catch (Exception e) {
-            Log.e("###", "Exception: " + e.getMessage());
-            e.printStackTrace();
-        }
-        return null;
-    }
+    protected abstract void initViewBinding();
 
     protected abstract void initView();
 

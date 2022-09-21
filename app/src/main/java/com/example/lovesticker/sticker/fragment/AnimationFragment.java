@@ -1,6 +1,7 @@
 package com.example.lovesticker.sticker.fragment;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -8,13 +9,17 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.example.lovesticker.base.BaseFragment;
 import com.example.lovesticker.databinding.FragmentAnimationBinding;
+import com.example.lovesticker.databinding.FragmentSavedStickerBinding;
 import com.example.lovesticker.sticker.adapter.AnimationAdapter;
 import com.example.lovesticker.sticker.model.AllAnimatedBean;
 import com.example.lovesticker.sticker.viewmodel.AnimationViewModel;
@@ -30,6 +35,7 @@ import java.util.List;
 public class AnimationFragment extends BaseFragment<AnimationViewModel, FragmentAnimationBinding> {
     private AnimationAdapter animationAdapter;
     private GridLayoutManager manager;
+    private FragmentAnimationBinding viewBinding;
 
 
     public AnimationFragment() {
@@ -40,6 +46,12 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
         return fragment;
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        viewBinding = FragmentAnimationBinding.inflate(inflater);
+        return viewBinding.getRoot();
+    }
 
     @Override
     protected void initView() {

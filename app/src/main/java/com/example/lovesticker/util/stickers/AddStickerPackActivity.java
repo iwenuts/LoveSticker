@@ -25,7 +25,6 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.lovesticker.BuildConfig;
 import com.example.lovesticker.R;
-import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.util.constant.LSConstant;
 
 public  class AddStickerPackActivity extends AppCompatActivity {

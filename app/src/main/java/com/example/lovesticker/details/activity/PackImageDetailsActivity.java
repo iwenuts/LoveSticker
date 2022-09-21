@@ -32,6 +32,7 @@ import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.base.LoveStickerApp;
+import com.example.lovesticker.databinding.ActivityPackDetailsBinding;
 import com.example.lovesticker.databinding.ActivityPackImageDetailsBinding;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.util.ads.MaxADManager;
@@ -87,8 +88,16 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
     private boolean stickerPackWhitelistedInWhatsAppConsumer;
     private boolean stickerPackWhitelistedInWhatsAppSmb;
 
+    private ActivityPackImageDetailsBinding viewBinding;
+
     private File fileTray;
     private File file;
+
+    @Override
+    protected void initViewBinding() {
+        viewBinding = ActivityPackImageDetailsBinding.inflate(LayoutInflater.from(this));
+        setContentView(viewBinding.getRoot());
+    }
 
     @Override
     protected void initView() {

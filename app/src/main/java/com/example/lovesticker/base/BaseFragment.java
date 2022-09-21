@@ -27,7 +27,6 @@ import java.lang.reflect.Type;
 public abstract class BaseFragment<VM extends BaseViewModel,VB> extends Fragment {
 
     protected VM viewModel;
-    public VB viewBinding;
 
     private AlertDialog baseDlg;
 
@@ -38,14 +37,6 @@ public abstract class BaseFragment<VM extends BaseViewModel,VB> extends Fragment
         MLog.logLifeStateF("onCreate");
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        MLog.logLifeStateF("onCreateView");
-        return initViewBinding(inflater,container);
-    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -57,28 +48,6 @@ public abstract class BaseFragment<VM extends BaseViewModel,VB> extends Fragment
         initClickListener();
         dataObserver();
 
-    }
-
-    protected View initViewBinding(LayoutInflater inflater,ViewGroup viewGroup){
-        try {
-            Type genericSuperclass = this.getClass().getGenericSuperclass();
-            ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
-            if(parameterizedType != null) {
-                Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-                Class<VB> tClass = (Class<VB>) actualTypeArguments[1];
-                Method inflate = tClass.getMethod("inflate", LayoutInflater.class,
-                        ViewGroup.class,boolean.class);
-                viewBinding = (VB) inflate.invoke(viewBinding,inflater,viewGroup,false);
-
-                Method getRoot = tClass.getMethod("getRoot");
-                return (View) getRoot.invoke(viewBinding);
-            }else{
-                throw new ClassCastException("");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     protected abstract void initView();

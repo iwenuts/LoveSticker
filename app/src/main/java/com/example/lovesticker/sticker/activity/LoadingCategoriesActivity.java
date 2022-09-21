@@ -5,11 +5,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.databinding.ActivityLoadingCategoriesBinding;
+import com.example.lovesticker.databinding.ActivitySetUpBinding;
 import com.example.lovesticker.sticker.adapter.LoadingCategoriesAdapter;
 import com.example.lovesticker.sticker.fragment.LoveFragment;
 import com.example.lovesticker.sticker.model.AnimatedCategoriesBean;
@@ -20,6 +22,14 @@ import com.gyf.immersionbar.ImmersionBar;
 import java.util.List;
 
 public class LoadingCategoriesActivity extends BaseActivity<BaseViewModel, ActivityLoadingCategoriesBinding> {
+    private ActivityLoadingCategoriesBinding viewBinding;
+
+
+    @Override
+    protected void initViewBinding() {
+        viewBinding = ActivityLoadingCategoriesBinding.inflate(LayoutInflater.from(this));
+        setContentView(viewBinding.getRoot());
+    }
 
     @Override
     protected void initView() {

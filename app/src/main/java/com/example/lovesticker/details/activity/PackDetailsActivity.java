@@ -80,11 +80,17 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     private File fileTray;
     private File myTray;
     private boolean isPopup = false;
+    private ActivityPackDetailsBinding viewBinding;
 
 
     @Override
+    protected void initViewBinding() {
+        viewBinding = ActivityPackDetailsBinding.inflate(LayoutInflater.from(this));
+        setContentView(viewBinding.getRoot());
+    }
+
+    @Override
     protected void initView() {
-        Log.e("###", "PackDetails onCreate: ");
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
 
         MaxADManager.loadInterstitialDetailAd(this);
