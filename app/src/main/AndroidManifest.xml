@@ -31,22 +31,30 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".main.view.AdDialog"
-            tools:ignore="Instantiatable"></activity>
-        <activity android:name=".main.view.CustomDialog"
-            tools:ignore="Instantiatable" />
+
         <activity
             android:name=".util.score.RateDialog"
             android:theme="@style/dialog_style" />
-        <activity android:name=".mine.activity.SetUpActivity" />
-        <activity android:name=".sticker.activity.LoadingCategoriesActivity" />
-        <activity android:name=".details.activity.StickersDetailsActivity" />
-        <activity android:name=".details.activity.PackImageDetailsActivity" />
-        <activity android:name=".details.activity.PackDetailsActivity" />
-        <activity android:name=".main.activity.MainActivity">
+
+        <activity android:name=".mine.activity.SetUpActivity"
+            android:exported="false"/>
+
+        <activity android:name=".sticker.activity.LoadingCategoriesActivity"
+            android:exported="false"/>
+
+        <activity android:name=".details.activity.StickersDetailsActivity"
+            android:exported="false"/>
+
+        <activity android:name=".details.activity.PackImageDetailsActivity"
+            android:exported="false"/>
+
+        <activity android:name=".details.activity.PackDetailsActivity"
+            android:exported="false"/>
+
+        <activity android:name=".main.activity.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

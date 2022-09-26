@@ -79,15 +79,13 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
             }
         });
 
-        holder.packPackage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, PackDetailsActivity.class);
-                intent.putExtra("saveStickerPack", (Serializable) spList.get(holder.getAdapterPosition()));
-                intent.putExtra("saveStickerPackNumber",spList.get(holder.getAdapterPosition()).getStickersList().size());
-                intent.putExtra("isSaved",true);
-                context.startActivity(intent);
-            }
+        holder.packPackage.setOnClickListener(v -> {
+            Intent intent = new Intent(context, PackDetailsActivity.class);
+            Log.e("###", "getAdapterPosition() : "+ holder.getAdapterPosition());
+            intent.putExtra("saveStickerPack", (Serializable) spList.get(holder.getAdapterPosition()));
+            intent.putExtra("saveStickerPackNumber",spList.get(holder.getAdapterPosition()).getStickersList().size());
+            intent.putExtra("isSaved",true);
+            context.startActivity(intent);
         });
 
         return holder;

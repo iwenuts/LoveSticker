@@ -18,6 +18,7 @@ import androidx.navigation.NavigatorProvider;
 import androidx.navigation.fragment.FragmentNavigator;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.blankj.utilcode.util.ActivityUtils;
 import com.example.lovesticker.BuildConfig;
 import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
@@ -74,9 +75,9 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
 
             navController.navigate(item.getItemId());
 
-//            if (item.isChecked()){
-//                return true;
-//            }
+            if (item.isChecked()){
+                return true;
+            }
             return true;
         });
 
@@ -133,6 +134,10 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
 
     }
 
+    @Override
+    public void onBackPressed() {
+        ActivityUtils.startHomeActivity();
+    }
 
     @Override
     protected void dataObserver() {
@@ -188,7 +193,6 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
 
         navGraph.setStartDestination(destination1.getId());
         return navGraph;
-
     }
 
     private void permissionsRD(){

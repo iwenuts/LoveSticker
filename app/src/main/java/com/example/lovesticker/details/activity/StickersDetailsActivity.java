@@ -270,7 +270,8 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
     private void saveLocal(String imgAddress) {
 
         new Thread(() -> {
-            File imgFile = new File(getExternalFilesDir(null).getAbsolutePath() + File.separator + "sticker");
+//            File imgFile = new File(getExternalFilesDir(null).getAbsolutePath() + File.separator + "sticker");
+            File imgFile = new File(getExternalFilesDir(null), "sticker");
             if (!imgFile.exists()) {
                 imgFile.mkdirs();
             }

@@ -21,6 +21,7 @@ import com.gyf.immersionbar.ImmersionBar;
 
 public class SetUpActivity extends BaseActivity<BaseViewModel, ActivitySetUpBinding> {
     private ActivitySetUpBinding viewBinding;
+    private static PendingIntent pendingIntent;
 
     @Override
     protected void initViewBinding() {
@@ -117,9 +118,17 @@ public class SetUpActivity extends BaseActivity<BaseViewModel, ActivitySetUpBind
 
 
         Intent receiver = new Intent(context, SetUpActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, receiver, PendingIntent.FLAG_UPDATE_CURRENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            pendingIntent = PendingIntent.getBroadcast(context, 0, receiver, PendingIntent.FLAG_IMMUTABLE);
+        }else {
+            pendingIntent = PendingIntent.getBroadcast(context, 0, receiver, PendingIntent.FLAG_ONE_SHOT);
+        }
+//        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, receiver, PendingIntent.FLAG_UPDATE_CURRENT);
         //切记需要使用Intent.createChooser，否则会出现别样的应用选择框，您可以试试
-        shareIntent = Intent.createChooser(shareIntent, context.getString(R.string.app_name), pendingIntent.getIntentSender());
-        context.startActivity(shareIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            shareIntent = Intent.createChooser(shareIntent, context.getString(R.string.app_name), pendingIntent.getIntentSender());
+            context.startActivity(shareIntent);
+        }
+
     }
 }
