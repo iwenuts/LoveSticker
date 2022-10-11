@@ -1,6 +1,7 @@
 package com.example.lovesticker.base;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.os.Build;
@@ -57,8 +58,9 @@ public class LoveStickerApp extends Application implements Application.ActivityL
         applicationContext = getApplicationContext();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            String processName = getProcessName();
-            if (!TextUtils.equals(processName, getPackageName())) {
+            String processName = getProcessName(this);
+            String packageName = this.getPackageName();
+            if (!packageName.equals(processName)) {
                 WebView.setDataDirectorySuffix(processName);
             }
         }
@@ -97,6 +99,17 @@ public class LoveStickerApp extends Application implements Application.ActivityL
                 .tag("LoveSticker")
                 .build();
         Logger.addLogAdapter(new AndroidLogAdapter(formatStrategy));
+    }
+
+    private String getProcessName(Context context) {
+        if (context == null) return null;
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()) {
+            if (processInfo.pid == android.os.Process.myPid()) {
+                return processInfo.processName;
+            }
+        }
+        return null;
     }
 
 
