@@ -1,11 +1,11 @@
 package com.example.lovesticker.details.activity;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -143,6 +143,30 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
             LSMKVUtil.put("IsStickerDetailsClear", false);
         }
+
+
+        stickerPackWhitelistedInWhatsAppConsumer = WhitelistCheck.isStickerPackWhitelistedInWhatsAppConsumer(this, packDetails.getIdentifier());
+        stickerPackWhitelistedInWhatsAppSmb = WhitelistCheck.isStickerPackWhitelistedInWhatsAppSmb(this, packDetails.getIdentifier());
+
+        if (!InvokesData.getInvokesData().querySavePackGson(packDetails.getId())
+                && stickerPackWhitelistedInWhatsAppConsumer) {  //有数据
+            viewBinding.textView2.setText(R.string.added_to_whatsApp);
+            viewBinding.sendButton.setEnabled(false);
+        } else {
+            if (stickerPackWhitelistedInWhatsAppConsumer) {  //已经添加到whatsApp
+                viewBinding.textView2.setText(R.string.added_to_whatsApp);
+                viewBinding.sendButton.setEnabled(false);
+
+                //添加进收藏
+                InvokesData.getInvokesData().insertPackData(
+                        new SaveData(packDetails.getId(), gson.toJson(packDetails)));
+            } else {
+                viewBinding.textView2.setText(R.string.add_to_whatsapp);
+                viewBinding.sendButton.setEnabled(true);
+            }
+
+        }
+
     }
 
     @Override
@@ -202,8 +226,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             @Override
             public void onClick(View v) {
                 if (LSMKVUtil.getBoolean("loadad", true)) {
-                    rewardInterval = rewardInterval + 1;
-                    showRewardDialog(rewardInterval);
+                    showRewardDialog();
 
                 } else {
                     addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
@@ -222,82 +245,56 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         });
     }
 
-    private void showRewardDialog(int intent) {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
+    private void showRewardDialog() {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
         try {
             int rewarDinter = LSMKVUtil.getInt("rewardinter", 1);
+            int rewardInterval = LSMKVUtil.getInt("rewardInterval", 0);
 
-            if (intent == 1) {
+            if (rewardInterval % (rewarDinter + 1) == 0) {
                 new AlertDialog.Builder(this)
                         .setMessage("Watch an AD to unblock the content?")
                         .setPositiveButton("Watch ", (dialog, which) -> {
-                    try {
-                        showProgressDialog();
-                        MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
-                            @Override
-                            public void onRewardFail() {
-                                dismissProgressDialog();
+                            try {
+                                showProgressDialog();
+                                MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                                    @Override
+                                    public void onRewardFail() {
+                                        dismissProgressDialog();
+
+                                    }
+
+                                    @Override
+                                    public void onRewardShown() {
+                                        dismissProgressDialog();
+
+                                    }
+
+                                    @Override
+                                    public void onRewarded() {
+                                        addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
+                                    }
+
+                                    @Override
+                                    public void onTimeOut() {
+                                        dismissProgressDialog();
+                                        addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
+
+                                    }
+                                });
+                            } catch (Exception e) {
                             }
 
-                            @Override
-                            public void onRewardShown() {
-                                dismissProgressDialog();
-                            }
-
-                            @Override
-                            public void onRewarded() {
-                                addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
-                            }
-
-                            @Override
-                            public void onTimeOut() {
-                                dismissProgressDialog();
-                                addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
-                            }
-                        });
-                    } catch (Exception e) {
-
-                    }
+                        }).setNegativeButton("cancel", (dialog, which) -> {
 
                 }).setCancelable(false).show();
 
-            } else if (intent % (rewarDinter + 1) != 1) { // 不弹激励广告
+            } else {  // 不弹激励广告
                 addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
 
-            } else { // 弹激励广告
-
-                new AlertDialog.Builder(this)
-                        .setMessage("Watch an AD to unblock the content?")
-                        .setPositiveButton("Watch ", (dialog, which) -> {
-                    try {
-                        showProgressDialog();
-                        MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
-                            @Override
-                            public void onRewardFail() {
-                                dismissProgressDialog();
-                            }
-
-                            @Override
-                            public void onRewardShown() {
-                                dismissProgressDialog();
-                            }
-
-                            @Override
-                            public void onRewarded() {
-                                addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
-                            }
-
-                            @Override
-                            public void onTimeOut() {
-                                dismissProgressDialog();
-                                addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
-                            }
-                        });
-                    } catch (Exception e) {
-
-                    }
-
-                }).setCancelable(false).show();
             }
+
+            rewardInterval = rewardInterval + 1;
+            LSMKVUtil.put("rewardInterval", rewardInterval);
 
 
         } catch (Exception e) {
@@ -494,6 +491,9 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             InvokesData.getInvokesData().insertPackData(
                     new SaveData(packDetails.getId(), gson.toJson(packDetails)));
 
+            viewBinding.textView2.setText(R.string.added_to_whatsApp);
+            viewBinding.sendButton.setEnabled(false);
+
             RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener(){
 
                 @Override
@@ -519,6 +519,9 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
             if (resultCode == Activity.RESULT_CANCELED) {
                 if (data != null) {
+                    viewBinding.textView2.setText(R.string.add_to_whatsapp);
+                    viewBinding.sendButton.setEnabled(true);
+
                     RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener(){
 
                         @Override

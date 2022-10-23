@@ -25,7 +25,7 @@ public abstract class SaveDatabase extends RoomDatabase {
     }
 
     private static SaveDatabase create() {
-        return Room.databaseBuilder(LoveStickerApp.getApplication(),
+        return Room.databaseBuilder(LoveStickerApp.getAppContext(),
                 SaveDatabase.class, DB_NAME)
                 .fallbackToDestructiveMigration()
                 .allowMainThreadQueries()

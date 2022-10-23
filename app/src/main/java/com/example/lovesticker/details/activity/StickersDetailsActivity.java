@@ -1,8 +1,8 @@
 package com.example.lovesticker.details.activity;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
@@ -124,8 +124,7 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
             @Override
             public void onClick(View v) {
                 if (LSMKVUtil.getBoolean("loadad", true)) {
-                    rewardInterval = rewardInterval + 1;
-                    showRewardDialog(rewardInterval);
+                    showRewardDialog();
                     saveLocal(LSConstant.image_gif_uri + mImage);
                 } else {
                     isNoAd = true;
@@ -157,103 +156,65 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
 //        });
     }
 
-    private void showRewardDialog(int intent) {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
+    private void showRewardDialog() {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
         try {
             int rewarDinter = LSMKVUtil.getInt("rewardinter", 1);
+            int rewardInterval = LSMKVUtil.getInt("hitsNumber", 0);
 
-            if (intent == 1) {
-                isNoAd = false;
+            if (rewardInterval % (rewarDinter + 1) == 0) {
                 new AlertDialog.Builder(this)
                         .setMessage("Watch an AD to unblock the content?")
                         .setPositiveButton("Watch ", (dialog, which) -> {
-                    try {
-                        showProgressDialog();
-                        MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
-                            @Override
-                            public void onRewardFail() {
-                                dismissProgressDialog();
+                            try {
+                                showProgressDialog();
+                                MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
+                                    @Override
+                                    public void onRewardFail() {
+                                        dismissProgressDialog();
+
+                                    }
+
+                                    @Override
+                                    public void onRewardShown() {
+                                        dismissProgressDialog();
+
+                                    }
+
+                                    @Override
+                                    public void onRewarded() {
+                                        isLoadAD = true;
+                                        if (isLoadAD && isDownload) {
+                                            shareAny(saveUri);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onTimeOut() {
+                                        dismissProgressDialog();
+                                        isLoadAD = true;
+                                        if (isLoadAD && isDownload) {
+                                            shareAny(saveUri);
+                                        }
+                                    }
+                                });
+                            } catch (Exception e) {
                             }
 
-                            @Override
-                            public void onRewardShown() {
-                                dismissProgressDialog();
-                            }
-
-                            @Override
-                            public void onRewarded() {
-                                isLoadAD = true;
-                                if (isLoadAD && isDownload) {
-                                    shareAny(saveUri);
-                                }
-                            }
-
-                            @Override
-                            public void onTimeOut() {
-                                dismissProgressDialog();
-                                isLoadAD = true;
-                                if (isLoadAD && isDownload) {
-                                    shareAny(saveUri);
-                                }
-                            }
-                        });
-                    } catch (Exception e) {
-
-                    }
+                        }).setNegativeButton("cancel", (dialog, which) -> {
 
                 }).setCancelable(false).show();
 
-            } else if (intent % (rewarDinter + 1) != 1) { //不弹激励广告
+            } else {  // 不弹激励广告
                 isNoAd = true;
                 isLoadAD = false;
                 if (mImage != null) {
                     showProgressDialog();
                     saveLocal(LSConstant.image_gif_uri + mImage);
                 }
-
-            } else { //  弹激励广告
-                isNoAd = false;
-                new AlertDialog.Builder(this)
-                        .setMessage("Watch an AD to unblock the content?")
-                        .setNegativeButton("Cancel", (dialog, which) -> {
-
-                        }).setPositiveButton("Watch ", (dialog, which) -> {
-                    try {
-                        showProgressDialog();
-                        MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
-                            @Override
-                            public void onRewardFail() {
-                                dismissProgressDialog();
-                            }
-
-                            @Override
-                            public void onRewardShown() {
-                                dismissProgressDialog();
-                            }
-
-                            @Override
-                            public void onRewarded() {
-                                isLoadAD = true;
-                                if (isLoadAD && isDownload) {
-                                    shareAny(saveUri);
-                                }
-
-                            }
-
-                            @Override
-                            public void onTimeOut() {
-                                dismissProgressDialog();
-                                isLoadAD = true;
-                                if (isLoadAD && isDownload) {
-                                    shareAny(saveUri);
-                                }
-                            }
-                        });
-                    } catch (Exception e) {
-
-                    }
-
-                }).setCancelable(false).show();
             }
+
+            rewardInterval = rewardInterval + 1;
+            LSMKVUtil.put("hitsNumber", rewardInterval);
 
         } catch (Exception e) {
 

@@ -102,19 +102,24 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
         viewModel.getAllAnimatedLiveData().observe(getViewLifecycleOwner(), new Observer<Integer>() {
             @Override
             public void onChanged(Integer size) {
-                viewBinding.loadingData.setVisibility(View.GONE);
+                try {
+                    viewBinding.loadingData.setVisibility(View.GONE);
 
-                if (size > -1) { // -1时，网络加载数据失败
-                    int index = viewModel.postcardsList.size() - size;
+                    if (size > -1) { // -1时，网络加载数据失败
+                        int index = viewModel.postcardsList.size() - size;
 
-                    if (index == 0) {
-                        animationAdapter.notifyDataSetChanged();
-                    } else {
-                        animationAdapter.notifyItemRangeChanged(index - 1, size);
+                        if (index == 0) {
+                            animationAdapter.notifyDataSetChanged();
+                        } else {
+                            animationAdapter.notifyItemRangeChanged(index - 1, size);
+                        }
                     }
+
+                    viewBinding.swipeLayout.finishLoadMore();
+                }catch (Exception e){
+                    e.getMessage();
                 }
 
-                viewBinding.swipeLayout.finishLoadMore();
             }
         });
     }

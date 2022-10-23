@@ -398,7 +398,7 @@ public class MaxADManager implements LifecycleObserver {
 
             @Override
             public void onUserRewarded(MaxAd ad, MaxReward reward) {
-
+                isRewarded = true;
             }
 
             @Override
@@ -422,6 +422,7 @@ public class MaxADManager implements LifecycleObserver {
                 }else{
                     listener.onRewardFail(); // reward广告加载失败，不给用户奖励
                 }
+                rewardAd.loadAd();
                 isRewarded = false;
             }
 

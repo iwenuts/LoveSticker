@@ -128,6 +128,7 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
     @Override
     public void onDestroy() {
         super.onDestroy();
-
     }
+
+
 }

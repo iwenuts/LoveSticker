@@ -66,12 +66,16 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
         holder.packNoAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                Log.e("###", "getAdapterPosition() : "+ holder.getAdapterPosition());
+
 //                Log.e("###", "onAddButtonClickedListener : " + onAddButtonClickedListener);
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(context)
                         .setTitle("Would you like to add Lovely！to WhatsApp?")
                         .setCancelable(false)
                         .setPositiveButton("ADD",((dialog, which) -> {
-                            onAddButtonClickedListener.onAddButtonClicked(spList.get(holder.getAdapterPosition()),holder.getAdapterPosition() );
+                            if (spList.size() > holder.getAdapterPosition()){
+                                onAddButtonClickedListener.onAddButtonClicked(spList.get(holder.getAdapterPosition()),holder.getAdapterPosition() );
+                            }
                             dialog.dismiss();
 
                         })).setNegativeButton("CANCEL",((dialog, which) -> dialog.dismiss()));
@@ -81,7 +85,6 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
 
         holder.packPackage.setOnClickListener(v -> {
             Intent intent = new Intent(context, PackDetailsActivity.class);
-//            Log.e("###", "getAdapterPosition() : "+ holder.getAdapterPosition());
             intent.putExtra("saveStickerPack", (Serializable) spList.get(holder.getAdapterPosition()));
             intent.putExtra("saveStickerPackNumber",spList.get(holder.getAdapterPosition()).getStickersList().size());
             intent.putExtra("isSaved",true);

@@ -65,8 +65,9 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
 
     @Override
     protected void initView() {
-        viewBinding.savedPackRecycler.setLayoutManager(new WrapContentLinearLayoutManager(requireContext(),
-                LinearLayoutManager.VERTICAL, false));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        viewBinding.savedPackRecycler.setLayoutManager(layoutManager);
         viewBinding.savedPackRecycler.setHasFixedSize(true);
         savedPackAdapter = new SavedPackAdapter(viewModel.saveData,getContext(), onAddButtonClickedListener);
         viewBinding.savedPackRecycler.setAdapter(savedPackAdapter);
@@ -239,7 +240,7 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
 
             StickersManager.cleanStickers();
 
-            if (null != ((SavePacksViewModel)viewModel).saveData  && selIndex>-1 && selIndex<((SavePacksViewModel)viewModel).saveData.size()) {
+            if (null != viewModel.saveData  && selIndex > -1 && selIndex < viewModel.saveData.size()) {
                 boolean isWhitelisted = WhitelistCheck.isWhitelisted(requireContext(), ((SavePacksViewModel)viewModel).saveData.get(selIndex).getIdentifier());
                 if (isWhitelisted && null != savedPackAdapter){
                     savedPackAdapter.notifyItemRangeChanged(selIndex, 1);

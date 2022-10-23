@@ -51,7 +51,6 @@ public class PackViewModel extends BaseViewModel {
             @Override
             public void onResponse(Call<PackBean> call, Response<PackBean> response) {
                 PackBean packBean = response.body(); //requestInitialPackData()
-
                 if (packBean != null){
                     Log.e("###", "getTotalPages: " + packBean.getData().getTotalPages());
                     totalPage =  packBean.getData().getTotalPages();
@@ -88,7 +87,7 @@ public class PackViewModel extends BaseViewModel {
     public boolean requestSurplusPackData(){
         nowPage ++;
 
-        if (nowPage > totalPage)
+        if (nowPage == totalPage)
             return false;
 
         request(nowPage);

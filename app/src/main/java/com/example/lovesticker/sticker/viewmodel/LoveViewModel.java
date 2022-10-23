@@ -75,7 +75,7 @@ public class LoveViewModel extends BaseViewModel {
     public Boolean requestSurplusSingleAnimatedData(String link){
         nowPage ++;
 
-        if (nowPage > totalPage)
+        if (nowPage == totalPage)
             return false;
 
         requestInitialSingleAnimatedData(link,nowPage);

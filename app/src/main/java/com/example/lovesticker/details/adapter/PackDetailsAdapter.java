@@ -50,17 +50,14 @@ public class PackDetailsAdapter extends RecyclerView.Adapter<PackDetailsAdapter.
         ViewHolder holder = new ViewHolder(view);
 
 
-        holder.img.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.img.setOnClickListener(v -> {
 //                Log.e("###", "imagePosition: " + holder.getAdapterPosition());
-                LSMKVUtil.put("IsStickerDetailsClear", true);
-                Intent intent = new Intent(context, PackImageDetailsActivity.class);
-                intent.putExtra("position",holder.getAdapterPosition());
-                intent.putExtra("packDetails_value",imageDetails);
-                intent.putExtra("stickerPackNumber",stickerPackNumber);
-                context.startActivity(intent);
-            }
+            LSMKVUtil.put("IsStickerDetailsClear", true);
+            Intent intent = new Intent(context, PackImageDetailsActivity.class);
+            intent.putExtra("position",holder.getAdapterPosition());
+            intent.putExtra("packDetails_value",imageDetails);
+            intent.putExtra("stickerPackNumber",stickerPackNumber);
+            context.startActivity(intent);
         });
 
 
@@ -78,7 +75,6 @@ public class PackDetailsAdapter extends RecyclerView.Adapter<PackDetailsAdapter.
             Glide.with(context)
                     .load(LSConstant.image_uri + stickers.getImage())
                     .into(holder.img);
-
 
         }
 

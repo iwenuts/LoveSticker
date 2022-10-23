@@ -152,8 +152,8 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             viewBinding.sendButton.setEnabled(false);
         } else {
             if (stickerPackWhitelistedInWhatsAppConsumer) {  //已经添加到whatsApp
-                viewBinding.sendText.setText(R.string.add_to_whatsapp);
-                viewBinding.sendButton.setEnabled(true);
+                viewBinding.sendText.setText(R.string.added_to_whatsApp);
+                viewBinding.sendButton.setEnabled(false);
 
                 //添加进收藏
                 InvokesData.getInvokesData().insertPackData(
@@ -190,15 +190,14 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             public void onClick(View v) {
 
                 if (LSMKVUtil.getBoolean("loadad", true)) {
-                    rewardInterval = rewardInterval + 1;
-                    showRewardDialog(rewardInterval);
+
+                    showRewardDialog();
 
                 } else {
                     addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
                 }
 
-                viewBinding.sendText.setText(R.string.added_to_whatsApp);
-                viewBinding.sendButton.setEnabled(false);
+//                viewBinding.sendText.setText(R.string.added_to_whatsApp);
 
             }
         });
@@ -220,12 +219,12 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         });
     }
 
-    private void showRewardDialog(int intent) {  //间隔出现激励弹窗 ex:第一次出现，第二次不出现......
+    private void showRewardDialog() {  //间隔出现激励弹窗 ex:第一次出现，第二次不出现......
         try {
             int rewarDinter = LSMKVUtil.getInt("rewardinter", 1);
-//            Log.e("###", "rewardinter: " + rewarDinter);
+            int rewardInterval = LSMKVUtil.getInt("rewardInterval", 0);
 
-            if (intent == 1) {
+            if (rewardInterval % (rewarDinter + 1) == 0) {
                 new AlertDialog.Builder(this)
                         .setMessage("Watch an AD to unblock the content?")
                         .setPositiveButton("Watch ", (dialog, which) -> {
@@ -258,47 +257,16 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                             } catch (Exception e) {
                             }
 
+                        }).setNegativeButton("cancel", (dialog, which) -> {
+
                         }).setCancelable(false).show();
 
-            } else if (intent % (rewarDinter + 1) != 1) { // 不弹激励广告
+            } else {  // 不弹激励广告
                 addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
-
-            } else { // 弹激励广告
-
-                alertDialog = new AlertDialog.Builder(this)
-                        .setMessage("Watch an AD to unblock the content?")
-                        .setPositiveButton("Watch ", (dialog, which) -> {
-                            try {
-                                showProgressDialog();
-                                MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
-                                    @Override
-                                    public void onRewardFail() {
-                                        dismissProgressDialog();
-                                    }
-
-                                    @Override
-                                    public void onRewardShown() {
-                                        dismissProgressDialog();
-                                    }
-
-                                    @Override
-                                    public void onRewarded() {
-                                        addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
-                                    }
-
-                                    @Override
-                                    public void onTimeOut() {
-                                        dismissProgressDialog();
-                                        addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
-                                    }
-                                });
-                            } catch (Exception e) {
-
-                            }
-
-                        }).setCancelable(false).show();
             }
 
+            rewardInterval = rewardInterval + 1;
+            LSMKVUtil.put("rewardInterval", rewardInterval);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -572,7 +540,11 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             if (InvokesData.getInvokesData().querySavePackGson(stickerPacks.getId())) {
                 InvokesData.getInvokesData().insertPackData(
                         new SaveData(stickerPacks.getId(), gson.toJson(stickerPacks)));
+
             }
+
+            viewBinding.sendText.setText(R.string.added_to_whatsApp);
+            viewBinding.sendButton.setEnabled(false);
 
             RateController.getInstance().tryRateFinish(PackDetailsActivity.this, new RateDialog.RatingClickListener() {
 
@@ -599,6 +571,8 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
             if (resultCode == Activity.RESULT_CANCELED) {
                 if (data != null) {
+                    viewBinding.sendText.setText(R.string.add_to_whatsapp);
+                    viewBinding.sendButton.setEnabled(true);
 
                     RateController.getInstance().tryRateFinish(PackDetailsActivity.this, new RateDialog.RatingClickListener() {
 
