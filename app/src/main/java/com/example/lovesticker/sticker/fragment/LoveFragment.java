@@ -129,23 +129,26 @@ public class LoveFragment extends Fragment {
             @Override
             public void onChanged(Integer size) {
                 viewBinding.loadingData.setVisibility(View.GONE);
-
+                Log.e("###", "onChanged size: "+ size);
                 if (size > -1) { // -1时，网络加载数据失败
                     int index = viewModel.postcardsList.size() - size;
+                    Log.e("###", "onChanged index: "+ index);
 
                     if (index == 0) {
                         loveAdapter.notifyDataSetChanged();
                     } else {
-                        loveAdapter.notifyItemRangeChanged(index - 1, size);
+                        if (index - 1 < viewModel.postcardsList.size()){
+                            loveAdapter.notifyItemRangeChanged(index - 1, size);
+                        }
                     }
+                    viewBinding.swipeLayout.finishLoadMore(1000);
                 }
-
-                viewBinding.swipeLayout.finishLoadMore();
             }
         });
     }
 
     private final AnimationAdapter.OnPositionClickedListener onPositionClickedListener = position -> {
+
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {

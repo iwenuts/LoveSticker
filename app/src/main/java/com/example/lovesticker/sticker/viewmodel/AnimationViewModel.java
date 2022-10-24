@@ -71,7 +71,7 @@ public class AnimationViewModel extends BaseViewModel {
     public Boolean requestSurplusAllAnimatedData() {
         nowPage ++;
 
-        if (nowPage == totalPage)
+        if (nowPage > totalPage)
             return false;
 
         requestAllAnimatedData(nowPage);

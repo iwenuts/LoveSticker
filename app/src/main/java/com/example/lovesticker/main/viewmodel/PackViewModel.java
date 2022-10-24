@@ -87,7 +87,7 @@ public class PackViewModel extends BaseViewModel {
     public boolean requestSurplusPackData(){
         nowPage ++;
 
-        if (nowPage == totalPage)
+        if (nowPage > totalPage)
             return false;
 
         request(nowPage);

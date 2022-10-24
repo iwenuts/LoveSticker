@@ -103,11 +103,13 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
                     if (index == 0) {
                         packAdapter.notifyDataSetChanged();
                     } else {
-                        packAdapter.notifyItemRangeChanged(index - 1, size);
+                        if (index - 1 < viewModel.stickerPacksList.size()){
+                            packAdapter.notifyItemRangeChanged(index - 1, size);
+                        }
                     }
                 }
 
-                viewBinding.swipeLayout.finishLoadMore();
+                viewBinding.swipeLayout.finishLoadMore(1000);
             }
         });
 

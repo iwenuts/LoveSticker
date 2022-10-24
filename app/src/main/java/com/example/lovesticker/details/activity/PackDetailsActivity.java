@@ -259,6 +259,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
                         }).setNegativeButton("cancel", (dialog, which) -> {
 
+
                         }).setCancelable(false).show();
 
             } else {  // 不弹激励广告

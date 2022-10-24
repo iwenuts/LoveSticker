@@ -104,18 +104,18 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
             public void onChanged(Integer size) {
                 try {
                     viewBinding.loadingData.setVisibility(View.GONE);
-
                     if (size > -1) { // -1时，网络加载数据失败
                         int index = viewModel.postcardsList.size() - size;
-
                         if (index == 0) {
                             animationAdapter.notifyDataSetChanged();
                         } else {
-                            animationAdapter.notifyItemRangeChanged(index - 1, size);
+                            if (index - 1 < viewModel.postcardsList.size()){
+                                animationAdapter.notifyItemRangeChanged(index - 1, size);
+                            }
                         }
                     }
 
-                    viewBinding.swipeLayout.finishLoadMore();
+                    viewBinding.swipeLayout.finishLoadMore(1000);
                 }catch (Exception e){
                     e.getMessage();
                 }
