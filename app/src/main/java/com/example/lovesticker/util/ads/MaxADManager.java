@@ -53,17 +53,14 @@ public class MaxADManager implements LifecycleObserver {
 
     public static void initMaxAd(Context context){
         try {
-            Log.e("###", "initMaxAd ");
             instance.appLovinSdk = AppLovinSdk.getInstance(APP_LOVIN_KEY,new AppLovinSdkSettings(context),context);
             instance.appLovinSdk.setMediationProvider(AppLovinMediationProvider.MAX);
             instance.appLovinSdk.initializeSdk((new AppLovinSdk.SdkInitializationListener() {
                 @Override
                 public void onSdkInitialized(AppLovinSdkConfiguration config) {
-                    Log.e("###", "onSdkInitialized");
 
                     Activity topAct = ActivityUtils.getTopActivity();
                     if (topAct != null){
-                        Log.e("###", "onSdkInitialized  topAct: ");
                         loadRewardAd(topAct);
                     }
 
@@ -324,7 +321,6 @@ public class MaxADManager implements LifecycleObserver {
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                Log.e("###", "onAdLoaded: ");
                 if(waitingRewardShow){
                     rewardAd.showAd();
                 }
@@ -348,7 +344,6 @@ public class MaxADManager implements LifecycleObserver {
                 isRewarded = false;
 
                 if (rewardAd != null){
-                    Log.e("###", "onAdHidden  loadAd: ");
                     isLoadingReward = true;
                     rewardAd.loadAd();
                 }else {

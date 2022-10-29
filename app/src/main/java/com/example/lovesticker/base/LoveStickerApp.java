@@ -69,7 +69,7 @@ public class LoveStickerApp extends Application implements Application.ActivityL
         // mkv init
         LSMKVUtil.initMKV(applicationContext);
 
-        MaxADManager.enableDebugMaxAd(this);
+//        MaxADManager.enableDebugMaxAd(this);
 
         MaxADManager.initMaxAd(this);
 
