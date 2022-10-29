@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -71,7 +72,7 @@ public class RateDialog extends AppCompatActivity {
      */
     public static void launch(Context context, RatingClickListener listener) {
         try {
-            if (!willShow(context)) {
+            if (!willShow(context,listener)) {
                 return;
             }
 
@@ -89,7 +90,7 @@ public class RateDialog extends AppCompatActivity {
 
     public static void launch(Context context, String title, String description, RatingClickListener listener) {
         try {
-            if (!willShow(context)) {
+            if (!willShow(context,listener)) {
                 listener.onClickReject();
                 return;
             }
@@ -122,9 +123,14 @@ public class RateDialog extends AppCompatActivity {
      * @param context
      * @return
      */
-    public static boolean willShow(Context context) {
+    public static boolean willShow(Context context,RatingClickListener listener) {
         int count = getPopCount(context);
         totalcount = getPopTotalCount(context);
+        Log.e("###", "count: "+ count );
+
+        if (count == 2){
+            listener.onFinishScore();
+        }
         if (count < totalcount) {
             setPopCount(count, context);
             return true;
@@ -340,6 +346,8 @@ public class RateDialog extends AppCompatActivity {
         void onClickReject();
 
         void onClickCancel();
+
+        void onFinishScore();
 
     }
 }

@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -31,12 +30,10 @@ import com.applovin.sdk.AppLovinSdk;
 import com.applovin.sdk.AppLovinSdkConfiguration;
 import com.applovin.sdk.AppLovinSdkSettings;
 import com.applovin.sdk.AppLovinSdkUtils;
+import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ConvertUtils;
-import com.blankj.utilcode.util.EncodeUtils;
 import com.example.lovesticker.BuildConfig;
-import com.orhanobut.logger.Logger;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
 public class MaxADManager implements LifecycleObserver {
@@ -49,16 +46,26 @@ public class MaxADManager implements LifecycleObserver {
     public static final String APP_LOVIN_KEY = BuildConfig.APP_LOVIN_ID;
     private AppLovinSdk appLovinSdk;
 
+    private static OnRewardListener mOnRewardListener;
+
     private MaxADManager(){ }
     private static final MaxADManager instance = new MaxADManager();
 
     public static void initMaxAd(Context context){
         try {
+            Log.e("###", "initMaxAd ");
             instance.appLovinSdk = AppLovinSdk.getInstance(APP_LOVIN_KEY,new AppLovinSdkSettings(context),context);
             instance.appLovinSdk.setMediationProvider(AppLovinMediationProvider.MAX);
             instance.appLovinSdk.initializeSdk((new AppLovinSdk.SdkInitializationListener() {
                 @Override
                 public void onSdkInitialized(AppLovinSdkConfiguration config) {
+                    Log.e("###", "onSdkInitialized");
+
+                    Activity topAct = ActivityUtils.getTopActivity();
+                    if (topAct != null){
+                        Log.e("###", "onSdkInitialized  topAct: ");
+                        loadRewardAd(topAct);
+                    }
 
                 }
             }));
@@ -111,9 +118,19 @@ public class MaxADManager implements LifecycleObserver {
 
     // 加载并显示Reward广告，第二个参数是超时事件，如果加载时间超过这个时间还没有加载出来，
     //    则回调timeout，第三个参数为回调接口，具体方法见接口注释
-    public static void loadRewardAdAndShow(AppCompatActivity activity,long timeoutT,OnRewardListener listener) {
-        instance.loadRewardAndShow(activity,timeoutT,listener);
+    public static void loadRewardAd(Activity activity) {
+        instance.loadReward(activity);
     }
+
+    public static void tryShowRewardAd(){
+        instance.tryShowReward();
+    }
+
+    public static void rewardListener(OnRewardListener listener){
+        mOnRewardListener = listener;
+    }
+
+
 
     public interface OnRewardListener {
         // reward广告加载失败，不给用户奖励
@@ -123,7 +140,7 @@ public class MaxADManager implements LifecycleObserver {
         // reward广告播放完，并关闭，即用户获得奖励
         void onRewarded();
         // 加载reward广告超时，此时可以根据情况给用户奖励
-        void onTimeOut();
+//        void onTimeOut();
     }
 
     //// 加载Mrec广告
@@ -136,57 +153,6 @@ public class MaxADManager implements LifecycleObserver {
     public static void loadBannerIntoView(AppCompatActivity activity,FrameLayout adContainer){
         instance.loadBannerToView(activity,adContainer);
     }
-
-
-//    //interstitial_detail
-//    private MaxInterstitialAd interstitialDetail;
-//    private boolean adLoadingDetail = false;
-//    private boolean waitingIntersShow = false;
-//    private void initInterstitialDetail(AppCompatActivity activity) {
-//        if (appLovinSdk == null) return;
-//        if (interstitialDetail == null){
-//            interstitialDetail = new MaxInterstitialAd(INTERSTITIAL_Detail,appLovinSdk,activity);
-//        }
-//        interstitialDetail.setListener(new MaxAdListener() {
-//            @Override
-//            public void onAdLoaded(MaxAd ad) {
-//                adLoadingDetail = false;
-//                if(waitingIntersShow){
-//                    interstitialDetail.showAd();
-//                }
-//            }
-//
-//            @Override
-//            public void onAdDisplayed(MaxAd ad) {
-//                waitingIntersShow = false;
-//            }
-//
-//            @Override
-//            public void onAdHidden(MaxAd ad) {
-//
-//            }
-//
-//            @Override
-//            public void onAdClicked(MaxAd ad) {
-//
-//            }
-//
-//            @Override
-//            public void onAdLoadFailed(String adUnitId, MaxError error) {
-//                waitingIntersShow = false;
-//                adLoadingDetail = false;
-//            }
-//
-//            @Override
-//            public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-//                waitingIntersShow = false;
-//                adLoadingDetail = false;
-//            }
-//        });
-//
-//
-//
-//    }
 
 
     //interstitial_detail
@@ -253,54 +219,6 @@ public class MaxADManager implements LifecycleObserver {
         else waitingIntersShow = true;
     }
 
-
-//    //interstitial_back
-//    private MaxInterstitialAd interstitialBack;
-//    private boolean adLoadingBack = false;
-//    private boolean waitingBackShow = false;
-//
-//    private void initInterstitialDetailBack(AppCompatActivity activity){
-//        if (appLovinSdk == null) return;
-//        if (interstitialBack == null){
-//            interstitialBack = new MaxInterstitialAd(INTERSTITIAL_Back,appLovinSdk,activity);
-//            interstitialBack.setListener(new MaxAdListener() {
-//                @Override
-//                public void onAdLoaded(MaxAd ad) {
-//                    if (waitingBackShow){
-//                        interstitialBack.showAd();
-//                    }
-//                }
-//
-//                @Override
-//                public void onAdDisplayed(MaxAd ad) {
-//                    waitingBackShow = false;
-//                }
-//
-//                @Override
-//                public void onAdHidden(MaxAd ad) {
-//                    interstitialBack.destroy();
-//                }
-//
-//                @Override
-//                public void onAdClicked(MaxAd ad) {
-//
-//                }
-//
-//                @Override
-//                public void onAdLoadFailed(String adUnitId, MaxError error) {
-//                    interstitialBack.destroy();
-//
-//                }
-//
-//                @Override
-//                public void onAdDisplayFailed(MaxAd ad, MaxError error) {
-//                    interstitialBack.destroy();
-//                }
-//            });
-//        }
-//        activity.getLifecycle().addObserver(this);
-//
-//    }
 
     //interstitial_back
     private MaxInterstitialAd interstitialBack;
@@ -375,16 +293,19 @@ public class MaxADManager implements LifecycleObserver {
     private MaxRewardedAd rewardAd;
     private final Handler rewardHandler = new Handler(Looper.getMainLooper());
     private boolean waitingRewardShow = false;
+    private boolean isLoadingReward = false;
+
     private boolean isRewarded = false;
 
-    private void loadRewardAndShow(AppCompatActivity activity,long timeoutT,OnRewardListener listener){
+    private void loadReward(Activity activity){
         if (appLovinSdk == null) return;
         isRewarded = false;
         if (rewardAd == null){
             rewardAd = MaxRewardedAd.getInstance(MAX_REWARD,appLovinSdk,activity);
         }
 
-        activity.getLifecycle().addObserver(this);
+        isLoadingReward = true;
+
         rewardAd.setListener(new MaxRewardedAdListener() {
             @Override
             public void onRewardedVideoStarted(MaxAd ad) {
@@ -403,6 +324,7 @@ public class MaxADManager implements LifecycleObserver {
 
             @Override
             public void onAdLoaded(MaxAd ad) {
+                Log.e("###", "onAdLoaded: ");
                 if(waitingRewardShow){
                     rewardAd.showAd();
                 }
@@ -412,18 +334,31 @@ public class MaxADManager implements LifecycleObserver {
             public void onAdDisplayed(MaxAd ad) {
                 rewardHandler.removeCallbacksAndMessages(null);
                 waitingRewardShow = true;
-                listener.onRewardShown(); // reward广告展示，在此回调里隐藏加载进度条
+                mOnRewardListener.onRewardShown(); // reward广告展示，在此回调里隐藏加载进度条
             }
 
             @Override
             public void onAdHidden(MaxAd ad) {
                 if(isRewarded){
-                    listener.onRewarded(); // reward广告播放完，并关闭，即用户获得奖励
+                    mOnRewardListener.onRewarded(); // reward广告播放完，并关闭，即用户获得奖励
                 }else{
-                    listener.onRewardFail(); // reward广告加载失败，不给用户奖励
+                    mOnRewardListener.onRewardFail(); // reward广告加载失败，不给用户奖励
                 }
 
                 isRewarded = false;
+
+                if (rewardAd != null){
+                    Log.e("###", "onAdHidden  loadAd: ");
+                    isLoadingReward = true;
+                    rewardAd.loadAd();
+                }else {
+                    isLoadingReward = true;
+                    rewardAd = MaxRewardedAd.getInstance(MAX_REWARD,appLovinSdk,activity);
+                    rewardAd.setListener(this);
+                    rewardAd.loadAd();
+                }
+
+
             }
 
             @Override
@@ -435,29 +370,68 @@ public class MaxADManager implements LifecycleObserver {
             public void onAdLoadFailed(String adUnitId, MaxError error) {
                 rewardHandler.removeCallbacksAndMessages(null);
                 waitingRewardShow = false;
-                listener.onRewardFail(); // reward广告加载失败，不给用户奖励
+
+                if (rewardAd != null){
+                    isLoadingReward = true;
+                    rewardAd.loadAd();
+                }else {
+                    isLoadingReward = true;
+                    rewardAd = MaxRewardedAd.getInstance(MAX_REWARD,appLovinSdk,activity);
+                    rewardAd.setListener(this);
+                    rewardAd.loadAd();
+                }
+
+
+                mOnRewardListener.onRewardFail(); // reward广告加载失败，不给用户奖励
             }
 
             @Override
             public void onAdDisplayFailed(MaxAd ad, MaxError error) {
                 rewardHandler.removeCallbacksAndMessages(null);
                 waitingRewardShow = false;
-                listener.onRewardFail();  // reward广告加载失败，不给用户奖励
+
+                if (rewardAd != null){
+                    isLoadingReward = true;
+                    rewardAd.loadAd();
+                }else {
+                    isLoadingReward = true;
+                    rewardAd = MaxRewardedAd.getInstance(MAX_REWARD,appLovinSdk,activity);
+                    rewardAd.setListener(this);
+                    rewardAd.loadAd();
+                }
+                mOnRewardListener.onRewardFail();  // reward广告加载失败，不给用户奖励
             }
         });
+
+        rewardAd.loadAd();
+
+
+//        if(rewardAd.isReady()){
+//            rewardAd.showAd();
+//        }else{
+//            rewardAd.loadAd();
+//            waitingRewardShow = true;
+//
+//            rewardHandler.postDelayed(() -> {
+//                waitingRewardShow = false;
+//                listener.onTimeOut(); // 加载reward广告超时，此时可以根据情况给用户奖励
+//            },timeoutT);
+//        }
+    }
+
+
+    private void tryShowReward(){
+        if(rewardAd == null || !isLoadingReward) return;
+
+        isLoadingReward = false;
 
         if(rewardAd.isReady()){
             rewardAd.showAd();
         }else{
-            rewardAd.loadAd();
             waitingRewardShow = true;
-            rewardHandler.postDelayed(() -> {
-                waitingRewardShow = false;
-                listener.onTimeOut(); // 加载reward广告超时，此时可以根据情况给用户奖励
-            },timeoutT);
         }
-    }
 
+    }
 
 
     private MaxAdView mrecAd;

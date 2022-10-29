@@ -73,6 +73,8 @@ public class LoveStickerApp extends Application implements Application.ActivityL
 
         MaxADManager.initMaxAd(this);
 
+
+
         // app event upload init
         LSEventUtil.init(applicationContext);
 

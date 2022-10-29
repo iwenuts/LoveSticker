@@ -31,6 +31,7 @@ import com.example.lovesticker.mine.adapter.SavedPackAdapter;
 import com.example.lovesticker.mine.viewmodel.SavePacksViewModel;
 import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.event.UpdatePacksEvent;
+import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.score.RateController;
 import com.example.lovesticker.util.score.RateDialog;
 import com.example.lovesticker.util.stickers.AddStickerPackActivity;
@@ -247,53 +248,36 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
                 }
             }
 
-            RateController.getInstance().tryRateFinish(getContext(), new RateDialog.RatingClickListener() {
-
-                @Override
-                public void onClickFiveStart() {
-
-                }
-
-                @Override
-                public void onClick1To4Start() {
-
-                }
-
-                @Override
-                public void onClickReject() {
-
-                }
-
-                @Override
-                public void onClickCancel() {
-
-                }
-            }); //评分
+//            RateController.getInstance().tryRateFinish(getContext(), new RateDialog.RatingClickListener() {
+//
+//                @Override
+//                public void onClickFiveStart() {
+//
+//                }
+//
+//                @Override
+//                public void onClick1To4Start() {
+//
+//                }
+//
+//                @Override
+//                public void onClickReject() {
+//
+//                }
+//
+//                @Override
+//                public void onClickCancel() {
+//
+//                }
+//
+//                @Override
+//                public void onFinishScore() {
+//
+//                }
+//            }); //评分
 
             if (resultCode == Activity.RESULT_CANCELED) {
                 if (data != null) {
-                    RateController.getInstance().tryRateFinish(getContext(), new RateDialog.RatingClickListener() {
-
-                        @Override
-                        public void onClickFiveStart() {
-
-                        }
-
-                        @Override
-                        public void onClick1To4Start() {
-
-                        }
-
-                        @Override
-                        public void onClickReject() {
-
-                        }
-
-                        @Override
-                        public void onClickCancel() {
-
-                        }
-                    }); //评分
 
                     final String validationError = data.getStringExtra("validation_error");
                     if (validationError != null) {

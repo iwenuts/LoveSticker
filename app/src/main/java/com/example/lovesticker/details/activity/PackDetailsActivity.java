@@ -2,7 +2,6 @@ package com.example.lovesticker.details.activity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -26,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.blankj.utilcode.util.SPStaticUtils;
 import com.example.lovesticker.BuildConfig;
 import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
@@ -48,14 +48,8 @@ import com.example.lovesticker.util.stickers.model.Sticker;
 import com.example.lovesticker.util.stickers.model.StickerPack;
 import com.google.gson.Gson;
 import com.gyf.immersionbar.ImmersionBar;
-import com.orhanobut.hawk.Hawk;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +61,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     private Integer stickerPackNumber;
     private SelectPicPopupWindow selectPicPopupWindow;
     private Gson gson = new Gson();
-    private int rewardInterval = 0;
+    private int rewardInterval;
 
     private PopupWindow addSendPopupWindow;
     private ImageView popupWindowImg;
@@ -80,6 +74,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     private File fileTray;
     private File myTray;
     private boolean isPopup = false;
+
     private ActivityPackDetailsBinding viewBinding;
 
 
@@ -162,8 +157,25 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 viewBinding.sendText.setText(R.string.add_to_whatsapp);
                 viewBinding.sendButton.setEnabled(true);
             }
-
         }
+
+        MaxADManager.rewardListener(new MaxADManager.OnRewardListener() {
+            @Override
+            public void onRewardFail() {
+                dismissProgressDialog();
+            }
+
+            @Override
+            public void onRewardShown() {
+                dismissProgressDialog();
+            }
+
+            @Override
+            public void onRewarded() {
+                addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
+            }
+        });
+
     }
 
     @Override
@@ -189,15 +201,17 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             @Override
             public void onClick(View v) {
 
-                if (LSMKVUtil.getBoolean("loadad", true)) {
+                if (SPStaticUtils.getBoolean("isFinishScore",false)){
+                    if (LSMKVUtil.getBoolean("loadad", true)) {
+                        showRewardDialog();
 
-                    showRewardDialog();
+                    } else {
+                        addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
+                    }
 
-                } else {
+                }else {
                     addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
                 }
-
-//                viewBinding.sendText.setText(R.string.added_to_whatsApp);
 
             }
         });
@@ -221,8 +235,8 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
     private void showRewardDialog() {  //间隔出现激励弹窗 ex:第一次出现，第二次不出现......
         try {
-            int rewarDinter = LSMKVUtil.getInt("rewardinter", 1);
-            int rewardInterval = LSMKVUtil.getInt("rewardInterval", 0);
+            int rewarDinter = LSMKVUtil.getInt("rewardinter", 0); //间隔
+            rewardInterval = LSMKVUtil.getInt("rewardInterval", 0);
 
             if (rewardInterval % (rewarDinter + 1) == 0) {
                 new AlertDialog.Builder(this)
@@ -230,30 +244,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                         .setPositiveButton("Watch ", (dialog, which) -> {
                             try {
                                 showProgressDialog();
-                                MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
-                                    @Override
-                                    public void onRewardFail() {
-                                        dismissProgressDialog();
-
-                                    }
-
-                                    @Override
-                                    public void onRewardShown() {
-                                        dismissProgressDialog();
-
-                                    }
-
-                                    @Override
-                                    public void onRewarded() {
-                                        addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
-                                    }
-
-                                    @Override
-                                    public void onTimeOut() {
-                                        dismissProgressDialog();
-                                        addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
-                                    }
-                                });
+                                MaxADManager.tryShowRewardAd();
                             } catch (Exception e) {
                             }
 
@@ -266,8 +257,6 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
             }
 
-            rewardInterval = rewardInterval + 1;
-            LSMKVUtil.put("rewardInterval", rewardInterval);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -323,6 +312,13 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                     addSendPopupWindow.dismiss();
                 }
                 isPopup = false;
+
+
+                if (SPStaticUtils.getBoolean("isFinishScore",false)){
+                    rewardInterval = rewardInterval + 1;
+                    LSMKVUtil.put("rewardInterval", rewardInterval);
+                }
+
 
 //                if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
 //                    launchIntentToAddPackToChooser(stickerPacks.getIdentifier(), stickerPacks.getTitle());
@@ -536,7 +532,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == LSConstant.ADD_PACK) {
+        if (requestCode == LSConstant.ADD_PACK && resultCode == Activity.RESULT_OK) {
             //添加进收藏
             if (InvokesData.getInvokesData().querySavePackGson(stickerPacks.getId())) {
                 InvokesData.getInvokesData().insertPackData(
@@ -568,35 +564,15 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 public void onClickCancel() {
 
                 }
+
+                @Override
+                public void onFinishScore() {
+                    SPStaticUtils.put("isFinishScore",true);
+                }
             }); //评分
 
             if (resultCode == Activity.RESULT_CANCELED) {
                 if (data != null) {
-                    viewBinding.sendText.setText(R.string.add_to_whatsapp);
-                    viewBinding.sendButton.setEnabled(true);
-
-                    RateController.getInstance().tryRateFinish(PackDetailsActivity.this, new RateDialog.RatingClickListener() {
-
-                        @Override
-                        public void onClickFiveStart() {
-
-                        }
-
-                        @Override
-                        public void onClick1To4Start() {
-
-                        }
-
-                        @Override
-                        public void onClickReject() {
-
-                        }
-
-                        @Override
-                        public void onClickCancel() {
-
-                        }
-                    }); //评分
 
                     final String validationError = data.getStringExtra("validation_error");
                     if (validationError != null) {

@@ -3,6 +3,7 @@ package com.example.lovesticker.details.activity;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
@@ -11,12 +12,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.blankj.utilcode.util.SPStaticUtils;
 import com.blankj.utilcode.util.UriUtils;
 import com.bumptech.glide.Glide;
 import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseViewModel;
-import com.example.lovesticker.databinding.ActivityPackDetailsBinding;
 import com.example.lovesticker.databinding.ActivitySingleAnimatedDetailsBinding;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
@@ -38,7 +39,7 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
     private static final int REQUEST_Single_CODE = 2;
     private String mImage;
     private int mId;
-    private int rewardInterval = 0;
+    private int rewardInterval;
 
     private Uri saveUri;
     private Boolean isLoadAD = false;
@@ -66,20 +67,45 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
         if (LSMKVUtil.getBoolean("loadad", true)) {
             viewBinding.adContainer.setVisibility(View.VISIBLE);
             MaxADManager.loadBannerIntoView(this, viewBinding.adContainer);
-        }else {
+        } else {
             viewBinding.adContainer.setVisibility(View.GONE);
         }
 
 
         mImage = getIntent().getStringExtra("image");
-        mId =  getIntent().getIntExtra("id", -1);
-        Log.e("###", "mId: "+ mId );
+        mId = getIntent().getIntExtra("id", -1);
+        Log.e("###", "mId: " + mId);
         if (mImage != null) {
             Glide.with(this)
                     .load(LSConstant.image_gif_uri + mImage)
                     .error(R.drawable.image_failed)
                     .into(viewBinding.singleDetailsImg);
         }
+
+        MaxADManager.rewardListener(new MaxADManager.OnRewardListener() {
+            @Override
+            public void onRewardFail() {
+                dismissProgressDialog();
+
+            }
+
+            @Override
+            public void onRewardShown() {
+                dismissProgressDialog();
+
+            }
+
+            @Override
+            public void onRewarded() {
+                saveLocal(LSConstant.image_gif_uri + mImage);
+//                                        isLoadAD = true;
+//                                        if (isLoadAD && isDownload) {
+//                                            shareAny(saveUri);
+//                                        }
+            }
+
+
+        });
 
     }
 
@@ -120,23 +146,31 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
         });
 
 
-        viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        viewBinding.sendButton.setOnClickListener(v -> {
+
+            if (SPStaticUtils.getBoolean("isFinishScore", false)) {
                 if (LSMKVUtil.getBoolean("loadad", true)) {
                     showRewardDialog();
-                    saveLocal(LSConstant.image_gif_uri + mImage);
+
                 } else {
-                    isNoAd = true;
-                    isLoadAD = false;
+//                    isNoAd = true;
+//                    isLoadAD = false;
                     if (mImage != null) {
                         showProgressDialog();
                         saveLocal(LSConstant.image_gif_uri + mImage);
                     }
                 }
-
+            } else {
+//                isNoAd = true;
+//                isLoadAD = false;
+                if (mImage != null) {
+                    showProgressDialog();
+                    saveLocal(LSConstant.image_gif_uri + mImage);
+                }
             }
+
         });
+
 
         MaxADManager.loadInterstitialBackAd(this);
         LSMKVUtil.put(" SingleAnimatedBackAd", true);
@@ -158,63 +192,31 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
 
     private void showRewardDialog() {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
         try {
-            int rewarDinter = LSMKVUtil.getInt("rewardinter", 1);
-            int rewardInterval = LSMKVUtil.getInt("hitsNumber", 0);
+            int rewarDinter = LSMKVUtil.getInt("rewardinter", 0);
+            rewardInterval = LSMKVUtil.getInt("hitsNumber", 0);
 
             if (rewardInterval % (rewarDinter + 1) == 0) {
+//                isNoAd = false;
                 new AlertDialog.Builder(this)
                         .setMessage("Watch an AD to unblock the content?")
                         .setPositiveButton("Watch ", (dialog, which) -> {
-                            try {
-                                showProgressDialog();
-                                MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
-                                    @Override
-                                    public void onRewardFail() {
-                                        dismissProgressDialog();
 
-                                    }
+                            showProgressDialog();
+                            MaxADManager.tryShowRewardAd();
 
-                                    @Override
-                                    public void onRewardShown() {
-                                        dismissProgressDialog();
-
-                                    }
-
-                                    @Override
-                                    public void onRewarded() {
-                                        isLoadAD = true;
-                                        if (isLoadAD && isDownload) {
-                                            shareAny(saveUri);
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onTimeOut() {
-                                        dismissProgressDialog();
-                                        isLoadAD = true;
-                                        if (isLoadAD && isDownload) {
-                                            shareAny(saveUri);
-                                        }
-                                    }
-                                });
-                            } catch (Exception e) {
-                            }
 
                         }).setNegativeButton("cancel", (dialog, which) -> {
 
                 }).setCancelable(false).show();
 
             } else {  // 不弹激励广告
-                isNoAd = true;
-                isLoadAD = false;
+//                isNoAd = true;
+//                isLoadAD = false;
                 if (mImage != null) {
                     showProgressDialog();
                     saveLocal(LSConstant.image_gif_uri + mImage);
                 }
             }
-
-            rewardInterval = rewardInterval + 1;
-            LSMKVUtil.put("hitsNumber", rewardInterval);
 
         } catch (Exception e) {
 
@@ -280,28 +282,37 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
             File file = (File) msg.obj;
             saveUri = UriUtils.file2Uri(file);
 
-            if (isNoAd) {
-                shareAny(saveUri);
-                dismissProgressDialog();
-            } else if (isDownload && isLoadAD) {
-                shareAny(saveUri);
-            }
+            shareAny(saveUri);
+            dismissProgressDialog();
+
+//            if (isNoAd) {
+//                shareAny(saveUri);
+//                dismissProgressDialog();
+//            } else if (isDownload && isLoadAD) {
+//                shareAny(saveUri);
+//            }
         }
         return false;
     });
 
-    protected void shareAny(Uri uri){
+    protected void shareAny(Uri uri) {
+        if (SPStaticUtils.getBoolean("isFinishScore", false)) {
+            rewardInterval = rewardInterval + 1;
+            LSMKVUtil.put("hitsNumber", rewardInterval);
+        }
+
+
         Intent whatsappIntent = new Intent(android.content.Intent.ACTION_SEND);
         whatsappIntent.setType("image/*");
         whatsappIntent.putExtra(Intent.EXTRA_STREAM, uri);//add image path
-        startActivityForResult(Intent.createChooser(whatsappIntent, "Share image using"),REQUEST_Single_CODE);
+        startActivityForResult(Intent.createChooser(whatsappIntent, "Share image using"), REQUEST_Single_CODE);
 
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_Single_CODE){
+        if (requestCode == REQUEST_Single_CODE && resultCode == Activity.RESULT_OK) {
             RateController.getInstance().tryRateFinish(StickersDetailsActivity.this, new RateDialog.RatingClickListener() {
 
                 @Override
@@ -322,6 +333,11 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
                 @Override
                 public void onClickCancel() {
 
+                }
+
+                @Override
+                public void onFinishScore() {
+                    SPStaticUtils.put("isFinishScore", true);
                 }
             });
         }

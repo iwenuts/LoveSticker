@@ -2,15 +2,11 @@ package com.example.lovesticker.details.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -26,13 +22,12 @@ import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.SPStaticUtils;
 import com.bumptech.glide.Glide;
 import com.example.lovesticker.BuildConfig;
 import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
 import com.example.lovesticker.base.BaseViewModel;
-import com.example.lovesticker.base.LoveStickerApp;
-import com.example.lovesticker.databinding.ActivityPackDetailsBinding;
 import com.example.lovesticker.databinding.ActivityPackImageDetailsBinding;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.util.ads.MaxADManager;
@@ -41,7 +36,6 @@ import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.InvokesData;
 import com.example.lovesticker.util.room.SaveData;
 
-import com.example.lovesticker.util.room.SaveStickerData;
 import com.example.lovesticker.util.score.RateController;
 import com.example.lovesticker.util.score.RateDialog;
 import com.example.lovesticker.util.stickers.AddStickerPackActivity;
@@ -51,27 +45,17 @@ import com.example.lovesticker.util.stickers.WhitelistCheck;
 import com.example.lovesticker.util.stickers.model.Sticker;
 import com.example.lovesticker.util.stickers.model.StickerPack;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.gyf.immersionbar.ImmersionBar;
-import com.orhanobut.hawk.Hawk;
 
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, ActivityPackImageDetailsBinding> {
     private StickerPacks packDetails;
     private StickerPack stickerPack;
     private List<Sticker> sticker = new ArrayList<>();
-    private int rewardInterval = 0;
+    private int rewardInterval;
 
     private int imagePosition;
     private int currentPosition; //当前图片所在位置
@@ -101,7 +85,6 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
     @Override
     protected void initView() {
-        Log.e("###", "PackImageDetails onCreate ");
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
 
         if (LSMKVUtil.getBoolean("PackDetailsInterstitialAd", false) &&
@@ -113,7 +96,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         if (LSMKVUtil.getBoolean("loadad", true)) {
             viewBinding.adContainer.setVisibility(View.VISIBLE);
             MaxADManager.loadBannerIntoView(this, viewBinding.adContainer);
-        }else {
+        } else {
             viewBinding.adContainer.setVisibility(View.GONE);
         }
 
@@ -121,7 +104,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         packDetails = (StickerPacks) getIntent().getSerializableExtra("packDetails_value");
         imagePosition = getIntent().getIntExtra("position", 0);
         stickerPackNumber = getIntent().getIntExtra("stickerPackNumber", 0);
-        Log.e("###", "PackImageDetailsNumber: " + stickerPackNumber);
+
 
         if (packDetails != null && stickerPackNumber != 0) {
             currentPosition = imagePosition;
@@ -166,6 +149,26 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             }
 
         }
+
+        MaxADManager.rewardListener(new MaxADManager.OnRewardListener() {
+            @Override
+            public void onRewardFail() {
+                dismissProgressDialog();
+
+            }
+
+            @Override
+            public void onRewardShown() {
+                dismissProgressDialog();
+
+            }
+
+            @Override
+            public void onRewarded() {
+                addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
+            }
+
+        });
 
     }
 
@@ -225,12 +228,17 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (LSMKVUtil.getBoolean("loadad", true)) {
-                    showRewardDialog();
+                if (SPStaticUtils.getBoolean("isFinishScore", false)) {
+                    if (LSMKVUtil.getBoolean("loadad", true)) {
+                        showRewardDialog();
 
+                    } else {
+                        addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
+                    }
                 } else {
                     addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
                 }
+
             }
         });
 
@@ -247,42 +255,17 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
     private void showRewardDialog() {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......
         try {
-            int rewarDinter = LSMKVUtil.getInt("rewardinter", 1);
-            int rewardInterval = LSMKVUtil.getInt("rewardInterval", 0);
+            int rewarDinter = LSMKVUtil.getInt("rewardinter", 0);
+            rewardInterval = LSMKVUtil.getInt("rewardInterval", 0);
 
             if (rewardInterval % (rewarDinter + 1) == 0) {
                 new AlertDialog.Builder(this)
                         .setMessage("Watch an AD to unblock the content?")
                         .setPositiveButton("Watch ", (dialog, which) -> {
-                            try {
-                                showProgressDialog();
-                                MaxADManager.loadRewardAdAndShow(this, 15000, new MaxADManager.OnRewardListener() {
-                                    @Override
-                                    public void onRewardFail() {
-                                        dismissProgressDialog();
 
-                                    }
+                            showProgressDialog();
+                            MaxADManager.tryShowRewardAd();
 
-                                    @Override
-                                    public void onRewardShown() {
-                                        dismissProgressDialog();
-
-                                    }
-
-                                    @Override
-                                    public void onRewarded() {
-                                        addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
-                                    }
-
-                                    @Override
-                                    public void onTimeOut() {
-                                        dismissProgressDialog();
-                                        addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
-
-                                    }
-                                });
-                            } catch (Exception e) {
-                            }
 
                         }).setNegativeButton("cancel", (dialog, which) -> {
 
@@ -292,9 +275,6 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
                 addStickerPackToWhatsApp(packDetails.getIdentifier(), packDetails.getTitle());
 
             }
-
-            rewardInterval = rewardInterval + 1;
-            LSMKVUtil.put("rewardInterval", rewardInterval);
 
 
         } catch (Exception e) {
@@ -362,7 +342,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             @Override
             public void completed(int complete, int failed, int all) {
                 Log.e("StickersManager", "downloadStickers 完成:" + complete + " 失败:" + failed + " 共:" + all);
-                if (failed > 0){ //如果有下载失败弹出提示
+                if (failed > 0) { //如果有下载失败弹出提示
 
                     return;
                 }
@@ -388,7 +368,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
     private final Handler handler = new Handler(msg -> {
         //回到主线程（UI线程），处理UI
         if (msg.what == 0) {
-            popupWindowSubtitle.setText("The pack in preparation… "+msg.arg1+"/"+msg.arg2);
+            popupWindowSubtitle.setText("The pack in preparation… " + msg.arg1 + "/" + msg.arg2);
 
             if (msg.arg1 == msg.arg2) {//如果下载完成
                 new Handler(Looper.getMainLooper()).postDelayed(() -> {
@@ -400,6 +380,12 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
                 if (stickerPackWhitelistedInWhatsAppConsumer) {
                     addSendPopupWindow.dismiss();
                 }
+
+                if (SPStaticUtils.getBoolean("isFinishScore", false)) {
+                    rewardInterval = rewardInterval + 1;
+                    LSMKVUtil.put("rewardInterval", rewardInterval);
+                }
+
 
 //                if (!stickerPackWhitelistedInWhatsAppConsumer && !stickerPackWhitelistedInWhatsAppSmb) {
 //                    launchIntentToAddPackToChooser(packDetails.getIdentifier(), packDetails.getTitle());
@@ -428,7 +414,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             stickerPackWhitelistedInWhatsAppConsumer = WhitelistCheck.isStickerPackWhitelistedInWhatsAppConsumer(this, identifier);
             stickerPackWhitelistedInWhatsAppSmb = WhitelistCheck.isStickerPackWhitelistedInWhatsAppSmb(this, identifier);
 //            if (getFileSize(file) == 0 && getFileSize(fileTray) == 0){
-                AddSendStatus();
+            AddSendStatus();
 //            }
 
             DownloadImages();
@@ -487,14 +473,14 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == LSConstant.ADD_PACK) {
+        if (requestCode == LSConstant.ADD_PACK && resultCode == Activity.RESULT_OK) {
             InvokesData.getInvokesData().insertPackData(
                     new SaveData(packDetails.getId(), gson.toJson(packDetails)));
 
             viewBinding.textView2.setText(R.string.added_to_whatsApp);
             viewBinding.sendButton.setEnabled(false);
 
-            RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener(){
+            RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener() {
 
                 @Override
                 public void onClickFiveStart() {
@@ -515,35 +501,17 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
                 public void onClickCancel() {
 
                 }
+
+                @Override
+                public void onFinishScore() {
+                    SPStaticUtils.put("isFinishScore", true);
+                }
             });
 
             if (resultCode == Activity.RESULT_CANCELED) {
                 if (data != null) {
                     viewBinding.textView2.setText(R.string.add_to_whatsapp);
                     viewBinding.sendButton.setEnabled(true);
-
-                    RateController.getInstance().tryRateFinish(PackImageDetailsActivity.this, new RateDialog.RatingClickListener(){
-
-                        @Override
-                        public void onClickFiveStart() {
-
-                        }
-
-                        @Override
-                        public void onClick1To4Start() {
-
-                        }
-
-                        @Override
-                        public void onClickReject() {
-
-                        }
-
-                        @Override
-                        public void onClickCancel() {
-
-                        }
-                    });
 
                     final String validationError = data.getStringExtra("validation_error");
                     if (validationError != null) {

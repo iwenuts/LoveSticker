@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.Toast;
 
@@ -42,6 +43,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.lovesticker.util.ads.MaxADManager.loadRewardAd;
+
 public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBinding> {
     private ActivityMainBinding viewBinding;
 
@@ -54,6 +57,11 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
     @Override
     protected void initView() {
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
+
+        LSMKVUtil.put("rewardInterval", 0);
+        LSMKVUtil.put("hitsNumber", 0);
+
+        loadRewardAd(this);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         NavHostFragment navHostFragment = (NavHostFragment) fragmentManager.findFragmentById(R.id.fragment);
