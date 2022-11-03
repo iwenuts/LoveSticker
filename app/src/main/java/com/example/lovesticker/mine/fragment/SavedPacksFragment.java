@@ -124,7 +124,7 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
             (stickerPack, index) -> {
                 selIndex = index;
 
-                if (stickerPack.getStickersList().size() != 0){
+                if (stickerPack.getStickersList().size() > 0){
                     sticker.clear();
                     ArrayList<String> emoji = new ArrayList<>();
                     emoji.add("");
@@ -132,8 +132,8 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
                         String name = stickerPack.getStickersList().get(i).getImage();
                         sticker.add(new Sticker(name.substring(name.lastIndexOf("/")+1), emoji));
                     }
+                    addStickerPackToWhatsApp(stickerPack.getIdentifier(), stickerPack.getTitle(), stickerPack);
                 }
-                addStickerPackToWhatsApp(stickerPack.getIdentifier(), stickerPack.getTitle(), stickerPack);
             };
 
     protected void addStickerPackToWhatsApp(String identifier, String stickerPackName, StickerPacks stickerPacks) {
@@ -244,7 +244,7 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
             if (null != viewModel.saveData  && selIndex > -1 && selIndex < viewModel.saveData.size()) {
                 boolean isWhitelisted = WhitelistCheck.isWhitelisted(requireContext(), ((SavePacksViewModel)viewModel).saveData.get(selIndex).getIdentifier());
                 if (isWhitelisted && null != savedPackAdapter){
-                    savedPackAdapter.notifyItemRangeChanged(selIndex, 1);
+                    savedPackAdapter.notifyItemRangeChanged(selIndex, viewModel.saveData.size());
                 }
             }
 

@@ -101,7 +101,7 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
 //                    Log.e("###",  "BuildConfig : " + BuildConfig.VERSION_CODE + " " + "getUv: "+  loveStickerBean.getUv() );
                     LSMKVUtil.put("rewardinter",loveStickerBean.getRewardinter());
                     if (BuildConfig.DEBUG){
-                        LSMKVUtil.put("loadad",true);
+                        LSMKVUtil.put("loadad",false);
                     }else {
                         LSMKVUtil.put("loadad",loveStickerBean.getLoadad());
                     }

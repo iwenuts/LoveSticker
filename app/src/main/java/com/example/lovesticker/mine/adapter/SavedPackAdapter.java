@@ -73,9 +73,7 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
                         .setTitle("Would you like to add Lovely！to WhatsApp?")
                         .setCancelable(false)
                         .setPositiveButton("ADD",((dialog, which) -> {
-                            if (spList.size() > holder.getAdapterPosition()){
-                                onAddButtonClickedListener.onAddButtonClicked(spList.get(holder.getAdapterPosition()),holder.getAdapterPosition() );
-                            }
+                            onAddButtonClickedListener.onAddButtonClicked(spList.get(holder.getAdapterPosition()),holder.getAdapterPosition() );
                             dialog.dismiss();
 
                         })).setNegativeButton("CANCEL",((dialog, which) -> dialog.dismiss()));
@@ -97,7 +95,7 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         stickerPacks = spList.get(position);
-        if (stickerPacks != null && spList.size() != 0){
+        if (stickerPacks != null && spList.size() > 0){
 
             holder.packNumber.setText(stickerPacks.getStickersList().size() + " Stickers");
 

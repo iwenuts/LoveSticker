@@ -3,6 +3,7 @@ package com.example.lovesticker.util.ads;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -18,6 +19,7 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.applovin.mediation.MaxAd;
 import com.applovin.mediation.MaxAdFormat;
 import com.applovin.mediation.MaxAdListener;
+import com.applovin.mediation.MaxAdRevenueListener;
 import com.applovin.mediation.MaxAdViewAdListener;
 import com.applovin.mediation.MaxError;
 import com.applovin.mediation.MaxReward;
@@ -33,6 +35,10 @@ import com.applovin.sdk.AppLovinSdkUtils;
 import com.blankj.utilcode.util.ActivityUtils;
 import com.blankj.utilcode.util.ConvertUtils;
 import com.example.lovesticker.BuildConfig;
+import com.example.lovesticker.base.LoveStickerApp;
+import com.example.lovesticker.main.model.LoveStickerBean;
+import com.example.lovesticker.util.event.LSEventUtil;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.HashMap;
 
@@ -47,6 +53,7 @@ public class MaxADManager implements LifecycleObserver {
     private AppLovinSdk appLovinSdk;
 
     private static OnRewardListener mOnRewardListener;
+    private static FirebaseAnalytics mFirebaseAnalytics;
 
     private MaxADManager(){ }
     private static final MaxADManager instance = new MaxADManager();
@@ -85,7 +92,6 @@ public class MaxADManager implements LifecycleObserver {
             sp.edit().putBoolean("com.applovin.sdk.mediation.test_mode_enabled", true).apply();
         }
     }
-
 
 
     // 加载InterstitialDetail广告，加载出来后不显示，等调用下面的方法的时候再显示
@@ -162,6 +168,30 @@ public class MaxADManager implements LifecycleObserver {
 
         interstitialDetail = new MaxInterstitialAd(INTERSTITIAL_Detail,appLovinSdk,activity);
 
+        interstitialDetail.setRevenueListener(ad -> {
+            try {
+                double revenue = ad.getRevenue(); // In USD
+                // Miscellaneous data
+                // String countryCode = appLovinSdk.getConfiguration().getCountryCode(); // "US" for the United States, etc - Note: Do not confuse this with currency code which is "USD" in most cases!
+                String networkName = ad.getNetworkName(); // Display name of the network that showed the movid.append.in.ad (e.g. "AdColony")
+                String adUnitId = ad.getAdUnitId(); // The MAX Ad Unit ID
+                MaxAdFormat adFormat = ad.getFormat(); // The movid.append.in.ad format of the movid.append.in.ad (e.g. BANNER, MREC, INTERSTITIAL, REWARDED)
+                String placement = ad.getPlacement(); // The placement this movid.append.in.ad's postbacks are tied to
+
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.AD_PLATFORM, "MaxApplovin");
+                bundle.putString(FirebaseAnalytics.Param.AD_SOURCE, networkName);
+                bundle.putString(FirebaseAnalytics.Param.AD_FORMAT, adFormat.getLabel());
+                bundle.putString(FirebaseAnalytics.Param.AD_UNIT_NAME, adUnitId + "-" + placement);
+                bundle.putString(FirebaseAnalytics.Param.CURRENCY, "USD");
+                bundle.putDouble(FirebaseAnalytics.Param.VALUE, revenue);
+                LSEventUtil.sendRevenue(bundle);
+            } catch (Exception e) {
+
+            }
+        });
+
         interstitialDetail.setListener(new MaxAdListener() {
             @Override
             public void onAdLoaded(MaxAd ad) {
@@ -225,6 +255,30 @@ public class MaxADManager implements LifecycleObserver {
         if (interstitialBack != null) return;
 
         interstitialBack = new MaxInterstitialAd(INTERSTITIAL_Back,appLovinSdk,activity);
+
+        interstitialBack.setRevenueListener(ad -> {
+            try {
+                double revenue = ad.getRevenue(); // In USD
+                // Miscellaneous data
+                // String countryCode = appLovinSdk.getConfiguration().getCountryCode(); // "US" for the United States, etc - Note: Do not confuse this with currency code which is "USD" in most cases!
+                String networkName = ad.getNetworkName(); // Display name of the network that showed the movid.append.in.ad (e.g. "AdColony")
+                String adUnitId = ad.getAdUnitId(); // The MAX Ad Unit ID
+                MaxAdFormat adFormat = ad.getFormat(); // The movid.append.in.ad format of the movid.append.in.ad (e.g. BANNER, MREC, INTERSTITIAL, REWARDED)
+                String placement = ad.getPlacement(); // The placement this movid.append.in.ad's postbacks are tied to
+
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.AD_PLATFORM, "MaxApplovin");
+                bundle.putString(FirebaseAnalytics.Param.AD_SOURCE, networkName);
+                bundle.putString(FirebaseAnalytics.Param.AD_FORMAT, adFormat.getLabel());
+                bundle.putString(FirebaseAnalytics.Param.AD_UNIT_NAME, adUnitId + "-" + placement);
+                bundle.putString(FirebaseAnalytics.Param.CURRENCY, "USD");
+                bundle.putDouble(FirebaseAnalytics.Param.VALUE, revenue);
+                LSEventUtil.sendRevenue(bundle);
+            } catch (Exception e) {
+
+            }
+        });
 
         interstitialBack.setListener(new MaxAdListener() {
             @Override
@@ -302,6 +356,30 @@ public class MaxADManager implements LifecycleObserver {
         }
 
         isLoadingReward = true;
+
+        rewardAd.setRevenueListener(ad -> {
+            try {
+                double revenue = ad.getRevenue(); // In USD
+                // Miscellaneous data
+                // String countryCode = appLovinSdk.getConfiguration().getCountryCode(); // "US" for the United States, etc - Note: Do not confuse this with currency code which is "USD" in most cases!
+                String networkName = ad.getNetworkName(); // Display name of the network that showed the movid.append.in.ad (e.g. "AdColony")
+                String adUnitId = ad.getAdUnitId(); // The MAX Ad Unit ID
+                MaxAdFormat adFormat = ad.getFormat(); // The movid.append.in.ad format of the movid.append.in.ad (e.g. BANNER, MREC, INTERSTITIAL, REWARDED)
+                String placement = ad.getPlacement(); // The placement this movid.append.in.ad's postbacks are tied to
+
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.AD_PLATFORM, "MaxApplovin");
+                bundle.putString(FirebaseAnalytics.Param.AD_SOURCE, networkName);
+                bundle.putString(FirebaseAnalytics.Param.AD_FORMAT, adFormat.getLabel());
+                bundle.putString(FirebaseAnalytics.Param.AD_UNIT_NAME, adUnitId + "-" + placement);
+                bundle.putString(FirebaseAnalytics.Param.CURRENCY, "USD");
+                bundle.putDouble(FirebaseAnalytics.Param.VALUE, revenue);
+                LSEventUtil.sendRevenue(bundle);
+            } catch (Exception e) {
+
+            }
+        });
 
         rewardAd.setListener(new MaxRewardedAdListener() {
             @Override
@@ -456,6 +534,30 @@ public class MaxADManager implements LifecycleObserver {
         adContainer.addView(mrecAd);
         mrecAd.loadAd();
 
+        mrecAd.setRevenueListener(ad -> {
+            try {
+                double revenue = ad.getRevenue(); // In USD
+                // Miscellaneous data
+                // String countryCode = appLovinSdk.getConfiguration().getCountryCode(); // "US" for the United States, etc - Note: Do not confuse this with currency code which is "USD" in most cases!
+                String networkName = ad.getNetworkName(); // Display name of the network that showed the movid.append.in.ad (e.g. "AdColony")
+                String adUnitId = ad.getAdUnitId(); // The MAX Ad Unit ID
+                MaxAdFormat adFormat = ad.getFormat(); // The movid.append.in.ad format of the movid.append.in.ad (e.g. BANNER, MREC, INTERSTITIAL, REWARDED)
+                String placement = ad.getPlacement(); // The placement this movid.append.in.ad's postbacks are tied to
+
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.AD_PLATFORM, "MaxApplovin");
+                bundle.putString(FirebaseAnalytics.Param.AD_SOURCE, networkName);
+                bundle.putString(FirebaseAnalytics.Param.AD_FORMAT, adFormat.getLabel());
+                bundle.putString(FirebaseAnalytics.Param.AD_UNIT_NAME, adUnitId + "-" + placement);
+                bundle.putString(FirebaseAnalytics.Param.CURRENCY, "USD");
+                bundle.putDouble(FirebaseAnalytics.Param.VALUE, revenue);
+                LSEventUtil.sendRevenue(bundle);
+            } catch (Exception e) {
+
+            }
+        });
+
         mrecAd.setListener(new MaxAdViewAdListener() {
             @Override
             public void onAdExpanded(MaxAd ad) {
@@ -557,6 +659,31 @@ public class MaxADManager implements LifecycleObserver {
         if (appLovinSdk == null) return null;
 
         MaxAdView adView = new MaxAdView(MAX_BANNER, appLovinSdk,activity);
+
+        adView.setRevenueListener(ad -> {
+            try {
+                double revenue = ad.getRevenue(); // In USD
+                // Miscellaneous data
+                // String countryCode = appLovinSdk.getConfiguration().getCountryCode(); // "US" for the United States, etc - Note: Do not confuse this with currency code which is "USD" in most cases!
+                String networkName = ad.getNetworkName(); // Display name of the network that showed the movid.append.in.ad (e.g. "AdColony")
+                String adUnitId = ad.getAdUnitId(); // The MAX Ad Unit ID
+                MaxAdFormat adFormat = ad.getFormat(); // The movid.append.in.ad format of the movid.append.in.ad (e.g. BANNER, MREC, INTERSTITIAL, REWARDED)
+                String placement = ad.getPlacement(); // The placement this movid.append.in.ad's postbacks are tied to
+
+
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.AD_PLATFORM, "MaxApplovin");
+                bundle.putString(FirebaseAnalytics.Param.AD_SOURCE, networkName);
+                bundle.putString(FirebaseAnalytics.Param.AD_FORMAT, adFormat.getLabel());
+                bundle.putString(FirebaseAnalytics.Param.AD_UNIT_NAME, adUnitId + "-" + placement);
+                bundle.putString(FirebaseAnalytics.Param.CURRENCY, "USD");
+                bundle.putDouble(FirebaseAnalytics.Param.VALUE, revenue);
+                LSEventUtil.sendRevenue(bundle);
+            } catch (Exception e) {
+
+            }
+        });
+
         adView.setListener(new MaxAdViewAdListener() {
             @Override
             public void onAdExpanded(MaxAd ad) {
