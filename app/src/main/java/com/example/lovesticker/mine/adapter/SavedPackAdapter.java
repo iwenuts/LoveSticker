@@ -96,30 +96,32 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        stickerPacks = spList.get(position);
-        if (stickerPacks != null && spList.size() > 0){
+        if (spList.size() > 0){
+            stickerPacks = spList.get(position);
 
-            holder.packNumber.setText(stickerPacks.getStickersList().size() + " Stickers");
+            if (stickerPacks != null) {
 
-            holder.itemName.setText(stickerPacks.getTitle());
+                holder.packNumber.setText(stickerPacks.getStickersList().size() + " Stickers");
 
-            Glide.with(context)
-                    .load(LSConstant.image_uri + stickerPacks.getStickersList().get(0).getImage())
-                    .placeholder(R.mipmap.ic_launcher_foreground)
-                    .into(holder.img1);
+                holder.itemName.setText(stickerPacks.getTitle());
 
-            Glide.with(context)
-                    .load(LSConstant.image_uri + stickerPacks.getStickersList().get(1).getImage())
-                    .placeholder(R.mipmap.ic_launcher_foreground)
-                    .into(holder.img2);
+                Glide.with(context)
+                        .load(LSConstant.image_uri + stickerPacks.getStickersList().get(0).getImage())
+                        .placeholder(R.mipmap.ic_launcher_foreground)
+                        .into(holder.img1);
 
-            Glide.with(context)
-                    .load(LSConstant.image_uri + stickerPacks.getStickersList().get(2).getImage())
-                    .placeholder(R.mipmap.ic_launcher_foreground)
-                    .into(holder.img3);
+                Glide.with(context)
+                        .load(LSConstant.image_uri + stickerPacks.getStickersList().get(1).getImage())
+                        .placeholder(R.mipmap.ic_launcher_foreground)
+                        .into(holder.img2);
+
+                Glide.with(context)
+                        .load(LSConstant.image_uri + stickerPacks.getStickersList().get(2).getImage())
+                        .placeholder(R.mipmap.ic_launcher_foreground)
+                        .into(holder.img3);
 
 
-            boolean isWhitelisted = WhitelistCheck.isWhitelisted(context, stickerPacks.getIdentifier());
+                boolean isWhitelisted = WhitelistCheck.isWhitelisted(context, stickerPacks.getIdentifier());
 //            for (StickerPack stickerPack : stickerPackList) {
 //                stickerPack.setIsWhitelisted(WhitelistCheck.isWhitelisted(context, stickerPacks.getIdentifier()));
 //
@@ -134,18 +136,18 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
 //                }
 //            }
 
-            if (isWhitelisted){
-                holder.packAdd.setVisibility(View.VISIBLE);
-                holder.packAdd.setImageResource(R.drawable.finished_adding);
-                holder.packNoAdd.setVisibility(View.GONE);
-            }else {
-                holder.packAdd.setVisibility(View.GONE);
-                holder.packNoAdd.setVisibility(View.VISIBLE);
-                holder.packNoAdd.setImageResource(R.drawable.add_pack);
+                if (isWhitelisted) {
+                    holder.packAdd.setVisibility(View.VISIBLE);
+                    holder.packAdd.setImageResource(R.drawable.finished_adding);
+                    holder.packNoAdd.setVisibility(View.GONE);
+                } else {
+                    holder.packAdd.setVisibility(View.GONE);
+                    holder.packNoAdd.setVisibility(View.VISIBLE);
+                    holder.packNoAdd.setImageResource(R.drawable.add_pack);
+                }
+
             }
-
         }
-
     }
 
     @Override
