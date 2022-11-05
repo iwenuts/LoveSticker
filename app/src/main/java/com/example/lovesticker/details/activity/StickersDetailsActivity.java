@@ -21,11 +21,13 @@ import com.example.lovesticker.base.BaseViewModel;
 import com.example.lovesticker.databinding.ActivitySingleAnimatedDetailsBinding;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
+import com.example.lovesticker.util.event.LSEventUtil;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.InvokesData;
 import com.example.lovesticker.util.room.SaveStickerData;
 import com.example.lovesticker.util.score.RateController;
 import com.example.lovesticker.util.score.RateDialog;
+import com.example.lovesticker.util.stickers.StickersManager;
 import com.gyf.immersionbar.ImmersionBar;
 
 import java.io.DataInputStream;
@@ -74,7 +76,12 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
 
         mImage = getIntent().getStringExtra("image");
         mId = getIntent().getIntExtra("id", -1);
+
         Log.e("###", "mId: " + mId);
+
+        LSEventUtil.logToClickSticker(mId);
+
+
         if (mImage != null) {
             Glide.with(this)
                     .load(LSConstant.image_gif_uri + mImage)
@@ -140,6 +147,8 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
                     InvokesData.getInvokesData().insertStickerData(
                             new SaveStickerData(mId, mImage));
 
+                    LSEventUtil.logToFavSticker(mId);
+
                 }
 
             }
@@ -147,6 +156,7 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
 
 
         viewBinding.sendButton.setOnClickListener(v -> {
+            LSEventUtil.logToSendSticker(mId);
 
             if (SPStaticUtils.getBoolean("isFinishScore", false)) {
                 if (LSMKVUtil.getBoolean("loadad", true)) {
@@ -279,7 +289,17 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
         //回到主线程（UI线程），处理UI
         if (msg.what == 0) {
             isDownload = true;
+
             File file = (File) msg.obj;
+
+            if (StickersManager.getFileSize(file) > 0){
+                LSEventUtil.logToDownloadStickerComplete(mId);
+            }else {
+                LSEventUtil.logToDownloadStickerFailed(mId);
+            }
+
+
+
             saveUri = UriUtils.file2Uri(file);
 
             shareAny(saveUri);

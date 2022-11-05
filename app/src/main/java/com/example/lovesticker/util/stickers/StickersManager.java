@@ -276,7 +276,7 @@ public class StickersManager {
         }
     }
 
-    protected long getFileSize(File file) {
+    public static long getFileSize(File file) {
         long size = 0;
         try {
             if (file.exists()) {

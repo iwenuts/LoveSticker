@@ -32,6 +32,7 @@ import com.example.lovesticker.main.fragment.MineFragment;
 import com.example.lovesticker.main.fragment.PackFragment;
 import com.example.lovesticker.main.fragment.StickerFragment;
 import com.example.lovesticker.main.model.LoveStickerBean;
+import com.example.lovesticker.util.event.LSEventUtil;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.gyf.immersionbar.ImmersionBar;
 import com.permissionx.guolindev.PermissionX;
@@ -82,6 +83,15 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
         viewBinding.bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
 
             navController.navigate(item.getItemId());
+
+            if (item.getItemId() == R.id.packFragment){
+                LSEventUtil.logToTabPack();
+            }else if (item.getItemId() == R.id.stickerFragment){
+                LSEventUtil.logToTabStickers();
+            }else {
+                LSEventUtil.logToTabMine();
+            }
+
 
             if (item.isChecked()){
                 return true;
