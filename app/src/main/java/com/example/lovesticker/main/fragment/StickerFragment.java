@@ -22,6 +22,7 @@ import com.example.lovesticker.sticker.activity.LoadingCategoriesActivity;
 import com.example.lovesticker.sticker.fragment.AnimationFragment;
 import com.example.lovesticker.sticker.fragment.LoveFragment;
 import com.example.lovesticker.sticker.model.AnimatedCategoriesBean;
+import com.example.lovesticker.util.event.LSEventUtil;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -61,6 +62,7 @@ public class StickerFragment extends BaseFragment<StickerViewModel, FragmentStic
 
     public void getPosition(int position){  //拿到单个种类所在位置后并进行跳转到对应界面
         viewBinding.stickerViewPager.setCurrentItem(position +1);
+        LSEventUtil.logToCategorySwitch(position +1,mCategoriesData.get(position +1).getTitle());
     }
 
 
@@ -70,9 +72,15 @@ public class StickerFragment extends BaseFragment<StickerViewModel, FragmentStic
             @Override
             public Fragment createFragment(int position) {  //fragment与页面的序号
                 switch (position){
-                    case 0: return  AnimationFragment.newInstance();
+                    case 0: {
+                        LSEventUtil.logToCategorySwitch(0,"Animation");
+                        return  AnimationFragment.newInstance();
+                    }
 
-                    default: return LoveFragment.newInstance(mCategoriesData.get(position-1).getLink());
+                    default: {
+                        LSEventUtil.logToCategorySwitch(position,mCategoriesData.get(position-1).getTitle());
+                        return LoveFragment.newInstance(mCategoriesData.get(position-1).getLink());
+                    }
                 }
             }
 

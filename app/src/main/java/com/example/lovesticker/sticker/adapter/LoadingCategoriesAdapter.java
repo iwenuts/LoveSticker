@@ -67,7 +67,7 @@ public class LoadingCategoriesAdapter extends RecyclerView.Adapter<LoadingCatego
             public void onClick(View v) {
                 StickerFragment.newInstance().getPosition(holder.getAdapterPosition());  //获取单个种类所在的位置
 
-                if (Activity.class.isInstance(context)){ //关闭当前Activity
+                if (context instanceof Activity){ //关闭当前Activity
                     Activity activity = (Activity) context;
                     activity.finish();
                 }

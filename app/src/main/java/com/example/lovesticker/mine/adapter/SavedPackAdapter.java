@@ -66,27 +66,29 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
         holder.packNoAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Log.e("###", "getAdapterPosition() : "+ holder.getAdapterPosition());
+                if (holder.getAdapterPosition() >= 0){
+                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(context)
+                            .setTitle("Would you like to add Lovely！to WhatsApp?")
+                            .setCancelable(false)
+                            .setPositiveButton("ADD",((dialog, which) -> {
+                                onAddButtonClickedListener.onAddButtonClicked(spList.get(holder.getAdapterPosition()),holder.getAdapterPosition() );
+                                dialog.dismiss();
 
-//                Log.e("###", "onAddButtonClickedListener : " + onAddButtonClickedListener);
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context)
-                        .setTitle("Would you like to add Lovely！to WhatsApp?")
-                        .setCancelable(false)
-                        .setPositiveButton("ADD",((dialog, which) -> {
-                            onAddButtonClickedListener.onAddButtonClicked(spList.get(holder.getAdapterPosition()),holder.getAdapterPosition() );
-                            dialog.dismiss();
+                            })).setNegativeButton("CANCEL",((dialog, which) -> dialog.dismiss()));
+                    alertDialog.show();
+                }
 
-                        })).setNegativeButton("CANCEL",((dialog, which) -> dialog.dismiss()));
-                alertDialog.show();
             }
         });
 
         holder.packPackage.setOnClickListener(v -> {
-            Intent intent = new Intent(context, PackDetailsActivity.class);
-            intent.putExtra("saveStickerPack", (Serializable) spList.get(holder.getAdapterPosition()));
-            intent.putExtra("saveStickerPackNumber",spList.get(holder.getAdapterPosition()).getStickersList().size());
-            intent.putExtra("isSaved",true);
-            context.startActivity(intent);
+            if (holder.getAdapterPosition() >= 0){
+                Intent intent = new Intent(context, PackDetailsActivity.class);
+                intent.putExtra("saveStickerPack", (Serializable) spList.get(holder.getAdapterPosition()));
+                intent.putExtra("saveStickerPackNumber",spList.get(holder.getAdapterPosition()).getStickersList().size());
+                intent.putExtra("isSaved",true);
+                context.startActivity(intent);
+            }
         });
 
         return holder;
@@ -94,30 +96,32 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        stickerPacks = spList.get(position);
-        if (stickerPacks != null && spList.size() > 0){
+        if (spList.size() > 0){
+            stickerPacks = spList.get(position);
 
-            holder.packNumber.setText(stickerPacks.getStickersList().size() + " Stickers");
+            if (stickerPacks != null) {
 
-            holder.itemName.setText(stickerPacks.getTitle());
+                holder.packNumber.setText(stickerPacks.getStickersList().size() + " Stickers");
 
-            Glide.with(context)
-                    .load(LSConstant.image_uri + stickerPacks.getStickersList().get(0).getImage())
-                    .placeholder(R.mipmap.ic_launcher_foreground)
-                    .into(holder.img1);
+                holder.itemName.setText(stickerPacks.getTitle());
 
-            Glide.with(context)
-                    .load(LSConstant.image_uri + stickerPacks.getStickersList().get(1).getImage())
-                    .placeholder(R.mipmap.ic_launcher_foreground)
-                    .into(holder.img2);
+                Glide.with(context)
+                        .load(LSConstant.image_uri + stickerPacks.getStickersList().get(0).getImage())
+                        .placeholder(R.mipmap.ic_launcher_foreground)
+                        .into(holder.img1);
 
-            Glide.with(context)
-                    .load(LSConstant.image_uri + stickerPacks.getStickersList().get(2).getImage())
-                    .placeholder(R.mipmap.ic_launcher_foreground)
-                    .into(holder.img3);
+                Glide.with(context)
+                        .load(LSConstant.image_uri + stickerPacks.getStickersList().get(1).getImage())
+                        .placeholder(R.mipmap.ic_launcher_foreground)
+                        .into(holder.img2);
+
+                Glide.with(context)
+                        .load(LSConstant.image_uri + stickerPacks.getStickersList().get(2).getImage())
+                        .placeholder(R.mipmap.ic_launcher_foreground)
+                        .into(holder.img3);
 
 
-            boolean isWhitelisted = WhitelistCheck.isWhitelisted(context, stickerPacks.getIdentifier());
+                boolean isWhitelisted = WhitelistCheck.isWhitelisted(context, stickerPacks.getIdentifier());
 //            for (StickerPack stickerPack : stickerPackList) {
 //                stickerPack.setIsWhitelisted(WhitelistCheck.isWhitelisted(context, stickerPacks.getIdentifier()));
 //
@@ -132,18 +136,18 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
 //                }
 //            }
 
-            if (isWhitelisted){
-                holder.packAdd.setVisibility(View.VISIBLE);
-                holder.packAdd.setImageResource(R.drawable.finished_adding);
-                holder.packNoAdd.setVisibility(View.GONE);
-            }else {
-                holder.packAdd.setVisibility(View.GONE);
-                holder.packNoAdd.setVisibility(View.VISIBLE);
-                holder.packNoAdd.setImageResource(R.drawable.add_pack);
+                if (isWhitelisted) {
+                    holder.packAdd.setVisibility(View.VISIBLE);
+                    holder.packAdd.setImageResource(R.drawable.finished_adding);
+                    holder.packNoAdd.setVisibility(View.GONE);
+                } else {
+                    holder.packAdd.setVisibility(View.GONE);
+                    holder.packNoAdd.setVisibility(View.VISIBLE);
+                    holder.packNoAdd.setImageResource(R.drawable.add_pack);
+                }
+
             }
-
         }
-
     }
 
     @Override

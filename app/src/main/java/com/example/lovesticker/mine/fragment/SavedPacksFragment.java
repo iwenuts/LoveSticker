@@ -244,7 +244,7 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
             if (null != viewModel.saveData  && selIndex > -1 && selIndex < viewModel.saveData.size()) {
                 boolean isWhitelisted = WhitelistCheck.isWhitelisted(requireContext(), ((SavePacksViewModel)viewModel).saveData.get(selIndex).getIdentifier());
                 if (isWhitelisted && null != savedPackAdapter){
-                    savedPackAdapter.notifyItemRangeChanged(selIndex, viewModel.saveData.size());
+                    savedPackAdapter.notifyItemRangeChanged(selIndex, 1);
                 }
             }
 

@@ -35,6 +35,7 @@ import com.example.lovesticker.details.adapter.PackDetailsAdapter;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.util.ads.MaxADManager;
 import com.example.lovesticker.util.constant.LSConstant;
+import com.example.lovesticker.util.event.LSEventUtil;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.room.InvokesData;
 import com.example.lovesticker.util.room.SaveData;
@@ -116,6 +117,8 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
 
         if (stickerPacks != null && stickerPackNumber != 0) {
+            LSEventUtil.logToClickPack(stickerPacks.getId(),stickerPacks.getTitle());
+
             viewBinding.packTitle.setText(stickerPacks.getTitle());
 
 //            Log.e("###", "imageitem: " + stickerPacks.getStickersList().get(0).getImage());
@@ -200,6 +203,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         viewBinding.sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LSEventUtil.logToAdd2WSP(stickerPacks.getId(), stickerPacks.getTitle());
 
                 if (SPStaticUtils.getBoolean("isFinishScore",false)){
                     if (LSMKVUtil.getBoolean("loadad", true)) {
@@ -283,6 +287,9 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 if (complete == all) {
                     //下载成功数据缓存
                     StickersManager.putStickers();
+                    LSEventUtil.logToPackDownloadComplete(stickerPacks.getId(), stickerPacks.getTitle());
+                }else {
+                    LSEventUtil.logToPackDownloadFailed(stickerPacks.getId(), stickerPacks.getTitle());
                 }
 
                 Message msg = new Message();
@@ -540,6 +547,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
             }
 
+            LSEventUtil.logToPackAddSuccess(stickerPacks.getId(), stickerPacks.getTitle());
             viewBinding.sendText.setText(R.string.added_to_whatsApp);
             viewBinding.sendButton.setEnabled(false);
 
