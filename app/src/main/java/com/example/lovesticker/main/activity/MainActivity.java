@@ -20,6 +20,7 @@ import androidx.navigation.fragment.FragmentNavigator;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.blankj.utilcode.util.ActivityUtils;
+import com.blankj.utilcode.util.SPStaticUtils;
 import com.example.lovesticker.BuildConfig;
 import com.example.lovesticker.R;
 import com.example.lovesticker.base.BaseActivity;
@@ -43,7 +44,6 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
 import static com.example.lovesticker.util.ads.MaxADManager.loadRewardAd;
 
 public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBinding> {
@@ -62,7 +62,11 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
         LSMKVUtil.put("rewardInterval", 0);
         LSMKVUtil.put("hitsNumber", 0);
 
-        loadRewardAd(this);
+        if (!SPStaticUtils.getBoolean("initReward",false)){
+            Log.e("###", "MainActivity loadRewardAd: ");
+            loadRewardAd(this);
+        }
+
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         NavHostFragment navHostFragment = (NavHostFragment) fragmentManager.findFragmentById(R.id.fragment);
@@ -111,7 +115,7 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
 //                    Log.e("###",  "BuildConfig : " + BuildConfig.VERSION_CODE + " " + "getUv: "+  loveStickerBean.getUv() );
                     LSMKVUtil.put("rewardinter",loveStickerBean.getRewardinter());
                     if (BuildConfig.DEBUG){
-                        LSMKVUtil.put("loadad",false);
+                        LSMKVUtil.put("loadad",true);
                     }else {
                         LSMKVUtil.put("loadad",loveStickerBean.getLoadad());
                     }

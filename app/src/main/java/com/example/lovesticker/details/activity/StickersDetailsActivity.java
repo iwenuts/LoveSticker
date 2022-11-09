@@ -11,6 +11,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Toast;
 
 import com.blankj.utilcode.util.SPStaticUtils;
 import com.blankj.utilcode.util.UriUtils;
@@ -111,6 +112,13 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
 //                                        }
             }
 
+            @Override
+            public void onTimeOut() {
+                Toast.makeText(StickersDetailsActivity.this,"Wow, No Need to watch video this time",Toast.LENGTH_SHORT).show();
+
+                saveLocal(LSConstant.image_gif_uri + mImage);
+            }
+
 
         });
 
@@ -208,11 +216,11 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
             if (rewardInterval % (rewarDinter + 1) == 0) {
 //                isNoAd = false;
                 new AlertDialog.Builder(this)
-                        .setMessage("Watch an AD to unblock the content?")
+                        .setMessage("Watch a short video to unlock this content")
                         .setPositiveButton("Watch ", (dialog, which) -> {
 
                             showProgressDialog();
-                            MaxADManager.tryShowRewardAd();
+                            MaxADManager.tryShowRewardAd(this);
 
 
                         }).setNegativeButton("cancel", (dialog, which) -> {

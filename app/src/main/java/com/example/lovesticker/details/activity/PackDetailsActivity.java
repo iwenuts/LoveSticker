@@ -175,8 +175,18 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
             @Override
             public void onRewarded() {
+                dismissProgressDialog();
                 addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
             }
+
+            @Override
+            public void onTimeOut() {
+                dismissProgressDialog();
+                Toast.makeText(PackDetailsActivity.this,"Wow, No Need to watch video this time",Toast.LENGTH_SHORT).show();
+                addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
+            }
+
+
         });
 
     }
@@ -244,11 +254,11 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
             if (rewardInterval % (rewarDinter + 1) == 0) {
                 new AlertDialog.Builder(this)
-                        .setMessage("Watch an AD to unblock the content?")
+                        .setMessage("Watch a short video to unlock this content")
                         .setPositiveButton("Watch ", (dialog, which) -> {
                             try {
                                 showProgressDialog();
-                                MaxADManager.tryShowRewardAd();
+                                MaxADManager.tryShowRewardAd(this);
                             } catch (Exception e) {
                             }
 
