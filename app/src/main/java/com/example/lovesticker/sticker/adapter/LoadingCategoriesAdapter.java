@@ -72,7 +72,6 @@ public class LoadingCategoriesAdapter extends RecyclerView.Adapter<LoadingCatego
                     activity.finish();
                 }
 
-
             }
         });
 

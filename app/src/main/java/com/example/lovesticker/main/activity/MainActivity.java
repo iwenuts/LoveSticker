@@ -63,7 +63,6 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
         LSMKVUtil.put("hitsNumber", 0);
 
         if (!SPStaticUtils.getBoolean("initReward",false)){
-            Log.e("###", "MainActivity loadRewardAd: ");
             loadRewardAd(this);
         }
 

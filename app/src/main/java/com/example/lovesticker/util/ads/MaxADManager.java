@@ -71,7 +71,6 @@ public class MaxADManager implements LifecycleObserver {
 
                     Activity topAct = ActivityUtils.getTopActivity();
                     if (topAct != null) {
-                        Log.e("###", "initMaxAd loadRewardAd: ");
                         loadRewardAd(topAct);
                         SPStaticUtils.put("initReward", true);
                     }
@@ -453,11 +452,8 @@ public class MaxADManager implements LifecycleObserver {
 
             @Override
             public void onAdLoaded(MaxAd ad) {
-                Log.e("###", "onAdLoaded: ");
-//                if (waitingRewardShow) {
-//                    isShow  = true;
-//                    rewardAd.showAd();
-//                }
+//                Log.e("###", "onAdLoaded: ");
+
             }
 
             @Override
