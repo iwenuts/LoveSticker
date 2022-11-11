@@ -62,7 +62,7 @@ public class StickerFragment extends BaseFragment<StickerViewModel, FragmentStic
 
     public void getPosition(int position){  //拿到单个种类所在位置后并进行跳转到对应界面
         viewBinding.stickerViewPager.setCurrentItem(position + 1);
-        LSEventUtil.logToCategorySwitch(position +1,mCategoriesData.get(position-1).getTitle());
+//        LSEventUtil.logToCategorySwitch(position +1,mCategoriesData.get(position-1).getTitle());
     }
 
 

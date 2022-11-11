@@ -78,7 +78,7 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
         mImage = getIntent().getStringExtra("image");
         mId = getIntent().getIntExtra("id", -1);
 
-        Log.e("###", "mId: " + mId);
+//        Log.e("###", "mId: " + mId);
 
         LSEventUtil.logToClickSticker(mId);
 
@@ -105,6 +105,7 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
 
             @Override
             public void onRewarded() {
+                dismissProgressDialog();
                 saveLocal(LSConstant.image_gif_uri + mImage);
 //                                        isLoadAD = true;
 //                                        if (isLoadAD && isDownload) {
@@ -174,7 +175,7 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
 //                    isNoAd = true;
 //                    isLoadAD = false;
                     if (mImage != null) {
-                        showProgressDialog();
+//                        showProgressDialog();
                         saveLocal(LSConstant.image_gif_uri + mImage);
                     }
                 }
@@ -182,7 +183,7 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
 //                isNoAd = true;
 //                isLoadAD = false;
                 if (mImage != null) {
-                    showProgressDialog();
+//                    showProgressDialog();
                     saveLocal(LSConstant.image_gif_uri + mImage);
                 }
             }
@@ -231,7 +232,7 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
 //                isNoAd = true;
 //                isLoadAD = false;
                 if (mImage != null) {
-                    showProgressDialog();
+//                    showProgressDialog();
                     saveLocal(LSConstant.image_gif_uri + mImage);
                 }
             }
@@ -249,7 +250,7 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
 
 
     private void saveLocal(String imgAddress) {
-
+        showProgressDialog();
         new Thread(() -> {
 //            File imgFile = new File(getExternalFilesDir(null).getAbsolutePath() + File.separator + "sticker");
             File imgFile = new File(getExternalFilesDir(null), "sticker");
