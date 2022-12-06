@@ -152,7 +152,7 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
 
     @Override
     public int getItemCount() {
-        return spList.size();
+        return Math.max(spList.size(), 0);
     }
 
     public interface OnAddButtonClickedListener {

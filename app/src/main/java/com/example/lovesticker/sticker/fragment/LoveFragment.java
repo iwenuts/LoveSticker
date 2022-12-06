@@ -131,8 +131,10 @@ public class LoveFragment extends Fragment {
                 viewBinding.loadingData.setVisibility(View.GONE);
 //                Log.e("###", "onChanged size: "+ size);
                 if (size > -1) { // -1时，网络加载数据失败
+                    Log.e("###", "onChanged size: "+ size);
+                    Log.e("###", "postcardsList.size(): "+ viewModel.postcardsList.size());
                     int index = viewModel.postcardsList.size() - size;
-//                    Log.e("###", "onChanged index: "+ index);
+                    Log.e("###", "onChanged index: "+ index);
 
                     if (index == 0) {
                         loveAdapter.notifyDataSetChanged();

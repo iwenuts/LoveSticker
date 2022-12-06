@@ -415,19 +415,22 @@ public class MaxADManager implements LifecycleObserver {
             rewardAd.loadAd();
         }
 
-        if (rewardAd.isReady()) {
-            rewardAd.showAd();
-        } else {
-            rewardHandler.postDelayed(() -> {
-                if (rewardAd.isReady()){
-                    rewardAd.showAd();
-                }else {
-                    rewardAd.loadAd();
-                    mOnRewardListener.onTimeOut(); // 加载reward广告超时，此时可以根据情况给用户奖励
-                }
+        if (rewardAd != null){
+            if (rewardAd.isReady()) {
+                rewardAd.showAd();
+            } else {
+                rewardHandler.postDelayed(() -> {
+                    if (rewardAd.isReady()){
+                        rewardAd.showAd();
+                    }else {
+                        rewardAd.loadAd();
+                        mOnRewardListener.onTimeOut(); // 加载reward广告超时，此时可以根据情况给用户奖励
+                    }
 
-            }, 10000);
+                }, 10000);
+            }
         }
+
 
     }
 

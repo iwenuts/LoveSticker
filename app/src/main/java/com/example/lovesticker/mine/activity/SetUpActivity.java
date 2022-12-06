@@ -119,7 +119,8 @@ public class SetUpActivity extends BaseActivity<BaseViewModel, ActivitySetUpBind
 
         Intent receiver = new Intent(context, SetUpActivity.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            pendingIntent = PendingIntent.getBroadcast(context, 0, receiver, PendingIntent.FLAG_IMMUTABLE);
+            pendingIntent = PendingIntent.getBroadcast(context, 0, receiver,
+                    PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_ONE_SHOT);
         }else {
             pendingIntent = PendingIntent.getBroadcast(context, 0, receiver, PendingIntent.FLAG_ONE_SHOT);
         }

@@ -73,12 +73,10 @@ public class StickerFragment extends BaseFragment<StickerViewModel, FragmentStic
             public Fragment createFragment(int position) {  //fragment与页面的序号
                 switch (position){
                     case 0: {
-                        LSEventUtil.logToCategorySwitch(0,"Animation");
                         return  AnimationFragment.newInstance();
                     }
 
                     default: {
-                        LSEventUtil.logToCategorySwitch(position,mCategoriesData.get(position-1).getTitle());
                         return LoveFragment.newInstance(mCategoriesData.get(position-1).getLink());
                     }
                 }
@@ -90,9 +88,7 @@ public class StickerFragment extends BaseFragment<StickerViewModel, FragmentStic
             }
         });
 
-                viewBinding.stickerViewPager.setOffscreenPageLimit(8);
-
-
+        viewBinding.stickerViewPager.setOffscreenPageLimit(8);
 
         new TabLayoutMediator(viewBinding.tabLayout, viewBinding.stickerViewPager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
@@ -106,6 +102,29 @@ public class StickerFragment extends BaseFragment<StickerViewModel, FragmentStic
                 }
             }
         }).attach();
+
+        viewBinding.stickerViewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                if (position == 0){
+                    LSEventUtil.logToCategorySwitch(position,"Animation");
+                }else {
+                    LSEventUtil.logToCategorySwitch(position,mCategoriesData.get(position-1).getTitle());
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                super.onPageScrollStateChanged(state);
+            }
+        });
+
 
     }
 
