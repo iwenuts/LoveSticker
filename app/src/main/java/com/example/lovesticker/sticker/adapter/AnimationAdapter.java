@@ -31,25 +31,13 @@ public class AnimationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private String imageJPG;
     private String detailsImage;
     private Activity activity;
-//    private final OnPositionClickedListener onPositionClickedListener;
 
-    public AnimationAdapter(List<AllAnimatedBean.Postcards> allPostcards, Context context, Activity activity
-                             ) {
+    public AnimationAdapter(List<AllAnimatedBean.Postcards> allPostcards, Context context, Activity activity) {
         this.allPostcards = allPostcards;
         this.context = context;
         this.activity = activity;
-//        this.onPositionClickedListener = onPositionClickedListener;
     }
 
-//    public class ViewHolder extends RecyclerView.ViewHolder {
-//        ImageView img;
-//        FrameLayout frameLayout;
-//        public ViewHolder(@NonNull View view) {
-//            super(view);
-//            img = view.findViewById(R.id.image);
-//            frameLayout = view.findViewById(R.id.ad_container);
-//        }
-//    }
 
     public class ItemViewOneHolder extends RecyclerView.ViewHolder {
         ImageView img;
@@ -75,27 +63,6 @@ public class AnimationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.animation_item,parent,false);
-//        ViewHolder holder = new ViewHolder(view);
-//
-//        holder.img.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.e("###", "holder.getAdapterPosition(): " + holder.getAdapterPosition() );
-//
-//                detailsImage = allPostcards.get(holder.getAdapterPosition()).getImage();
-//
-//                Intent intent = new Intent(context, StickersDetailsActivity.class);
-//                intent.putExtra("image",detailsImage);
-//                intent.putExtra("id",allPostcards.get(holder.getAdapterPosition()).getId());
-//                context.startActivity(intent);
-//
-//            }
-//        });
-//
-//        return holder;
-
-
         View view;
 
         if (viewType == 0) {
