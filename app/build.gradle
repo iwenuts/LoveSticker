@@ -16,7 +16,7 @@ android {
     android.buildFeatures.viewBinding = true
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 31
 
         flavorDimensions "default"
@@ -81,8 +81,8 @@ android {
         publish{
             dimension "default"
             applicationId "wasticker.love.stickers.whatsapp.apps"
-            versionCode 130
-            versionName "1.3.0"
+            versionCode 131
+            versionName "1.3.1"
 
             def contentProviderAuthority = applicationId + ".stickercontentprovider"
             // Creates a placeholder property to use in the manifest.

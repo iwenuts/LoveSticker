@@ -117,6 +117,11 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
     @Override
     public void onResume() {
         super.onResume();
+        if (LSConstant.isDeletePack){
+            savedPackAdapter.notifyDataSetChanged();
+            LSConstant.isDeletePack = false;
+        }
+
     }
 
     // 接口回调

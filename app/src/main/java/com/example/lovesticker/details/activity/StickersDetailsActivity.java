@@ -61,11 +61,7 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
     protected void initView() {
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
 
-        if (LSMKVUtil.getBoolean("SingleAnimatedInterstitialAd", false) &&
-                LSMKVUtil.getBoolean("loadad", true)) {
-            MaxADManager.tryShowInterstitialDetailAd(this);
-            LSMKVUtil.put(" SingleAnimatedInterstitialAd", false);
-        }
+        MaxADManager.tryShowInterstitialDetailAd(this);
 
         if (LSMKVUtil.getBoolean("loadad", true)) {
             viewBinding.adContainer.setVisibility(View.VISIBLE);
@@ -190,12 +186,10 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
 
         });
 
-
-        MaxADManager.loadInterstitialBackAd(this);
-        LSMKVUtil.put(" SingleAnimatedBackAd", true);
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LSConstant.StickersDetailsBack = true;
                 finish();
             }
         });

@@ -30,6 +30,7 @@ import com.example.lovesticker.sticker.adapter.LoveAdapter;
 import com.example.lovesticker.sticker.model.SingleAnimatedCategoriesBean;
 import com.example.lovesticker.sticker.viewmodel.LoveViewModel;
 import com.example.lovesticker.util.ads.MaxADManager;
+import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.view.swipeRefresh.PullLoadMoreRecyclerView;
 import com.scwang.smart.refresh.layout.api.RefreshLayout;
@@ -81,22 +82,41 @@ public class LoveFragment extends Fragment {
 
     protected void initView() {
         if (getArguments() != null){
-            MaxADManager.loadInterstitialDetailAd((AppCompatActivity) getActivity());
-            LSMKVUtil.put(" SingleAnimatedInterstitialAd", true);
             mLink = getArguments().getString("link");
 
             if (mLink != null) {
 //                Log.e("###", "mLink: " + getArguments().getString("link").substring(1));
                 viewBinding.loadingData.setVisibility(View.VISIBLE);
 
+                viewModel.requestInitialSingleAnimatedData(mLink.substring(1));
+
+
+
                 //Adapter
                 manager = new GridLayoutManager(getContext(), 2);
+
+                manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                    @Override
+                    public int getSpanSize(int position) {
+                        if (LSMKVUtil.getBoolean("loadad", true)) {
+                            if (position == 6) {
+                                return 2;
+                            } else {
+                                return 1;
+                            }
+                        } else {
+                            return 1;
+                        }
+
+                    }
+                });
+
                 viewBinding.loveRecycler.setLayoutManager(manager);
-                loveAdapter = new LoveAdapter(viewModel.postcardsList, getContext(), getActivity(), onPositionClickedListener);
+                loveAdapter = new LoveAdapter(viewModel.postcardsList, getContext(), getActivity());
                 viewBinding.loveRecycler.setAdapter(loveAdapter);
 
 
-                viewModel.requestInitialSingleAnimatedData(mLink.substring(1));
+
             }
         }
     }
@@ -149,33 +169,13 @@ public class LoveFragment extends Fragment {
         });
     }
 
-    private final AnimationAdapter.OnPositionClickedListener onPositionClickedListener = position -> {
-
-        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                if (LSMKVUtil.getBoolean("loadad", true)) {
-                    if (position == 6) {
-                        return 2;
-                    } else {
-                        return 1;
-                    }
-                } else {
-                    return 1;
-                }
-
-            }
-        });
-    };
-
 
     @Override
     public void onResume() {
         super.onResume();
-        if (LSMKVUtil.getBoolean("SingleAnimatedBackAd", false) &&
-                LSMKVUtil.getBoolean("loadad", true)) {
+        if (LSConstant.StickersDetailsBack){
             MaxADManager.tryShowInterstitialBackAd((AppCompatActivity) getActivity());
-            LSMKVUtil.put(" SingleAnimatedBackAd", false);
+            LSConstant.StickersDetailsBack = false;
         }
     }
 

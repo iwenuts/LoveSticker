@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.NavGraph;
@@ -33,6 +34,7 @@ import com.example.lovesticker.main.fragment.MineFragment;
 import com.example.lovesticker.main.fragment.PackFragment;
 import com.example.lovesticker.main.fragment.StickerFragment;
 import com.example.lovesticker.main.model.LoveStickerBean;
+import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.event.LSEventUtil;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.gyf.immersionbar.ImmersionBar;
@@ -44,6 +46,9 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static com.example.lovesticker.util.ads.MaxADManager.loadInterstitialBackAd;
+import static com.example.lovesticker.util.ads.MaxADManager.loadInterstitialDetailAd;
 import static com.example.lovesticker.util.ads.MaxADManager.loadRewardAd;
 
 public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBinding> {
@@ -62,8 +67,16 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
         LSMKVUtil.put("rewardInterval", 0);
         LSMKVUtil.put("hitsNumber", 0);
 
-        if (!SPStaticUtils.getBoolean("initReward",false)){
+        if (!LSConstant.initReward){
             loadRewardAd(this);
+        }
+
+        if (!LSConstant.initInterstitial){
+            loadInterstitialDetailAd(this);
+        }
+
+        if (!LSConstant.initInterstitialBack){
+            loadInterstitialBackAd(this);
         }
 
 

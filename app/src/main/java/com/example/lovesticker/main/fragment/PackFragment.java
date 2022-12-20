@@ -23,6 +23,7 @@ import com.example.lovesticker.main.adapter.PackAdapter;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.main.viewmodel.PackViewModel;
 import com.example.lovesticker.util.ads.MaxADManager;
+import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.view.swipeRefresh.PullLoadMoreRecyclerView;
 import com.scwang.smart.refresh.layout.api.RefreshLayout;
@@ -55,9 +56,6 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
 
     @Override
     protected void initView() {
-
-        MaxADManager.loadInterstitialDetailAd((AppCompatActivity) getActivity());
-        LSMKVUtil.put("PackInterstitialAd",true);
 
         viewBinding.loadingData.setVisibility(View.VISIBLE);
 
@@ -119,11 +117,11 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
     @Override
     public void onResume() {
         super.onResume();
-        if (LSMKVUtil.getBoolean("PackDetailsBackAd",false) &&
-                LSMKVUtil.getBoolean("loadad",true)){
+        if (LSConstant.PackDetailsBack){
             MaxADManager.tryShowInterstitialBackAd((AppCompatActivity) getActivity());
-            LSMKVUtil.put("PackDetailsBackAd",false);
+            LSConstant.PackDetailsBack = false;
         }
+
 
     }
 

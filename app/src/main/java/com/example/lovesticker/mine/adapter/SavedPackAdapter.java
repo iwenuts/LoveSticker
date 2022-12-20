@@ -63,22 +63,19 @@ public class SavedPackAdapter extends RecyclerView.Adapter<SavedPackAdapter.View
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.save_pack_item,parent,false);
         ViewHolder holder = new ViewHolder(view);
-        holder.packNoAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (holder.getAdapterPosition() >= 0){
-                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(context)
-                            .setTitle("Would you like to add Lovely！to WhatsApp?")
-                            .setCancelable(false)
-                            .setPositiveButton("ADD",((dialog, which) -> {
-                                onAddButtonClickedListener.onAddButtonClicked(spList.get(holder.getAdapterPosition()),holder.getAdapterPosition() );
-                                dialog.dismiss();
+        holder.packNoAdd.setOnClickListener(v -> {
+            if (holder.getAdapterPosition() >= 0){
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context)
+                        .setTitle("Would you like to add Lovely！to WhatsApp?")
+                        .setCancelable(false)
+                        .setPositiveButton("ADD",((dialog, which) -> {
+                            onAddButtonClickedListener.onAddButtonClicked(spList.get(holder.getAdapterPosition()),holder.getAdapterPosition() );
+                            dialog.dismiss();
 
-                            })).setNegativeButton("CANCEL",((dialog, which) -> dialog.dismiss()));
-                    alertDialog.show();
-                }
-
+                        })).setNegativeButton("CANCEL",((dialog, which) -> dialog.dismiss()));
+                alertDialog.show();
             }
+
         });
 
         holder.packPackage.setOnClickListener(v -> {

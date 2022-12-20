@@ -11,6 +11,16 @@ public class LSConstant {
     public static final String image_jpg_uri = "https://cdn.wastickersapp.com/storage/animations/thumbs/";
     public static final String image_gif_uri = "https://cdn.wastickersapp.com/storage/animations/big/";
 
+    public static Boolean initReward = false;
+    public static Boolean initInterstitial = false;
+    public static Boolean initInterstitialBack = false;
+
+    public static Boolean PackImageDetailsBack = false;
+    public static Boolean PackDetailsBack = false;
+    public static Boolean StickersDetailsBack = false;
+
+    public static Boolean isDeletePack = false;
+
 
 
 }

@@ -24,6 +24,7 @@ import com.example.lovesticker.sticker.adapter.AnimationAdapter;
 import com.example.lovesticker.sticker.model.AllAnimatedBean;
 import com.example.lovesticker.sticker.viewmodel.AnimationViewModel;
 import com.example.lovesticker.util.ads.MaxADManager;
+import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
 import com.example.lovesticker.util.view.swipeRefresh.PullLoadMoreRecyclerView;
 import com.scwang.smart.refresh.layout.api.RefreshLayout;
@@ -57,14 +58,24 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
     protected void initView() {
         viewBinding.loadingData.setVisibility(View.VISIBLE);
 
-        MaxADManager.loadInterstitialDetailAd((AppCompatActivity) getActivity());
-        LSMKVUtil.put("AnimationInterstitialAd",true);
-
-
        //Adapter
         manager = new GridLayoutManager(getContext(),2);
+        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                if (LSMKVUtil.getBoolean("loadad",true)){
+                    if (position == 6){
+                        return 2;
+                    }else {
+                        return 1;
+                    }
+                }else {
+                    return 1;
+                }
+            }
+        });
         viewBinding.animationRecycler.setLayoutManager(manager);
-        animationAdapter = new AnimationAdapter(viewModel.postcardsList,getContext(),getActivity(),onPositionClickedListener);
+        animationAdapter = new AnimationAdapter(viewModel.postcardsList,getContext(),getActivity());
         viewBinding.animationRecycler.setAdapter(animationAdapter);
 
 
@@ -124,32 +135,17 @@ public class AnimationFragment extends BaseFragment<AnimationViewModel, Fragment
         });
     }
 
-    private final AnimationAdapter.OnPositionClickedListener onPositionClickedListener = position -> {
-        manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                if (LSMKVUtil.getBoolean("loadad",true)){
-                    if (position == 6){
-                        return 2;
-                    }else {
-                        return 1;
-                    }
-                }else {
-                    return 1;
-                }
-            }
-        });
-    };
+//    private final AnimationAdapter.OnPositionClickedListener onPositionClickedListener = position -> {
+//
+//    };
 
     @Override
     public void onResume() {
         super.onResume();
-        if (LSMKVUtil.getBoolean("AnimationDetailsBackAd",false) &&
-                LSMKVUtil.getBoolean("loadad",true)){
+        if (LSConstant.StickersDetailsBack){
             MaxADManager.tryShowInterstitialBackAd((AppCompatActivity) getActivity());
-            LSMKVUtil.put("AnimationDetailsBackAd",false);
+            LSConstant.StickersDetailsBack = false;
         }
-
     }
 
 }

@@ -90,11 +90,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
         LSEventUtil.logToViewSticker();
 
-        if (LSMKVUtil.getBoolean("PackDetailsInterstitialAd", false) &&
-                LSMKVUtil.getBoolean("loadad", true)) {
-            MaxADManager.tryShowInterstitialDetailAd(this);
-            LSMKVUtil.put("PackDetailsInterstitialAd", false);
-        }
+        MaxADManager.tryShowInterstitialDetailAd(this);
 
         if (LSMKVUtil.getBoolean("loadad", true)) {
             viewBinding.adContainer.setVisibility(View.VISIBLE);
@@ -254,12 +250,10 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
             }
         });
 
-
-        MaxADManager.loadInterstitialBackAd(this);
-        LSMKVUtil.put("PackImageDetailsBackAd", true);
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LSConstant.PackImageDetailsBack = true;
                 finish();
             }
         });

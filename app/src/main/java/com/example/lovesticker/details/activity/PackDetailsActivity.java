@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -69,8 +70,8 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     private TextView popupWindowHeadline;
     private TextView popupWindowSubtitle;
     private AlertDialog alertDialog;
-    private boolean stickerPackWhitelistedInWhatsAppConsumer;
-    private boolean stickerPackWhitelistedInWhatsAppSmb;
+    private boolean stickerPackWhitelistedInWhatsAppConsumer = false;
+    private boolean stickerPackWhitelistedInWhatsAppSmb = false;
     private File file;
     private File fileTray;
     private File myTray;
@@ -89,15 +90,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     protected void initView() {
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
 
-        MaxADManager.loadInterstitialDetailAd(this);
-        LSMKVUtil.put("PackDetailsInterstitialAd", true);
-
-
-        if (LSMKVUtil.getBoolean("PackInterstitialAd", false) &&
-                LSMKVUtil.getBoolean("loadad", true)) {
-            MaxADManager.tryShowInterstitialDetailAd(this);
-            LSMKVUtil.put("PackInterstitialAd", false);
-        }
+        MaxADManager.tryShowInterstitialDetailAd(this);
 
 
         isSavedLayout = getIntent().getBooleanExtra("isSaved", false);
@@ -117,7 +110,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
 
         if (stickerPacks != null && stickerPackNumber != 0) {
-            LSEventUtil.logToClickPack(stickerPacks.getId(),stickerPacks.getTitle());
+            LSEventUtil.logToClickPack(stickerPacks.getId(), stickerPacks.getTitle());
 
             viewBinding.packTitle.setText(stickerPacks.getTitle());
 
@@ -141,8 +134,10 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             }
         }
 
-        stickerPackWhitelistedInWhatsAppConsumer = WhitelistCheck.isStickerPackWhitelistedInWhatsAppConsumer(this, stickerPacks.getIdentifier());
-        stickerPackWhitelistedInWhatsAppSmb = WhitelistCheck.isStickerPackWhitelistedInWhatsAppSmb(this, stickerPacks.getIdentifier());
+        if (!TextUtils.isEmpty(stickerPacks.getIdentifier())) {
+            stickerPackWhitelistedInWhatsAppConsumer = WhitelistCheck.isStickerPackWhitelistedInWhatsAppConsumer(this, stickerPacks.getIdentifier());
+            stickerPackWhitelistedInWhatsAppSmb = WhitelistCheck.isStickerPackWhitelistedInWhatsAppSmb(this, stickerPacks.getIdentifier());
+        }
 
         if (!InvokesData.getInvokesData().querySavePackGson(stickerPacks.getId())
                 && stickerPackWhitelistedInWhatsAppConsumer) {  //有数据
@@ -182,7 +177,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             @Override
             public void onTimeOut() {
                 dismissProgressDialog();
-                Toast.makeText(PackDetailsActivity.this,"Wow, No Need to watch video this time",Toast.LENGTH_SHORT).show();
+                Toast.makeText(PackDetailsActivity.this, "Wow, No Need to watch video this time", Toast.LENGTH_SHORT).show();
                 addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
             }
 
@@ -194,11 +189,12 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     @Override
     protected void onResume() {
         super.onResume();
-        if (LSMKVUtil.getBoolean("PackImageDetailsBackAd", false) &&
-                LSMKVUtil.getBoolean("loadad", true)) {
+
+        if (LSConstant.PackImageDetailsBack) {
             MaxADManager.tryShowInterstitialBackAd(this);
-            LSMKVUtil.put("PackImageDetailsBackAd", false);
+            LSConstant.PackImageDetailsBack = false;
         }
+
     }
 
     @Override
@@ -215,7 +211,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             public void onClick(View v) {
                 LSEventUtil.logToAdd2WSP(stickerPacks.getId(), stickerPacks.getTitle());
 
-                if (SPStaticUtils.getBoolean("isFinishScore",false)){
+                if (SPStaticUtils.getBoolean("isFinishScore", false)) {
                     if (LSMKVUtil.getBoolean("loadad", true)) {
                         showRewardDialog();
 
@@ -223,18 +219,17 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                         addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
                     }
 
-                }else {
+                } else {
                     addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
                 }
 
             }
         });
 
-        MaxADManager.loadInterstitialBackAd(this);
-        LSMKVUtil.put("PackDetailsBackAd", true);
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                LSConstant.PackDetailsBack = true;
                 finish();
             }
         });
@@ -265,7 +260,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                         }).setNegativeButton("cancel", (dialog, which) -> {
 
 
-                        }).setCancelable(false).show();
+                }).setCancelable(false).show();
 
             } else {  // 不弹激励广告
                 addStickerPackToWhatsApp(stickerPacks.getIdentifier(), stickerPacks.getTitle());
@@ -298,7 +293,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                     //下载成功数据缓存
                     StickersManager.putStickers();
                     LSEventUtil.logToPackDownloadComplete(stickerPacks.getId(), stickerPacks.getTitle());
-                }else {
+                } else {
                     LSEventUtil.logToPackDownloadFailed(stickerPacks.getId(), stickerPacks.getTitle());
                 }
 
@@ -331,7 +326,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                 isPopup = false;
 
 
-                if (SPStaticUtils.getBoolean("isFinishScore",false)){
+                if (SPStaticUtils.getBoolean("isFinishScore", false)) {
                     rewardInterval = rewardInterval + 1;
                     LSMKVUtil.put("rewardInterval", rewardInterval);
                 }
@@ -386,10 +381,10 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
                         .setPositiveButton("DELETE", (dialog, which) -> {
 
                             if (!InvokesData.getInvokesData().querySavePackGson(stickerPacks.getId())) {
-//                        Log.e("###", "delete" );
                                 InvokesData.getInvokesData().deleteSavePacks(gson.toJson(stickerPacks));
                             }
-
+                            LSConstant.isDeletePack = true;
+                            finish();
                         }).setNegativeButton("CANCEL", (dialog, which) -> {
                             dialog.dismiss();
                         });
@@ -585,7 +580,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
 
                 @Override
                 public void onFinishScore() {
-                    SPStaticUtils.put("isFinishScore",true);
+                    SPStaticUtils.put("isFinishScore", true);
                 }
             }); //评分
 

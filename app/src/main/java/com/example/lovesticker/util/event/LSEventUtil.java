@@ -28,8 +28,10 @@ public class LSEventUtil {
     }
 
     public static void logToClickPack(int id,String title) {
-        String event = "clickPackId_" + id + "_title_" + title;
-        logEvent(event);
+        HashMap<String,String> value = new HashMap<>();
+        value.put("id",String.valueOf(id));
+        value.put("title",title);
+        logEvent("clickPack",value);
     }
 
     public static void logToTabStickers() {
@@ -49,54 +51,68 @@ public class LSEventUtil {
     }
 
     public static void logToAdd2WSP(int id,String title) {
-        String event = "add2WSPId_" + id + "_title_" + title;
-        logEvent(event);
+        HashMap<String,String> value = new HashMap<>();
+        value.put("id",String.valueOf(id));
+        value.put("title",title);
+        logEvent("add2WSP",value);
     }
 
     public static void logToPackDownloadComplete(int id,String title) {
-        String event = "packDownloadCompleteId_" + id  + "_title_" + title;
-        logEvent(event);
+        HashMap<String,String> value = new HashMap<>();
+        value.put("id",String.valueOf(id));
+        value.put("title",title);
+        logEvent("packDownloadComplete",value);
     }
 
     public static void logToPackDownloadFailed(int id,String title) {
-        String event = "packDownloadFailedId_" + id + "_title_" + title;
-        logEvent(event);
+        HashMap<String,String> value = new HashMap<>();
+        value.put("id",String.valueOf(id));
+        value.put("title",title);
+        logEvent("packDownloadFailed",value);
     }
 
     public static void logToPackAddSuccess(int id,String title) {
-        String event = "packAddSuccessId_" + id + "_title_" + title;
-        logEvent(event);
+        HashMap<String,String> value = new HashMap<>();
+        value.put("id",String.valueOf(id));
+        value.put("title",title);
+        logEvent("packAddSuccess",value);
     }
 
     public static void logToCategorySwitch(int id,String title) {
-        String event = "categorySwitchId_" + id + "_title_" + title;
-//        Log.e("###", "logToCategorySwitch: " + event);
-        logEvent(event);
+        HashMap<String,String> value = new HashMap<>();
+        value.put("id",String.valueOf(id));
+        value.put("title",title);
+        logEvent("categorySwitch",value);
     }
 
     public static void logToClickSticker(int id) {
-        String event = "clickStickerId_" + id;
-        logEvent(event);
+        HashMap<String,String> value = new HashMap<>();
+        value.put("id",String.valueOf(id));
+        logEvent("clickSticker",value);
     }
 
     public static void logToSendSticker(int id) {
-        String event = "sendStickerId_" + id;
-        logEvent(event);
+        HashMap<String,String> value = new HashMap<>();
+        value.put("id",String.valueOf(id));
+        logEvent("sendSticker",value);
     }
 
     public static void logToDownloadStickerComplete(int id) {
-        String event = "downloadStickerCompleteId_" + id;
-        logEvent(event);
+        HashMap<String,String> value = new HashMap<>();
+        value.put("id",String.valueOf(id));
+        logEvent("downloadStickerComplete",value);
     }
 
     public static void logToDownloadStickerFailed(int id) {
-        String event = "downloadStickerFailedId_" + id;
-        logEvent(event);
+        HashMap<String,String> value = new HashMap<>();
+        value.put("id",String.valueOf(id));
+        logEvent("downloadStickerFailed",value);
     }
 
     public static void logToFavSticker(int id) {
-        String event = "favStickerId_" + id;
-        logEvent(event);
+        HashMap<String,String> value = new HashMap<>();
+        value.put("id",String.valueOf(id));
+        logEvent("favSticker",value);
     }
 
 
@@ -131,5 +147,19 @@ public class LSEventUtil {
     private static void logEventLS(String key) {
         if(mFirebaseAnalytics != null)
             mFirebaseAnalytics.logEvent(key, new Bundle());
+    }
+
+    private static void logEvent(String key, HashMap<String, String> value) {
+        Bundle bundle = new Bundle();
+        HashMap<String, Object> umValue = new HashMap<>();
+        for (Map.Entry<String, String> v : value.entrySet()) {
+            bundle.putString(v.getKey(), v.getValue());
+            umValue.put(v.getKey(), v.getValue());
+        }
+        if (umValue.isEmpty()) {
+            umValue.put("x", "x");
+        }
+        if (mFirebaseAnalytics != null)
+            mFirebaseAnalytics.logEvent(key, bundle);
     }
 }
