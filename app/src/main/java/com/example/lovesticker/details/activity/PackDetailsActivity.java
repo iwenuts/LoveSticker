@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.blankj.utilcode.util.SPStaticUtils;
@@ -90,7 +91,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     protected void initView() {
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
 
-        MaxADManager.tryShowInterstitialDetailAd(this);
+        MaxADManager.tryShowInterstitialDetailAd();
 
 
         isSavedLayout = getIntent().getBooleanExtra("isSaved", false);
@@ -189,12 +190,6 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
     @Override
     protected void onResume() {
         super.onResume();
-
-        if (LSConstant.PackImageDetailsBack) {
-            MaxADManager.tryShowInterstitialBackAd(this);
-            LSConstant.PackImageDetailsBack = false;
-        }
-
     }
 
     @Override
@@ -229,7 +224,7 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LSConstant.PackDetailsBack = true;
+                MaxADManager.tryShowInterstitialBackAd(PackDetailsActivity.this);
                 finish();
             }
         });
@@ -458,12 +453,14 @@ public class PackDetailsActivity extends BaseActivity<BaseViewModel, ActivityPac
             builder.setPositiveButton("Exit", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    MaxADManager.tryShowInterstitialBackAd(PackDetailsActivity.this);
                     finish();
                     dialog.dismiss();
                 }
             });
             builder.show();
         } else {
+            MaxADManager.tryShowInterstitialBackAd(PackDetailsActivity.this);
             finish();
         }
     }

@@ -2,6 +2,7 @@ package com.example.lovesticker.details.activity;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -61,7 +62,7 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
     protected void initView() {
         ImmersionBar.with(this).statusBarView(viewBinding.statusBar).init();
 
-        MaxADManager.tryShowInterstitialDetailAd(this);
+        MaxADManager.tryShowInterstitialDetailAd();
 
         if (LSMKVUtil.getBoolean("loadad", true)) {
             viewBinding.adContainer.setVisibility(View.VISIBLE);
@@ -189,7 +190,7 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LSConstant.StickersDetailsBack = true;
+                MaxADManager.tryShowInterstitialBackAd(StickersDetailsActivity.this);
                 finish();
             }
         });
@@ -201,6 +202,12 @@ public class StickersDetailsActivity extends BaseActivity<BaseViewModel, Activit
 //                shareAny(uri);
 //            }
 //        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        MaxADManager.tryShowInterstitialBackAd(StickersDetailsActivity.this);
+        finish();
     }
 
     private void showRewardDialog() {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......

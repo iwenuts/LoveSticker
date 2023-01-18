@@ -14,9 +14,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.applovin.mediation.MaxAd;
+import com.blankj.utilcode.util.AppUtils;
+import com.blankj.utilcode.util.Utils;
 import com.example.lovesticker.main.activity.MainActivity;
 import com.example.lovesticker.main.model.StickerPacks;
 import com.example.lovesticker.util.ads.MaxADManager;
+import com.example.lovesticker.util.constant.LSConstant;
 import com.example.lovesticker.util.event.LSEventUtil;
 import com.example.lovesticker.util.event.UpdatePacksEvent;
 import com.example.lovesticker.util.mmkv.LSMKVUtil;
@@ -36,14 +39,16 @@ import org.greenrobot.eventbus.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LoveStickerApp extends Application implements Application.ActivityLifecycleCallbacks{
+public class LoveStickerApp extends Application implements Application.ActivityLifecycleCallbacks {
 
     private static Context applicationContext;
+
     public static Context getAppContext() {
         return applicationContext;
     }
 
     private static Application application;
+
     public static Application getApplication() {
         return application;
     }
@@ -69,10 +74,9 @@ public class LoveStickerApp extends Application implements Application.ActivityL
         // mkv init
         LSMKVUtil.initMKV(applicationContext);
 
-        MaxADManager.enableDebugMaxAd(this);
+//        MaxADManager.enableDebugMaxAd(this);
 
         MaxADManager.initMaxAd(this);
-
 
 
         // app event upload init
@@ -90,6 +94,19 @@ public class LoveStickerApp extends Application implements Application.ActivityL
                 .build(this, "5QZSQGBGTY9TPNPV7BV9");
 
         FileDownloader.setup(application);
+
+        AppUtils.registerAppStatusChangedListener(new Utils.OnAppStatusChangedListener() {
+            @Override
+            public void onForeground(Activity activity) {
+                Log.e("###", "onForeground: 在前台");
+                MaxADManager.tryShowInterstitialDetailAd();
+            }
+
+            @Override
+            public void onBackground(Activity activity) {
+                Log.e("###", "onBackground: 在后台");
+            }
+        });
     }
 
 

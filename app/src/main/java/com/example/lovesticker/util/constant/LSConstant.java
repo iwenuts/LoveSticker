@@ -15,10 +15,6 @@ public class LSConstant {
     public static Boolean initInterstitial = false;
     public static Boolean initInterstitialBack = false;
 
-    public static Boolean PackImageDetailsBack = false;
-    public static Boolean PackDetailsBack = false;
-    public static Boolean StickersDetailsBack = false;
-
     public static Boolean isDeletePack = false;
 
 

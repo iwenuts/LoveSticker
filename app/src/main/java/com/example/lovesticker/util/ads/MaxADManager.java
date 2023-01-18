@@ -67,24 +67,21 @@ public class MaxADManager implements LifecycleObserver {
         try {
             instance.appLovinSdk = AppLovinSdk.getInstance(APP_LOVIN_KEY, new AppLovinSdkSettings(context), context);
             instance.appLovinSdk.setMediationProvider(AppLovinMediationProvider.MAX);
-            instance.appLovinSdk.initializeSdk((new AppLovinSdk.SdkInitializationListener() {
-                @Override
-                public void onSdkInitialized(AppLovinSdkConfiguration config) {
+            instance.appLovinSdk.initializeSdk((config -> {
 
-                    Activity topAct = ActivityUtils.getTopActivity();
-                    if (topAct != null) {
-                        Log.e("###", "topAct != null ");
+                Activity topAct = ActivityUtils.getTopActivity();
+                if (topAct != null) {
+                    Log.e("###", "topAct != null ");
 
-                        loadRewardAd(topAct);
-                        loadInterstitialDetailAd(topAct);
-                        loadInterstitialBackAd(topAct);
-                        LSConstant.initReward = true;
-                        LSConstant.initInterstitial = true;
-                        LSConstant.initInterstitialBack = true;
-
-                    }
+                    loadRewardAd(topAct);
+                    loadInterstitialDetailAd(topAct);
+                    loadInterstitialBackAd(topAct);
+                    LSConstant.initReward = true;
+                    LSConstant.initInterstitial = true;
+                    LSConstant.initInterstitialBack = true;
 
                 }
+
             }));
 
         } catch (Exception e) {
@@ -113,8 +110,8 @@ public class MaxADManager implements LifecycleObserver {
     }
 
     // 展示InterstitialDetail广告
-    public static void tryShowInterstitialDetailAd(Activity activity) {
-        instance.tryShowInterstitialDetail(activity);
+    public static void tryShowInterstitialDetailAd() {
+        instance.tryShowInterstitialDetail();
     }
 
 
@@ -174,9 +171,11 @@ public class MaxADManager implements LifecycleObserver {
     private boolean waitingIntersShow = false;
 
     private void loadInterstitialDetail(Activity activity) {
-//        Log.e("###", "loadInterstitialDetail: "+ interstitialDetail );
-
         if (interstitialDetail != null) return;
+
+        if (!LSMKVUtil.getBoolean("loadad", true))return;
+
+//        Log.e("###", "loadInterstitialDetail: ");
 
         interstitialDetail = new MaxInterstitialAd(INTERSTITIAL_Detail, appLovinSdk, activity);
 
@@ -223,10 +222,15 @@ public class MaxADManager implements LifecycleObserver {
             public void onAdHidden(MaxAd ad) {
 //                Log.e("###", "onAdLoaded  onAdHidden: ");
                 if (interstitialDetail == null) {
+//                    Log.e("###", "loadInterstitial  interstitialDetail == null ");
                     interstitialDetail = new MaxInterstitialAd(INTERSTITIAL_Detail, appLovinSdk, activity);
                     interstitialDetail.setListener(this);
                 }
                 interstitialDetail.loadAd();
+
+//                if(interstitialDetail != null) interstitialDetail.destroy();
+//                interstitialDetail = null;
+//                loadInterstitialDetail(activity);
             }
 
             @Override
@@ -237,12 +241,16 @@ public class MaxADManager implements LifecycleObserver {
             @Override
             public void onAdLoadFailed(String adUnitId, MaxError error) {
                 waitingIntersShow = false;
-                Log.e("###", "onAdLoaded  onAdLoadFailed: ");
+                Log.e("###", "loadInterstitial  onAdLoadFailed: ");
                 if (interstitialDetail == null) {
                     interstitialDetail = new MaxInterstitialAd(INTERSTITIAL_Detail, appLovinSdk, activity);
                     interstitialDetail.setListener(this);
                 }
                 interstitialDetail.loadAd();
+
+//                if(interstitialDetail != null) interstitialDetail.destroy();
+//                interstitialDetail = null;
+//                loadInterstitialDetail(activity);
             }
 
             @Override
@@ -255,24 +263,27 @@ public class MaxADManager implements LifecycleObserver {
                     interstitialDetail.setListener(this);
                 }
                 interstitialDetail.loadAd();
+
+//                if(interstitialDetail != null) interstitialDetail.destroy();
+//                interstitialDetail = null;
+//                loadInterstitialDetail(activity);
             }
         });
 
         interstitialDetail.loadAd();
-
     }
 
-    private void tryShowInterstitialDetail(Activity activity) {
-//        if(waitingIntersShow) return;
+    private void tryShowInterstitialDetail() {
+        if(waitingIntersShow) return;
 //        if(!isLoadingInters) return;
 
         if (!LSMKVUtil.getBoolean("loadad", true))return;
 
-        Log.e("###", "tryShowInterstitialDetail: ");
-
         if (interstitialDetail == null) {
-            loadInterstitialDetail(activity);
+            return;
         }
+
+//        Log.e("###", "tryShowInterstitialDetail: ");
 
 //        isLoadingInters = false;
         if(interstitialDetail.isReady()){
@@ -288,8 +299,12 @@ public class MaxADManager implements LifecycleObserver {
     private boolean waitingBackShow = false;
 
     private void loadInterstitialBack(Activity activity) {
-
         if (interstitialBack != null) return;
+
+        if (!LSMKVUtil.getBoolean("loadad", true))return;
+
+//        Log.e("###", "loadInterstitialBack: ");
+
 
         interstitialBack = new MaxInterstitialAd(INTERSTITIAL_Back, appLovinSdk, activity);
 
@@ -335,7 +350,12 @@ public class MaxADManager implements LifecycleObserver {
             @Override
             public void onAdHidden(MaxAd ad) {
 //                Log.e("###", "Back  onAdHidden: ");
+//                if(interstitialBack != null) interstitialBack.destroy();
+//                interstitialBack = null;
+//                loadInterstitialBack(activity);
+
                 if (interstitialBack == null) {
+//                    Log.e("###", "Back  interstitialDetail == null ");
                     interstitialBack = new MaxInterstitialAd(INTERSTITIAL_Back, appLovinSdk, activity);
                     interstitialBack.setListener(this);
                 }
@@ -356,6 +376,10 @@ public class MaxADManager implements LifecycleObserver {
                     interstitialBack.setListener(this);
                 }
                 interstitialBack.loadAd();
+
+//                if(interstitialBack != null) interstitialBack.destroy();
+//                interstitialBack = null;
+//                loadInterstitialBack(activity);
             }
 
             @Override
@@ -367,24 +391,27 @@ public class MaxADManager implements LifecycleObserver {
                     interstitialBack.setListener(this);
                 }
                 interstitialBack.loadAd();
+
+//                if(interstitialBack != null) interstitialBack.destroy();
+//                interstitialBack = null;
+//                loadInterstitialBack(activity);
             }
         });
 
         interstitialBack.loadAd();
-
     }
 
     private void tryShowInterstitialBack(Activity activity) {
-//        if(waitingBackShow) return;
+        if(waitingBackShow) return;
 //        if(!isLoadingBack) return;
 
         if (!LSMKVUtil.getBoolean("loadad", true))return;
 
-        Log.e("###", "tryShowInterstitialBack: ");
-
         if (interstitialBack == null) {
             loadInterstitialBack(activity);
         }
+
+//        Log.e("###", "tryShowInterstitialBack: ");
 
         if(interstitialBack.isReady()){
             interstitialBack.showAd();

@@ -90,7 +90,7 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
 
         LSEventUtil.logToViewSticker();
 
-        MaxADManager.tryShowInterstitialDetailAd(this);
+        MaxADManager.tryShowInterstitialDetailAd();
 
         if (LSMKVUtil.getBoolean("loadad", true)) {
             viewBinding.adContainer.setVisibility(View.VISIBLE);
@@ -253,10 +253,16 @@ public class PackImageDetailsActivity extends BaseActivity<BaseViewModel, Activi
         viewBinding.back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LSConstant.PackImageDetailsBack = true;
+                MaxADManager.tryShowInterstitialBackAd(PackImageDetailsActivity.this);
                 finish();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        MaxADManager.tryShowInterstitialBackAd(PackImageDetailsActivity.this);
+        finish();
     }
 
     private void showRewardDialog() {  //间隔一次出现激励弹窗 ex:第一次出现，第二次不出现......

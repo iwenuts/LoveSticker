@@ -117,12 +117,6 @@ public class PackFragment extends BaseFragment<PackViewModel, FragmentPackBindin
     @Override
     public void onResume() {
         super.onResume();
-        if (LSConstant.PackDetailsBack){
-            MaxADManager.tryShowInterstitialBackAd((AppCompatActivity) getActivity());
-            LSConstant.PackDetailsBack = false;
-        }
-
-
     }
 
     @Override

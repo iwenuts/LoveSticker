@@ -209,12 +209,14 @@ public class SavedPacksFragment extends BaseFragment<SavePacksViewModel, Fragmen
     });
 
     private void launchIntentToAddPackToSpecificPackage(String identifier, String stickerPackName, String whatsappPackageName) {
-        Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
-        intent.setPackage(whatsappPackageName);
-        try {
-            startActivityForResult(intent, LSConstant.ADD_PACK);
-        } catch (ActivityNotFoundException e) {
-            Toast.makeText(getContext(), R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
+        if (isAdded()){
+            Intent intent = createIntentToAddStickerPack(identifier, stickerPackName);
+            intent.setPackage(whatsappPackageName);
+            try {
+                startActivityForResult(intent, LSConstant.ADD_PACK);
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(getContext(), R.string.add_pack_fail_prompt_update_whatsapp, Toast.LENGTH_LONG).show();
+            }
         }
     }
 

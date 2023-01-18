@@ -173,10 +173,6 @@ public class LoveFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (LSConstant.StickersDetailsBack){
-            MaxADManager.tryShowInterstitialBackAd((AppCompatActivity) getActivity());
-            LSConstant.StickersDetailsBack = false;
-        }
     }
 
 
