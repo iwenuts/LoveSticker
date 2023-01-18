@@ -72,12 +72,12 @@ public class MainActivity extends BaseActivity<BaseViewModel, ActivityMainBindin
         }
 
         if (!LSConstant.initInterstitial){
-            Log.e("###", "LSConstant.initInterstitial " );
+//            Log.e("###", "LSConstant.initInterstitial " );
             loadInterstitialDetailAd(this);
         }
 
         if (!LSConstant.initInterstitialBack){
-            Log.e("###", "LSConstant.initInterstitialBack " );
+//            Log.e("###", "LSConstant.initInterstitialBack " );
             loadInterstitialBackAd(this);
         }
 

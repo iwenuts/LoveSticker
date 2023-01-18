@@ -52,6 +52,15 @@ allprojects {
         maven { url 'https://artifacts.applovin.com/android' }
         maven { url 'https://adcolony.bintray.com/AdColony&apos' }
 //        maven { url 'https://repo1.maven.org/maven2/' }
+
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url 'https://android-sdk.is.com/' }
+        maven { url "https://dl-maven-android.mintegral.com/repository/mbridge_android_sdk_oversea" }
+        maven { url "https://artifact.bytedance.com/repository/pangle" }
+        maven {
+            allowInsecureProtocol = true
+            url "http://4thline.org/m2"
+        }
     }
 }
 
